@@ -52,37 +52,37 @@
 		clk_sysclk: clk-sysclk {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
-			clock-frequency = <180000000>;
+			clock-frequency = <168000000>;
 		};
 
 		clk_hclk: clk-hclk {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
-			clock-frequency = <180000000>;
+			clock-frequency = <168000000>;
 		};
 
 		clk_pclk1: clk-pclk1 {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
-			clock-frequency = <45000000>;
+			clock-frequency = <42000000>;
 		};
 
 		clk_pclk2: clk-pclk2 {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
-			clock-frequency = <90000000>;
+			clock-frequency = <84000000>;
 		};
 
 		clk_pmtr1: clk-pmtr1 {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
-			clock-frequency = <90000000>;
+			clock-frequency = <84000000>;
 		};
 
 		clk_pmtr2: clk-pmtr2 {
 			#clock-cells = <0>;
 			compatible = "fixed-clock";
-			clock-frequency = <180000000>;
+			clock-frequency = <168000000>;
 		};
 
 		clk_systick: clk-systick {

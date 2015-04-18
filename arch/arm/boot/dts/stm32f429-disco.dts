@@ -58,7 +58,7 @@
 	};
 
 	memory {
-		reg = <0x90000000 0x800000>;
+		reg = <0xD0000000 0x800000>;
 	};
 
 	aliases {
@@ -67,5 +67,9 @@
 };
 
 &usart1 {
+	status = "okay";
+};
+
+&timer2 {
 	status = "okay";
 };
