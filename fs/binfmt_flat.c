@@ -914,6 +914,9 @@ static int load_flat_binary(struct linux_binprm * bprm)
 	 */
 	start_addr = libinfo.lib_list[0].entry;
 
+	/* Dirty ARMv7-M hack! */
+	start_addr |= 1;
+
 #ifdef CONFIG_BINFMT_SHARED_FLAT
 	for (i = MAX_SHARED_LIBS-1; i>0; i--) {
 		if (libinfo.lib_list[i].loaded) {
