@@ -115,6 +115,9 @@ config CLKSRC_STM32
 	bool "Clocksource for STM32 SoCs" if !ARCH_STM32
 	depends on OF && ARM && (ARCH_STM32 || COMPILE_TEST)
 	select CLKSRC_MMIO
+	default ARCH_STM32
+	help
+	  Support to use the timers of STM32 SoCs as clock event device.
 
 config ARM_ARCH_TIMER
 	bool
