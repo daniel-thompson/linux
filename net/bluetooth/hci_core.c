@@ -33,6 +33,268 @@
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
+#ifdef CONFIG_BT_RANDADDR
+#define USE_MAC_FROM_RDA_NVRAM
+#ifdef USE_MAC_FROM_RDA_NVRAM
+#include <plat/md_sys.h>
+struct bt_mac_info {
+	u16 activated;
+	u16 NAP;
+	u8  UAP;
+	u32 LAP;
+};
+#define BT_MAC_ACTIVATED_FLAG 0x1d0e
+#endif /*USE_MAC_FROM_RDA_NVRAM*/
+#define BT_NVRAM_FILE_NAME "/data/misc/bluetooth/BTMAC"
+#endif
+
+#ifdef CONFIG_BT_RANDADDR
+
+#ifndef USE_MAC_FROM_RDA_NVRAM
+static int nvram_read(char *filename, char *buf, ssize_t len, int offset)
+{
+	struct file *fd;
+	int retLen = -1;
+
+	mm_segment_t old_fs = get_fs();
+	set_fs(KERNEL_DS);
+
+	fd = filp_open(filename, O_RDWR|O_CREAT, 0666);
+
+	if(IS_ERR(fd)) {
+		printk("[bt][nvram_read] : failed to open fd = %d !!\n" ,(int)fd);
+		return -1;
+	}
+
+	do{
+		if ((fd->f_op == NULL) || (fd->f_op->read == NULL)){
+			printk("[bt][nvram_read] : file can not be read!!\n");
+			break;
+		}
+
+		if (fd->f_pos != offset) {
+			if (fd->f_op->llseek){
+				if(fd->f_op->llseek(fd, offset, 0) != offset){
+					printk("[bt][nvram_read] : failed to seek!!\n");
+					break;
+				}
+			} else {
+				fd->f_pos = offset;
+			}
+		}
+
+		retLen = fd->f_op->read(fd,
+							  buf,
+							  len,
+							  &fd->f_pos);
+	}while(false);
+
+	filp_close(fd, NULL);
+	set_fs(old_fs);
+	printk("bt nv_read success \n");
+	return retLen;
+}
+
+static int nvram_write(char *filename, char *buf, ssize_t len, int offset)
+{
+	struct file *fd;
+	int retLen = -1;
+
+	mm_segment_t old_fs = get_fs();
+	set_fs(KERNEL_DS);
+
+	fd = filp_open(filename, O_RDWR|O_CREAT, 0666);
+
+	if(IS_ERR(fd)){
+		printk("[bt][nvram_write] : failed to open!! fd = %d \n", (int)fd);
+		return -1;
+	}
+
+	do{
+		if ((fd->f_op == NULL) || (fd->f_op->write == NULL)){
+			printk("[bt][nvram_write] : file can not be write!!\n");
+			break;
+		} /* End of if */
+
+		if (fd->f_pos != offset){
+			if (fd->f_op->llseek){
+				if(fd->f_op->llseek(fd, offset, 0) != offset){
+					printk("[rda5890][nvram_write] : failed to seek!!\n");
+					break;
+				}
+			} else {
+				fd->f_pos = offset;
+			}
+		}
+
+		retLen = fd->f_op->write(fd,
+								 buf,
+								 len,
+								 &fd->f_pos);
+	}while(false);
+
+	filp_close(fd, NULL);
+	set_fs(old_fs);
+	printk("bt nv_write success \n");
+	return retLen;
+}
+#endif /*USE_MAC_FROM_RDA_NVRAM*/
+
+#ifdef USE_MAC_FROM_RDA_NVRAM
+int bt_read_mac_from_nvram(char *buf)
+{
+	int ret;
+	struct msys_device *bt_msys = NULL;
+	struct bt_mac_info bt_info;
+	struct client_cmd cmd_set;
+	int retry=3;
+
+	bt_msys = rda_msys_alloc_device();
+	if (!bt_msys) {
+		printk(KERN_ERR "nvram: can not allocate bt_msys device\n");
+		ret = -ENOMEM;
+		goto err_handle_sys;
+	}
+
+	bt_msys->module = SYS_GEN_MOD;
+	bt_msys->name = "rda-bt";
+	rda_msys_register_device(bt_msys);
+
+	memset(&bt_info, sizeof(bt_info), 0);
+	cmd_set.pmsys_dev = bt_msys;
+	cmd_set.mod_id = SYS_GEN_MOD;
+	cmd_set.mesg_id = SYS_GEN_CMD_GET_BT_INFO;
+	cmd_set.pdata = NULL;
+	cmd_set.data_size = 0;
+	cmd_set.pout_data = &bt_info;
+	cmd_set.out_size = sizeof(bt_info);
+
+	while (retry--) {
+		ret = rda_msys_send_cmd(&cmd_set);
+		if (ret) {
+			printk(KERN_ERR "nvram:can not get bt mac from nvram \n");
+			ret = -EBUSY;
+		} else {
+			break;
+		}
+	}
+
+	if (ret == -EBUSY) {
+		goto err_handle_cmd;
+	}
+
+	if (bt_info.activated != BT_MAC_ACTIVATED_FLAG) {
+		printk(KERN_ERR "nvram:get invalid bt mac address from nvram\n");
+		ret = -EINVAL;
+		goto err_invalid_mac;
+	}
+
+	buf[0] = (bt_info.NAP >> 8) & 0xff;
+	buf[1] = bt_info.NAP & 0xff;
+	buf[2] = bt_info.UAP;
+	buf[3] = (bt_info.LAP >> 16) & 0xff;
+	buf[4] = (bt_info.LAP >> 8) & 0xff;
+	buf[5] = bt_info.LAP & 0xff;
+
+	printk(KERN_ERR "nvram:get bt mac address [%02x:%02x:%02x:%02x:%02x:%02x] from nvram success.\n",
+		    buf[0], buf[1], buf[2],
+		    buf[3], buf[4], buf[5]);
+	ret = 0; /*success*/
+
+err_invalid_mac:
+err_handle_cmd:
+	rda_msys_unregister_device(bt_msys);
+	rda_msys_free_device(bt_msys);
+err_handle_sys:
+	return ret;
+}
+
+int bt_write_mac_to_nvram(const char *buf)
+{
+	int ret;
+	struct msys_device *bt_msys = NULL;
+	struct bt_mac_info bt_info;
+	struct client_cmd cmd_set;
+
+	bt_msys = rda_msys_alloc_device();
+	if (!bt_msys) {
+		printk(KERN_ERR "nvram: can not allocate bt_msys device\n");
+		ret = -ENOMEM;
+		goto err_handle_sys;
+	}
+
+	bt_msys->module = SYS_GEN_MOD;
+	bt_msys->name = "rda-bt";
+	rda_msys_register_device(bt_msys);
+
+	memset(&bt_info, sizeof(bt_info), 0);
+	bt_info.activated = BT_MAC_ACTIVATED_FLAG;
+	bt_info.NAP = 0x0000 | (buf[0]|0x0000)<<8 | (buf[1]|0x0000);
+	bt_info.UAP = buf[2];
+	bt_info.LAP = 0x00000000 | (buf[3]|0x00000000)<<16 | (buf[4]|0x00000000)<<8 | (buf[5]|0x00000000);
+
+	cmd_set.pmsys_dev = bt_msys;
+	cmd_set.mod_id = SYS_GEN_MOD;
+	cmd_set.mesg_id = SYS_GEN_CMD_SET_BT_INFO;
+	cmd_set.pdata = &bt_info;
+	cmd_set.data_size = sizeof(bt_info);
+	cmd_set.pout_data = NULL;
+	cmd_set.out_size = 0;
+
+	ret = rda_msys_send_cmd(&cmd_set);
+	if (ret) {
+		printk(KERN_ERR "nvram:can not set bt mac to nvram \n");
+		ret = -EBUSY;
+		goto err_handle_cmd;
+	}
+
+	printk(KERN_ERR "nvram:set bt mac address [%02x:%02x:%02x:%02x:%02x:%02x] to nvram success.\n",
+		    buf[0], buf[1], buf[2],
+		    buf[3], buf[4], buf[5]);
+	ret = 0; /*success*/
+
+err_handle_cmd:
+	rda_msys_unregister_device(bt_msys);
+	rda_msys_free_device(bt_msys);
+err_handle_sys:
+	return ret;
+}
+
+#endif /*USE_MAC_FROM_RDA_NVRAM*/
+
+void bt_get_random_address(char *buf)
+{
+	static unsigned char has_create_addr_success = 0;
+	static __u8 address[] = {0x00, 0x00, 0x00, 0x00, 0x90,0x59};
+
+	if(!has_create_addr_success)
+	{
+#ifdef USE_MAC_FROM_RDA_NVRAM
+		int ret;
+		ret = bt_read_mac_from_nvram(address);
+		if (ret) {
+			printk(KERN_ERR "nvram:get a random bt address\n");
+			get_random_bytes(address, 6);
+			if (ret == -EINVAL)
+				bt_write_mac_to_nvram(address);
+		}
+#else
+		if(nvram_read(BT_NVRAM_FILE_NAME, address, 6, 0) != 6)
+		{
+			get_random_bytes(address, 6);
+			nvram_write(BT_NVRAM_FILE_NAME, address, 6, 0);
+		}
+#endif /* USE_MAC_FROM_RDA_NVRAM */
+		has_create_addr_success = 1;
+	}
+
+	memcpy(buf, address, sizeof(address));
+}
+
+EXPORT_SYMBOL(bt_get_random_address);
+
+#endif
+
 static void hci_rx_work(struct work_struct *work);
 static void hci_cmd_work(struct work_struct *work);
 static void hci_tx_work(struct work_struct *work);
