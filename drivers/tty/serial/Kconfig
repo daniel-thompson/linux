@@ -1486,4 +1486,40 @@ config SERIAL_RP2_NR_UARTS
 
 endmenu
 
+config SERIAL_RDA_UART
+	tristate "RDA UART support"
+	select SERIAL_CORE
+        default n
+	help
+	  This driver supports the RDA UART port.
+config SERIAL_RDA_UART_DMA
+        bool "RDA UART DMA mode"
+        default n
+        help
+          This driver supports the RDA UART DMA mode.
+
+config SERIAL_RDA_UART_MAXPORTS
+	int "Maximum number of RDA UART ports"
+	depends on SERIAL_RDA_UART
+	default 3
+	help
+	  This setting lets you define the maximum number of the RDA
+	  UART ports. The usual default varies from board to board, and
+	  this setting is a way of catering for that.
+
+config SERIAL_RDA_UART_CONSOLE
+	bool "RDA UART console support"
+	depends on SERIAL_RDA_UART=y
+	select SERIAL_CORE_CONSOLE
+	help
+	  Enable a RDA UART port to be the system console.
+
+config SERIAL_RDA_MD
+    bool "RDA Modem Com support"
+    depends on PLAT_RDA=y
+    depends on !RDA_FPGA
+    default n
+    help
+      It is for communicating with modem.
+
 endif # TTY
