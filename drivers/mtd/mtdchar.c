@@ -421,7 +421,8 @@ static int mtdchar_writeoob(struct file *file, struct mtd_info *mtd,
 		return ret;
 
 	ops.ooblen = length;
-	ops.ooboffs = start & (mtd->writesize - 1);
+	ops.ooboffs = mtd_mod_by_ws(start, mtd);
+
 	ops.datbuf = NULL;
 	ops.mode = (mfi->mode == MTD_FILE_MODE_RAW) ? MTD_OPS_RAW :
 		MTD_OPS_PLACE_OOB;
@@ -433,7 +434,7 @@ static int mtdchar_writeoob(struct file *file, struct mtd_info *mtd,
 	if (IS_ERR(ops.oobbuf))
 		return PTR_ERR(ops.oobbuf);
 
-	start &= ~((uint64_t)mtd->writesize - 1);
+	start = mtd_div_by_ws(start, mtd) * mtd->writesize;
 	ret = mtd_write_oob(mtd, start, &ops);
 
 	if (ops.oobretlen > 0xFFFFFFFFU)
@@ -461,7 +462,7 @@ static int mtdchar_readoob(struct file *file, struct mtd_info *mtd,
 		return -EFAULT;
 
 	ops.ooblen = length;
-	ops.ooboffs = start & (mtd->writesize - 1);
+	ops.ooboffs = mtd_mod_by_ws(start, mtd);
 	ops.datbuf = NULL;
 	ops.mode = (mfi->mode == MTD_FILE_MODE_RAW) ? MTD_OPS_RAW :
 		MTD_OPS_PLACE_OOB;
@@ -473,7 +474,7 @@ static int mtdchar_readoob(struct file *file, struct mtd_info *mtd,
 	if (!ops.oobbuf)
 		return -ENOMEM;
 
-	start &= ~((uint64_t)mtd->writesize - 1);
+	start = mtd_div_by_ws(start, mtd) * mtd->writesize;
 	ret = mtd_read_oob(mtd, start, &ops);
 
 	if (put_user(ops.oobretlen, retp))

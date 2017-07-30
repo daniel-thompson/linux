@@ -42,7 +42,6 @@
 #include <linux/mtd/partitions.h>
 
 #include "mtdcore.h"
-
 /*
  * backing device capabilities for non-mappable devices (such as NAND flash)
  * - permits private mappings, copies are taken of the data
@@ -1098,7 +1097,11 @@ void *mtd_kmalloc_up_to(const struct mtd_info *mtd, size_t *size)
 			return kbuf;
 
 		*size >>= 1;
-		*size = ALIGN(*size, mtd->writesize);
+		if (is_power_of_2(mtd->writesize))
+			*size = ALIGN(*size, mtd->writesize);
+		else
+			*size = (size_t)mtd_div_by_ws((*size + mtd->writesize - 1),
+					(struct mtd_info *)mtd) * mtd->writesize;
 	}
 
 	/*

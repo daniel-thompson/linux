@@ -387,9 +387,10 @@ static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 	 */
 	if (!concat->mtd.numeraseregions) {
 		/* the easy case: device has uniform erase block size */
-		if (instr->addr & (concat->mtd.erasesize - 1))
+		if (mtd_mod_by_eb(instr->addr , &concat->mtd))
 			return -EINVAL;
-		if (instr->len & (concat->mtd.erasesize - 1))
+
+		if (mtd_mod_by_eb(instr->len , &concat->mtd))
 			return -EINVAL;
 	} else {
 		/* device has variable erase size */
@@ -408,7 +409,7 @@ static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 		 * to-be-erased area begins. Verify that the starting
 		 * offset is aligned to this region's erase size:
 		 */
-		if (i < 0 || instr->addr & (erase_regions[i].erasesize - 1))
+		if (i < 0 || mtd_mod_by_var(instr->addr, erase_regions[i].erasesize))
 			return -EINVAL;
 
 		/*
@@ -421,8 +422,8 @@ static int concat_erase(struct mtd_info *mtd, struct erase_info *instr)
 		/*
 		 * check if the ending offset is aligned to this region's erase size
 		 */
-		if (i < 0 || ((instr->addr + instr->len) &
-					(erase_regions[i].erasesize - 1)))
+		if (i < 0 || mtd_mod_by_var((instr->addr + instr->len),
+					erase_regions[i].erasesize))
 			return -EINVAL;
 	}
 
