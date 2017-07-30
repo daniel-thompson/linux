@@ -632,6 +632,20 @@ config I2C_PXA_SLAVE
 	  is necessary for systems where the PXA may be a target on the
 	  I2C bus.
 
+config I2C_RDA
+	tristate "RDA I2C adapter"
+	depends on ARCH_RDA8810
+	help
+	  If you say yes to this option, support will be included for the
+	  I2C interface on the RDA platform.
+
+config I2C_RDA_V2
+	tristate "RDA I2C adapter v2, used in rda8810e"
+	depends on ARCH_RDA8810E || ARCH_RDA8850E
+	help
+	  If you say yes to this option, support will be included for the
+	  I2C interface on the RDA platform.
+
 config HAVE_S3C2410_I2C
 	bool
 	help
