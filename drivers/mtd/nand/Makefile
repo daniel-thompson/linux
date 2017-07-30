@@ -1,6 +1,10 @@
 #
 # linux/drivers/nand/Makefile
 #
+subdir-ccflags-y := -Werror
+ubdir-ccflags-y += -DNAND_PAGE_SIZE=4096
+subdir-ccflags-y += -DNAND_BLOCK_SIZE=262144
+subdir-ccflags-y += -DNAND_SPARE_SIZE=128
 
 obj-$(CONFIG_MTD_NAND)			+= nand.o
 obj-$(CONFIG_MTD_NAND_ECC)		+= nand_ecc.o
@@ -41,6 +45,10 @@ obj-$(CONFIG_MTD_NAND_SLC_LPC32XX)      += lpc32xx_slc.o
 obj-$(CONFIG_MTD_NAND_MLC_LPC32XX)      += lpc32xx_mlc.o
 obj-$(CONFIG_MTD_NAND_SH_FLCTL)		+= sh_flctl.o
 obj-$(CONFIG_MTD_NAND_MXC)		+= mxc_nand.o
+obj-$(CONFIG_MTD_NAND_RDA_V1)		+= rda_nand_v1.o rda_nand_v1_low.o
+obj-$(CONFIG_MTD_NAND_RDA_V2)		+= rda_nand_v2.o
+obj-$(CONFIG_MTD_NAND_RDA_V3)		+= rda_nand_v3.o
+obj-$(CONFIG_MTD_NAND_RDA_SPI)		+= rda_spi_nand.o
 obj-$(CONFIG_MTD_NAND_SOCRATES)		+= socrates_nand.o
 obj-$(CONFIG_MTD_NAND_TXX9NDFMC)	+= txx9ndfmc.o
 obj-$(CONFIG_MTD_NAND_NUC900)		+= nuc900_nand.o

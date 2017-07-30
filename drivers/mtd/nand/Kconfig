@@ -1,3 +1,10 @@
+config MTD_NAND_IDS
+	tristate "Include chip ids for known NAND devices."
+	depends on MTD
+	help
+	  Useful for NAND drivers that do not use the NAND subsystem but
+	  still like to take advantage of the known chip information.
+
 config MTD_NAND_ECC
 	tristate
 
@@ -132,9 +139,6 @@ config BCH_CONST_T
 	default 4 if MTD_NAND_OMAP_BCH4
 	default 8 if MTD_NAND_OMAP_BCH8
 endif
-
-config MTD_NAND_IDS
-	tristate
 
 config MTD_NAND_RICOH
 	tristate "Ricoh xD card reader"
@@ -489,6 +493,47 @@ config MTD_NAND_MXC
 	help
 	  This enables the driver for the NAND flash controller on the
 	  MXC processors.
+
+config MTD_NAND_RDA
+	bool "Support for NAND Flash on RDA Platform"
+	depends on ARCH_RDA
+	help
+ 	  Enables support for NAND Flash on RDA platform.
+
+config MTD_NAND_RDA_V1
+	tristate "Support for RDA NAND Controller V1"
+	depends on MTD_NAND_RDA && ARCH_RDA8810
+	default y
+	help
+ 	  Enables support for RDA NAND Controller V1 for RDA8810
+
+config MTD_NAND_RDA_V2
+	tristate "Support for RDA NAND Controller V2"
+	depends on MTD_NAND_RDA && (ARCH_RDA8810E || ARCH_RDA8820)
+	default y
+	help
+ 	  Enables support for RDA NAND Controller V2 for RDA8810E/RDA8820
+
+config MTD_NAND_RDA_V3
+	tristate "Support for RDA NAND Controller V3"
+	depends on MTD_NAND_RDA && (ARCH_RDA8850E || ARCH_RDA8810H)
+	default y
+	help
+	  Enables support for RDA NAND Controller V3 for RDA8850E/RDA8810H
+
+config MTD_NAND_RDA_SPI
+	tristate "Support for SPI NAND Flash on RDA Platform"
+	depends on ARCH_RDA
+	help
+	  Enables support for SPI NAND Flash on RDA platform.
+
+config MTD_NAND_RDA_DMA
+        bool "RDA NAND Direct Memory Access(DMA)"
+        depends on MTD_NAND_RDA || MTD_NAND_RDA_SPI
+        default y
+        help
+          Driver for the NAND flash controller, with DMA.
+          If unsure, say Y
 
 config MTD_NAND_SH_FLCTL
 	tristate "Support for NAND on Renesas SuperH FLCTL"
