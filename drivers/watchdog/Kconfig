@@ -52,6 +52,14 @@ config WATCHDOG_NOWAYOUT
 comment "Watchdog Device Drivers"
 
 # Architecture Independent
+config RDA_WATCHDOG
+        tristate "RDA 88xx Watchdog"
+        select WATCHDOG_CORE
+        help
+          Support for the watchdog in the RDA Platform PMIC. Watchdog trigger
+          cause system reset.
+
+          Say Y here to include support for the RDA watchdog.
 
 config SOFT_WATCHDOG
 	tristate "Software watchdog"
