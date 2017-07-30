@@ -346,6 +346,19 @@ static inline uint32_t mtd_mod_by_ws(uint64_t sz, struct mtd_info *mtd)
 	return do_div(sz, mtd->writesize);
 }
 
+static inline uint32_t mtd_div_by_var(uint64_t sz, uint32_t var)
+{
+	(void)(((typeof((var)) *)0) == ((uint32_t *)0));
+	do_div(sz, var);
+	return sz;
+}
+
+static inline uint32_t mtd_mod_by_var(uint64_t sz, uint32_t var)
+{
+	(void)(((typeof((var)) *)0) == ((uint32_t *)0));
+	return do_div(sz, var);
+}
+
 static inline int mtd_has_oob(const struct mtd_info *mtd)
 {
 	return mtd->_read_oob && mtd->_write_oob;
