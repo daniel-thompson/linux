@@ -903,6 +903,9 @@ static int c_show(struct seq_file *m, void *v)
 	u32 cpuid;
 
 	for_each_online_cpu(i) {
+
+		seq_printf(m, "Processor\t: %s rev %d (%s)\n",
+                   cpu_name, read_cpuid_id() & 15, elf_platform);
 		/*
 		 * glibc reads /proc/cpuinfo to determine the number of
 		 * online processors, looking for lines beginning with
@@ -918,9 +921,14 @@ static int c_show(struct seq_file *m, void *v)
 			   per_cpu(cpu_data, i).loops_per_jiffy / (500000UL/HZ),
 			   (per_cpu(cpu_data, i).loops_per_jiffy / (5000UL/HZ)) % 100);
 #else
-		seq_printf(m, "BogoMIPS\t: %lu.%02lu\n",
-			   loops_per_jiffy / (500000/HZ),
-			   (loops_per_jiffy / (5000/HZ)) % 100);
+		{
+			unsigned long local_loops_per_jiffy;
+
+			local_loops_per_jiffy = 6 * loops_per_jiffy / 5;
+			seq_printf(m, "BogoMIPS\t: %lu.%02lu\n",
+				   local_loops_per_jiffy / (500000/HZ),
+				   (local_loops_per_jiffy / (5000/HZ)) % 100);
+		}
 #endif
 		/* dump out the processor features */
 		seq_puts(m, "Features\t: ");
@@ -981,3 +989,12 @@ const struct seq_operations cpuinfo_op = {
 	.stop	= c_stop,
 	.show	= c_show
 };
+
+/* export the cache management functions */
+#ifndef MULTI_CACHE
+
+EXPORT_SYMBOL(__glue(_CACHE,_dma_map_area));
+EXPORT_SYMBOL(__glue(_CACHE,_dma_unmap_area));
+EXPORT_SYMBOL(__glue(_CACHE,_dma_flush_range));
+
+#endif

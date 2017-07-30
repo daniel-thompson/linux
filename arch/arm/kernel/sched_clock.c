@@ -199,8 +199,15 @@ static int sched_clock_suspend(void)
 
 static void sched_clock_resume(void)
 {
+#if 0
 	cd.epoch_cyc = read_sched_clock();
 	cd.epoch_cyc_copy = cd.epoch_cyc;
+#else
+	/*
+	 * Call update_sched_clock to update epoch_ns field.
+	 */
+	update_sched_clock();
+#endif /* #if 0 */
 	cd.suspended = false;
 }
 
