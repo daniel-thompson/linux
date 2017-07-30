@@ -119,8 +119,17 @@
 #endif
 #endif
 #define _PFN_BITS		(MAX_PHYSMEM_BITS - PAGE_SHIFT)
-#define OBJ_INDEX_BITS	(BITS_PER_LONG - _PFN_BITS)
-#define OBJ_INDEX_MASK	((_AC(1, UL) << OBJ_INDEX_BITS) - 1)
+#define _PFN_SHIFT_BITS         (MAX_PHYSMEM_BITS - _PFN_BITS)
+/*
+ * in 32bits and 4K page system (without PAE). __PFN_BIT is 20bits
+ * 12 bits left for others
+ * lowest 4 bits for clients
+ * 8 bits used for OBJ_INDEX (7 bits max, 4096/32 = 128)
+ * */
+#define OBJ_INDEX_BITS	(BITS_PER_LONG - _PFN_BITS - ZS_UNTOUCH_BITS)
+#define OBJ_INDEX_SHIFT_BITS ZS_UNTOUCH_BITS
+#define OBJ_INDEX_MASK	\
+	(((_AC(1, UL) << OBJ_INDEX_BITS) - 1) << OBJ_INDEX_SHIFT_BITS)
 
 #define MAX(a, b) ((a) >= (b) ? (a) : (b))
 /* ZS_MIN_ALLOC_SIZE must be multiple of ZS_ALIGN */
@@ -445,8 +454,8 @@ static void *obj_location_to_handle(struct page *page, unsigned long obj_idx)
 		return NULL;
 	}
 
-	handle = page_to_pfn(page) << OBJ_INDEX_BITS;
-	handle |= ((obj_idx + 1) & OBJ_INDEX_MASK);
+	handle = page_to_pfn(page) << _PFN_SHIFT_BITS;
+	handle |= ((obj_idx + 1)  <<  OBJ_INDEX_SHIFT_BITS) & OBJ_INDEX_MASK;
 
 	return (void *)handle;
 }
@@ -459,8 +468,8 @@ static void *obj_location_to_handle(struct page *page, unsigned long obj_idx)
 static void obj_handle_to_location(unsigned long handle, struct page **page,
 				unsigned long *obj_idx)
 {
-	*page = pfn_to_page(handle >> OBJ_INDEX_BITS);
-	*obj_idx = (handle & OBJ_INDEX_MASK) - 1;
+	*page = pfn_to_page(handle >> _PFN_SHIFT_BITS);
+	*obj_idx = ((handle & OBJ_INDEX_MASK) >> OBJ_INDEX_SHIFT_BITS) - 1;
 }
 
 static unsigned long obj_idx_to_offset(struct page *page,
@@ -843,6 +852,10 @@ struct zs_pool *zs_create_pool(gfp_t flags)
 }
 EXPORT_SYMBOL_GPL(zs_create_pool);
 
+/* potential memory leak here
+ * as there is no list for FULL/EMPTY pages, no way to fix yet
+ * */
+
 void zs_destroy_pool(struct zs_pool *pool)
 {
 	int i;
@@ -922,18 +935,18 @@ unsigned long zs_malloc(struct zs_pool *pool, size_t size)
 }
 EXPORT_SYMBOL_GPL(zs_malloc);
 
-void zs_free(struct zs_pool *pool, unsigned long obj)
+size_t zs_free(struct zs_pool *pool, unsigned long obj)
 {
 	struct link_free *link;
 	struct page *first_page, *f_page;
 	unsigned long f_objidx, f_offset;
-
+	size_t ret;
 	int class_idx;
 	struct size_class *class;
 	enum fullness_group fullness;
 
 	if (unlikely(!obj))
-		return;
+		return 0;
 
 	obj_handle_to_location(obj, &f_page, &f_objidx);
 	first_page = get_first_page(f_page);
@@ -947,6 +960,7 @@ void zs_free(struct zs_pool *pool, unsigned long obj)
 	/* Insert this object in containing zspage's freelist */
 	link = (struct link_free *)((unsigned char *)kmap_atomic(f_page)
 							+ f_offset);
+	ret = *(u16 *)link;
 	link->next = first_page->freelist;
 	kunmap_atomic(link);
 	first_page->freelist = (void *)obj;
@@ -961,6 +975,8 @@ void zs_free(struct zs_pool *pool, unsigned long obj)
 
 	if (fullness == ZS_EMPTY)
 		free_zspage(first_page);
+
+	return ret;
 }
 EXPORT_SYMBOL_GPL(zs_free);
 
@@ -1065,6 +1081,29 @@ u64 zs_get_total_size_bytes(struct zs_pool *pool)
 	return npages << PAGE_SHIFT;
 }
 EXPORT_SYMBOL_GPL(zs_get_total_size_bytes);
+
+static inline void dump_zspool_class(struct size_class *c)
+{
+	printk(KERN_INFO"class info\n");
+	printk(KERN_INFO"obj size %d, index - %d\n",
+			c->size, c->index);
+	printk(KERN_INFO"pages_per_zspage - %d, page_allocated - %llu\n",
+			c->pages_per_zspage, c->pages_allocated);
+}
+
+void dump_zspool(struct zs_pool *pool)
+{
+#if 0
+	int i;
+
+	for (i = 0; i < ZS_SIZE_CLASSES; i++) {
+		printk(KERN_INFO"zspool for class %d\n", i);
+		dump_zspool_class(&(pool->size_class[i]));
+	}
+#endif
+	printk(KERN_INFO"total pages allocated - %llu\n",
+			zs_get_total_size_bytes(pool) >> PAGE_SHIFT);
+}
 
 module_init(zs_init);
 module_exit(zs_exit);
