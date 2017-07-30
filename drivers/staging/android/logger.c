@@ -539,6 +539,18 @@ static struct logger_log *get_log_from_minor(int minor)
 	return NULL;
 }
 
+void rda_logger_get_info(unsigned int *addr_ptr, unsigned int *len_ptr, int index)
+{
+	struct logger_log *log;
+
+	list_for_each_entry(log, &log_list, logs)
+		if (log->misc.minor == index) {
+			*addr_ptr = virt_to_phys(log->buffer);
+			*len_ptr = log->size;
+			return;
+		}
+}
+
 /*
  * logger_open - the log's open() file operation
  *
@@ -807,20 +819,21 @@ out_free_buffer:
 static int __init logger_init(void)
 {
 	int ret;
+	int buf_size = CONFIG_ANDROID_LOGGER_BUF_SIZE;
 
-	ret = create_log(LOGGER_LOG_MAIN, 256*1024);
+	ret = create_log(LOGGER_LOG_MAIN, buf_size*1024);
 	if (unlikely(ret))
 		goto out;
 
-	ret = create_log(LOGGER_LOG_EVENTS, 256*1024);
+	ret = create_log(LOGGER_LOG_EVENTS, buf_size*1024);
 	if (unlikely(ret))
 		goto out;
 
-	ret = create_log(LOGGER_LOG_RADIO, 256*1024);
+	ret = create_log(LOGGER_LOG_RADIO, buf_size*1024);
 	if (unlikely(ret))
 		goto out;
 
-	ret = create_log(LOGGER_LOG_SYSTEM, 256*1024);
+	ret = create_log(LOGGER_LOG_SYSTEM, buf_size*1024);
 	if (unlikely(ret))
 		goto out;
 
