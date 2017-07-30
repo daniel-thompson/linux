@@ -57,7 +57,8 @@ extern int nand_unlock(struct mtd_info *mtd, loff_t ofs, uint64_t len);
  * adjust this accordingly.
  */
 #define NAND_MAX_OOBSIZE	640
-#define NAND_MAX_PAGESIZE	8192
+/*#define NAND_MAX_PAGESIZE	8192*/
+#define NAND_MAX_PAGESIZE 16384
 
 /*
  * Constants for hardware specific CLE/ALE/NCE function
@@ -165,6 +166,9 @@ typedef enum {
 
 /* Device supports subpage reads */
 #define NAND_SUBPAGE_READ	0x00001000
+
+/* Option for RDA HEC nand devices */
+#define NAND_RDA_HEC		0x00002000
 
 /* Options valid for Samsung large page devices */
 #define NAND_SAMSUNG_LP_OPTIONS NAND_CACHEPRG
@@ -553,6 +557,9 @@ struct nand_chip {
 /* The maximum expected count of bytes in the NAND ID sequence */
 #define NAND_MAX_ID_LEN 8
 
+#define NAND_MFR_ESMT		0xc8
+#define NAND_MFR_GIGADEVICE	0xc8
+
 /*
  * A helper for defining older NAND chips where the second ID byte fully
  * defined the chip, including the geometry (chip size, eraseblock size, page
@@ -722,6 +729,27 @@ static inline int onfi_get_sync_timing_mode(struct nand_chip *chip)
 	if (!chip->onfi_version)
 		return ONFI_TIMING_MODE_UNKNOWN;
 	return le16_to_cpu(chip->onfi_params.src_sync_timing_mode);
+}
+
+static inline uint32_t mtd_div_by_cs(uint64_t sz, struct mtd_info *mtd)
+{
+	struct nand_chip *chip = mtd->priv;
+
+	if (chip->chipsize >> 32) {
+		//assume the chipsize is not out of 4096TB(4*1024*1024*GB)
+		//4096TB is 52bits.
+		sz >>= 20;
+		if (chip->chip_shift)
+			return sz >> (chip->chip_shift - 20);
+
+		do_div(sz, chip->chipsize >> 20);
+	} else {
+		if (chip->chip_shift)
+			return sz >> chip->chip_shift;
+
+		do_div(sz, chip->chipsize);
+	}
+	return sz;
 }
 
 #endif /* __LINUX_MTD_NAND_H */
