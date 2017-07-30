@@ -2475,6 +2475,31 @@ source "drivers/video/omap2/Kconfig"
 source "drivers/video/exynos/Kconfig"
 source "drivers/video/mmp/Kconfig"
 source "drivers/video/backlight/Kconfig"
+source "drivers/video/adf/Kconfig"
+
+choice
+	prompt "Choice VERSION V1/V2"
+	default FB_RDA_V1
+	---help---
+	  For rda8850e the LCDC module is separate from gouda,we use rdav2
+          to distinguish the old gouda arch in rda8810.
+
+config FB_RDA_V1
+	bool "Support for rda8810/rda8811"
+
+config FB_RDA_V2
+	bool "Support for rda8850/8810h"
+
+endchoice
+
+if FB_RDA_V1
+	source "drivers/video/rda/Kconfig"
+endif
+
+if FB_RDA_V2
+	source "drivers/video/rdav2/Kconfig"
+endif
+
 
 if VT
 	source "drivers/video/console/Kconfig"
