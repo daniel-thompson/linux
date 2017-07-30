@@ -14,7 +14,6 @@
 
 .LC0:		.word	loops_per_jiffy
 .LC1:		.word	UDELAY_MULT
-
 /*
  * r0  <= 2000
  * lpj <= 0x01ffffff (max. 3355 bogomips)
@@ -36,15 +35,14 @@ ENTRY(__loop_const_udelay)			@ 0 <= r0 <= 0x7fffff06
 		add	r0, r0, r1, lsr #32-6
 		movs	r0, r0, lsr #6
 		moveq	pc, lr
-
 /*
  * loops = r0 * HZ * loops_per_jiffy / 1000000
  */
-
+		.align 3 @ to make __loop_delay 8 bytes aligned
 @ Delay routine
 ENTRY(__loop_delay)
 		subs	r0, r0, #1
-#if 0
+#if 1
 		movls	pc, lr
 		subs	r0, r0, #1
 		movls	pc, lr
