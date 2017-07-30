@@ -339,6 +339,17 @@ config SPI_PXA2XX
 config SPI_PXA2XX_PCI
 	def_tristate SPI_PXA2XX && PCI
 
+config SPI_RDA
+	tristate "RDA SPI controller common module"
+	depends on ARCH_RDA
+	help
+	  SPI driver for RDA
+
+config SPI_RDA_DMA
+	bool "RDA SPI controller DMA mode"
+	depends on SPI_RDA
+	help
+	  SPI DMA mode for RDA
 config SPI_RSPI
 	tristate "Renesas RSPI controller"
 	depends on SUPERH
