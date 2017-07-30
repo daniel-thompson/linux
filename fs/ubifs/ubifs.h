@@ -36,7 +36,27 @@
 #include <linux/mtd/ubi.h>
 #include <linux/pagemap.h>
 #include <linux/backing-dev.h>
+#include <linux/security.h>
 #include "ubifs-media.h"
+
+#ifndef UBI_ALIGN
+#define UBI_ALIGN(x, a) \
+    ({ \
+     long long __f1 = 0, __f2 = 0, __f3 = (long long)x; \
+     unsigned int __f4 = (unsigned int)a; \
+     if(__f4!=0) { \
+         __f2=__f3+__f4; \
+         __f1=do_div(__f2,__f4); \
+         if(__f1!=0) \
+             __f1=__f2*__f4; \
+         else \
+             __f1=__f3; \
+     } \
+     else \
+         __f1=__f3; \
+     __f1; \
+     })
+#endif
 
 /* Version of this UBIFS implementation */
 #define UBIFS_VERSION 1
@@ -1456,6 +1476,7 @@ extern spinlock_t ubifs_infos_lock;
 extern atomic_long_t ubifs_clean_zn_cnt;
 extern struct kmem_cache *ubifs_inode_slab;
 extern const struct super_operations ubifs_super_operations;
+extern const struct xattr_handler *ubifs_xattr_handlers[];
 extern const struct address_space_operations ubifs_file_address_operations;
 extern const struct file_operations ubifs_file_operations;
 extern const struct inode_operations ubifs_file_inode_operations;
@@ -1742,6 +1763,8 @@ ssize_t ubifs_getxattr(struct dentry *dentry, const char *name, void *buf,
 		       size_t size);
 ssize_t ubifs_listxattr(struct dentry *dentry, char *buffer, size_t size);
 int ubifs_removexattr(struct dentry *dentry, const char *name);
+int ubifs_init_security(struct inode *dentry, struct inode *inode,
+			const struct qstr *qstr);
 
 /* super.c */
 struct inode *ubifs_iget(struct super_block *sb, unsigned long inum);

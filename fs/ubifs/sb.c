@@ -155,7 +155,10 @@ static int create_default_filesystem(struct ubifs_info *c)
 	main_first = c->leb_cnt - main_lebs;
 
 	/* Create default superblock */
-	tmp = ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
+	if (c->min_io_shift)
+		tmp = ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
+	else
+		tmp = UBI_ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
 	sup = kzalloc(tmp, GFP_KERNEL);
 	if (!sup)
 		return -ENOMEM;
@@ -216,7 +219,10 @@ static int create_default_filesystem(struct ubifs_info *c)
 	mst->root_len     = cpu_to_le32(tmp);
 	mst->gc_lnum      = cpu_to_le32(main_first + DEFAULT_GC_LEB);
 	mst->ihead_lnum   = cpu_to_le32(main_first + DEFAULT_IDX_LEB);
-	mst->ihead_offs   = cpu_to_le32(ALIGN(tmp, c->min_io_size));
+	if (c->min_io_shift)
+		mst->ihead_offs   = cpu_to_le32(ALIGN(tmp, c->min_io_size));
+	else
+		mst->ihead_offs   = cpu_to_le32(UBI_ALIGN(tmp, c->min_io_size));
 	mst->index_size   = cpu_to_le64(ALIGN(tmp, 8));
 	mst->lpt_lnum     = cpu_to_le32(c->lpt_lnum);
 	mst->lpt_offs     = cpu_to_le32(c->lpt_offs);
@@ -233,13 +239,24 @@ static int create_default_filesystem(struct ubifs_info *c)
 
 	/* Calculate lprops statistics */
 	tmp64 = main_bytes;
-	tmp64 -= ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
-	tmp64 -= ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
+	if (c->min_io_shift) {
+		tmp64 -= ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
+		tmp64 -= ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
+	} else {
+		tmp64 -= UBI_ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
+		tmp64 -= UBI_ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
+	}
 	mst->total_free = cpu_to_le64(tmp64);
 
-	tmp64 = ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
-	ino_waste = ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size) -
-			  UBIFS_INO_NODE_SZ;
+	if (c->min_io_shift) {
+		tmp64 = ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
+		ino_waste = ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size) -
+			UBIFS_INO_NODE_SZ;
+	} else {
+		tmp64 = UBI_ALIGN(ubifs_idx_node_sz(c, 1), c->min_io_size);
+		ino_waste = UBI_ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size) -
+			UBIFS_INO_NODE_SZ;
+	}
 	tmp64 += ino_waste;
 	tmp64 -= ALIGN(ubifs_idx_node_sz(c, 1), 8);
 	mst->total_dirty = cpu_to_le64(tmp64);
@@ -265,7 +282,10 @@ static int create_default_filesystem(struct ubifs_info *c)
 
 	/* Create the root indexing node */
 	tmp = ubifs_idx_node_sz(c, 1);
-	idx = kzalloc(ALIGN(tmp, c->min_io_size), GFP_KERNEL);
+	if (c->min_io_shift)
+		idx = kzalloc(ALIGN(tmp, c->min_io_size), GFP_KERNEL);
+	else
+		idx = kzalloc(UBI_ALIGN(tmp, c->min_io_size), GFP_KERNEL);
 	if (!idx)
 		return -ENOMEM;
 
@@ -288,7 +308,10 @@ static int create_default_filesystem(struct ubifs_info *c)
 		main_first + DEFAULT_IDX_LEB);
 
 	/* Create default root inode */
-	tmp = ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
+	if (c->min_io_shift)
+		tmp = ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
+	else
+		tmp = UBI_ALIGN(UBIFS_INO_NODE_SZ, c->min_io_size);
 	ino = kzalloc(tmp, GFP_KERNEL);
 	if (!ino)
 		return -ENOMEM;
@@ -324,7 +347,10 @@ static int create_default_filesystem(struct ubifs_info *c)
 	 * always the case during normal file-system operation. Write a fake
 	 * commit start node to the log.
 	 */
-	tmp = ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size);
+	 if (c->min_io_shift)
+		tmp = ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size);
+	 else
+	tmp = UBI_ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size);
 	cs = kzalloc(tmp, GFP_KERNEL);
 	if (!cs)
 		return -ENOMEM;
@@ -483,8 +509,10 @@ struct ubifs_sb_node *ubifs_read_sb_node(struct ubifs_info *c)
 {
 	struct ubifs_sb_node *sup;
 	int err;
-
-	sup = kmalloc(ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size), GFP_NOFS);
+	if (c->min_io_shift)
+		sup = kmalloc(ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size), GFP_NOFS);
+	else
+		sup = kmalloc(UBI_ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size), GFP_NOFS);
 	if (!sup)
 		return ERR_PTR(-ENOMEM);
 
@@ -507,7 +535,11 @@ struct ubifs_sb_node *ubifs_read_sb_node(struct ubifs_info *c)
  */
 int ubifs_write_sb_node(struct ubifs_info *c, struct ubifs_sb_node *sup)
 {
-	int len = ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
+	int len;
+	if (c->min_io_shift)
+		len = ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
+	else
+		len = UBI_ALIGN(UBIFS_SB_NODE_SZ, c->min_io_size);
 
 	ubifs_prepare_node(c, sup, UBIFS_SB_NODE_SZ, 1);
 	return ubifs_leb_change(c, UBIFS_SB_LNUM, sup, len);
@@ -719,8 +751,12 @@ static int fixup_free_space(struct ubifs_info *c)
 	 * Fixup the log head which contains the only a CS node at the
 	 * beginning.
 	 */
+	 if (c->min_io_shift)
+		err = fixup_leb(c, c->lhead_lnum,
+				ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size));
+	 else
 	err = fixup_leb(c, c->lhead_lnum,
-			ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size));
+				UBI_ALIGN(UBIFS_CS_NODE_SZ, c->min_io_size));
 	if (err)
 		goto out;
 

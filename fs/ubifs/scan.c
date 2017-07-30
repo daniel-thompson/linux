@@ -179,7 +179,10 @@ void ubifs_end_scan(const struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 	dbg_scan("stop scanning LEB %d at offset %d", lnum, offs);
 	ubifs_assert(offs % c->min_io_size == 0);
 
-	sleb->endpt = ALIGN(offs, c->min_io_size);
+	if (c->min_io_shift)
+		sleb->endpt = ALIGN(offs, c->min_io_size);
+	else
+		sleb->endpt = UBI_ALIGN(offs, c->min_io_size);
 }
 
 /**

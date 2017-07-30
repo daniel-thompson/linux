@@ -410,7 +410,7 @@ static int ubifs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	else
 		buf->f_bavail = 0;
 	buf->f_files = 0;
-	buf->f_ffree = 0;
+	buf->f_ffree = 1;
 	buf->f_namelen = UBIFS_MAX_NLEN;
 	buf->f_fsid.val[0] = le32_to_cpu(uuid[0]) ^ le32_to_cpu(uuid[2]);
 	buf->f_fsid.val[1] = le32_to_cpu(uuid[1]) ^ le32_to_cpu(uuid[3]);
@@ -513,9 +513,15 @@ static int init_constants_early(struct ubifs_info *c)
 	c->leb_start = c->di.leb_start;
 	c->half_leb_size = c->leb_size / 2;
 	c->min_io_size = c->di.min_io_size;
-	c->min_io_shift = fls(c->min_io_size) - 1;
+	if (is_power_of_2(c->min_io_size))
+		c->min_io_shift = fls(c->min_io_size) - 1;
+	else
+		c->min_io_shift = 0;
 	c->max_write_size = c->di.max_write_size;
-	c->max_write_shift = fls(c->max_write_size) - 1;
+	if (is_power_of_2(c->max_write_size))
+		c->max_write_shift = fls(c->max_write_size) - 1;
+	else
+		c->max_write_shift = 0;
 
 	if (c->leb_size < UBIFS_MIN_LEB_SZ) {
 		ubifs_err("too small LEBs (%d bytes), min. is %d bytes",
@@ -529,18 +535,12 @@ static int init_constants_early(struct ubifs_info *c)
 		return -EINVAL;
 	}
 
-	if (!is_power_of_2(c->min_io_size)) {
-		ubifs_err("bad min. I/O size %d", c->min_io_size);
-		return -EINVAL;
-	}
-
 	/*
 	 * Maximum write size has to be greater or equivalent to min. I/O
 	 * size, and be multiple of min. I/O size.
 	 */
 	if (c->max_write_size < c->min_io_size ||
-	    c->max_write_size % c->min_io_size ||
-	    !is_power_of_2(c->max_write_size)) {
+	    c->max_write_size % c->min_io_size) {
 		ubifs_err("bad write buffer size %d for %d min. I/O unit",
 			  c->max_write_size, c->min_io_size);
 		return -EINVAL;
@@ -560,8 +560,13 @@ static int init_constants_early(struct ubifs_info *c)
 		}
 	}
 
-	c->ref_node_alsz = ALIGN(UBIFS_REF_NODE_SZ, c->min_io_size);
-	c->mst_node_alsz = ALIGN(UBIFS_MST_NODE_SZ, c->min_io_size);
+	if (c->min_io_shift) {
+		c->ref_node_alsz = ALIGN(UBIFS_REF_NODE_SZ, c->min_io_size);
+		c->mst_node_alsz = ALIGN(UBIFS_MST_NODE_SZ, c->min_io_size);
+	} else {
+		c->ref_node_alsz = UBI_ALIGN(UBIFS_REF_NODE_SZ, c->min_io_size);
+		c->mst_node_alsz = UBI_ALIGN(UBIFS_MST_NODE_SZ, c->min_io_size);
+	}
 
 	/*
 	 * Initialize node length ranges which are mostly needed for node
@@ -600,8 +605,13 @@ static int init_constants_early(struct ubifs_info *c)
 	 * Initialize dead and dark LEB space watermarks. See gc.c for comments
 	 * about these values.
 	 */
-	c->dead_wm = ALIGN(MIN_WRITE_SZ, c->min_io_size);
-	c->dark_wm = ALIGN(UBIFS_MAX_NODE_SZ, c->min_io_size);
+	 if (c->min_io_shift) {
+		c->dead_wm = ALIGN(MIN_WRITE_SZ, c->min_io_size);
+		c->dark_wm = ALIGN(UBIFS_MAX_NODE_SZ, c->min_io_size);
+	 } else {
+		c->dead_wm = UBI_ALIGN(MIN_WRITE_SZ, c->min_io_size);
+		c->dark_wm = UBI_ALIGN(UBIFS_MAX_NODE_SZ, c->min_io_size);
+	 }
 
 	/*
 	 * Calculate how many bytes would be wasted at the end of LEB if it was
@@ -665,7 +675,10 @@ static int init_constants_sb(struct ubifs_info *c)
 
 	/* Make sure LEB size is large enough to fit full commit */
 	tmp = UBIFS_CS_NODE_SZ + UBIFS_REF_NODE_SZ * c->jhead_cnt;
-	tmp = ALIGN(tmp, c->min_io_size);
+	if (c->min_io_shift)
+		tmp = ALIGN(tmp, c->min_io_size);
+	else
+		tmp = UBI_ALIGN(tmp, c->min_io_size);
 	if (tmp > c->leb_size) {
 		ubifs_err("too small LEB size %d, at least %d needed",
 			  c->leb_size, tmp);
@@ -1244,8 +1257,13 @@ static int mount_ubifs(struct ubifs_info *c)
 	if (err)
 		goto out_free;
 
-	sz = ALIGN(c->max_idx_node_sz, c->min_io_size);
-	sz = ALIGN(sz + c->max_idx_node_sz, c->min_io_size);
+	if (c->min_io_shift) {
+		sz = ALIGN(c->max_idx_node_sz, c->min_io_size);
+		sz = ALIGN(sz + c->max_idx_node_sz, c->min_io_size);
+	} else {
+		sz = UBI_ALIGN(c->max_idx_node_sz, c->min_io_size);
+		sz = UBI_ALIGN(sz + c->max_idx_node_sz, c->min_io_size);
+	}
 	c->cbuf = kmalloc(sz, GFP_NOFS);
 	if (!c->cbuf) {
 		err = -ENOMEM;
@@ -2046,6 +2064,7 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 	if (c->max_inode_sz > MAX_LFS_FILESIZE)
 		sb->s_maxbytes = c->max_inode_sz = MAX_LFS_FILESIZE;
 	sb->s_op = &ubifs_super_operations;
+	sb->s_xattr = ubifs_xattr_handlers;
 
 	mutex_lock(&c->umount_mutex);
 	err = mount_ubifs(c);

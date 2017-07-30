@@ -115,12 +115,22 @@ static int validate_master(const struct ubifs_info *c)
 		goto out;
 	}
 
-	if (c->lhead_lnum < UBIFS_LOG_LNUM ||
-	    c->lhead_lnum >= UBIFS_LOG_LNUM + c->log_lebs ||
-	    c->lhead_offs < 0 || c->lhead_offs >= c->leb_size ||
-	    c->lhead_offs & (c->min_io_size - 1)) {
-		err = 4;
-		goto out;
+	if (c->min_io_shift) {
+		if (c->lhead_lnum < UBIFS_LOG_LNUM ||
+		    c->lhead_lnum >= UBIFS_LOG_LNUM + c->log_lebs ||
+		    c->lhead_offs < 0 || c->lhead_offs >= c->leb_size ||
+		    c->lhead_offs & (c->min_io_size - 1)) {
+			err = 4;
+			goto out;
+		}
+	} else {
+		if (c->lhead_lnum < UBIFS_LOG_LNUM ||
+		    c->lhead_lnum >= UBIFS_LOG_LNUM + c->log_lebs ||
+		    c->lhead_offs < 0 || c->lhead_offs >= c->leb_size ||
+		    c->lhead_offs % c->min_io_size) {
+			err = 4;
+			goto out;
+		}
 	}
 
 	if (c->zroot.lnum >= c->leb_cnt || c->zroot.lnum < c->main_first ||

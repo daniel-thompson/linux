@@ -144,7 +144,10 @@ static int fill_gap(struct ubifs_info *c, int lnum, int gap_start, int gap_end,
 			break;
 	}
 	if (gap_end == c->leb_size) {
-		c->ileb_len = ALIGN(gap_pos, c->min_io_size);
+		if (c->min_io_shift)
+			c->ileb_len = ALIGN(gap_pos, c->min_io_size);
+		else
+			c->ileb_len = UBI_ALIGN(gap_pos, c->min_io_size);
 		/* Pad to end of min_io_size */
 		pad_len = c->ileb_len - gap_pos;
 	} else
@@ -425,7 +428,10 @@ static int layout_in_empty_space(struct ubifs_info *c)
 	buf_offs = c->ihead_offs;
 
 	buf_len = ubifs_idx_node_sz(c, c->fanout);
-	buf_len = ALIGN(buf_len, c->min_io_size);
+	if (c->min_io_shift)
+		buf_len = ALIGN(buf_len, c->min_io_size);
+	else
+		buf_len = UBI_ALIGN(buf_len, c->min_io_size);
 	used = 0;
 	avail = buf_len;
 
@@ -504,8 +510,12 @@ static int layout_in_empty_space(struct ubifs_info *c)
 		if (avail <= 0 && next_len &&
 		    buf_offs + used + next_len <= c->leb_size)
 			blen = buf_len;
-		else
-			blen = ALIGN(wlen, c->min_io_size);
+		else{
+			if (c->min_io_shift)
+				blen = ALIGN(wlen, c->min_io_size);
+			else
+				blen = UBI_ALIGN(wlen, c->min_io_size);
+		}
 
 		/* The buffer is full or there are no more znodes to do */
 		buf_offs += blen;
@@ -823,7 +833,10 @@ static int write_index(struct ubifs_info *c)
 	buf_offs = c->ihead_offs;
 
 	/* Allocate commit buffer */
-	buf_len = ALIGN(c->max_idx_node_sz, c->min_io_size);
+	if (c->min_io_shift)
+		buf_len = ALIGN(c->max_idx_node_sz, c->min_io_size);
+	else
+		buf_len = UBI_ALIGN(c->max_idx_node_sz, c->min_io_size);
 	used = 0;
 	avail = buf_len;
 
@@ -945,7 +958,10 @@ static int write_index(struct ubifs_info *c)
 				blen = buf_len;
 		} else {
 			wlen = ALIGN(wlen, 8);
-			blen = ALIGN(wlen, c->min_io_size);
+			if (c->min_io_shift)
+				blen = ALIGN(wlen, c->min_io_size);
+			else
+				blen = UBI_ALIGN(wlen, c->min_io_size);
 			ubifs_pad(c, c->cbuf + wlen, blen - wlen);
 		}
 

@@ -394,7 +394,10 @@ void ubifs_prepare_node(struct ubifs_info *c, void *node, int len, int pad)
 
 	if (pad) {
 		len = ALIGN(len, 8);
-		pad = ALIGN(len, c->min_io_size) - len;
+		if (c->min_io_shift)
+			pad = ALIGN(len, c->min_io_size) - len;
+		else
+			pad = UBI_ALIGN(len, c->min_io_size) - len;
 		ubifs_pad(c, node + len, pad);
 	}
 }
@@ -518,7 +521,10 @@ int ubifs_wbuf_sync_nolock(struct ubifs_wbuf *wbuf)
 	 * Do not write whole write buffer but write only the minimum necessary
 	 * amount of min. I/O units.
 	 */
+	 if (c->min_io_shift)
 	sync_len = ALIGN(wbuf->used, c->min_io_size);
+	 else
+		sync_len = UBI_ALIGN(wbuf->used, c->min_io_size);
 	dirt = sync_len - wbuf->used;
 	if (dirt)
 		ubifs_pad(c, wbuf->buf + wbuf->used, dirt);
@@ -538,12 +544,21 @@ int ubifs_wbuf_sync_nolock(struct ubifs_wbuf *wbuf)
 	 * write-buffer flush we are again at the optimal offset (aligned to
 	 * @c->max_write_size).
 	 */
-	if (c->leb_size - wbuf->offs < c->max_write_size)
-		wbuf->size = c->leb_size - wbuf->offs;
-	else if (wbuf->offs & (c->max_write_size - 1))
-		wbuf->size = ALIGN(wbuf->offs, c->max_write_size) - wbuf->offs;
-	else
-		wbuf->size = c->max_write_size;
+	if (c->max_write_shift) {
+		if (c->leb_size - wbuf->offs < c->max_write_size)
+			wbuf->size = c->leb_size - wbuf->offs;
+		else if (wbuf->offs & (c->max_write_size - 1))
+			wbuf->size = ALIGN(wbuf->offs, c->max_write_size) - wbuf->offs;
+		else
+			wbuf->size = c->max_write_size;
+	} else {
+		if (c->leb_size - wbuf->offs < c->max_write_size)
+			wbuf->size = c->leb_size - wbuf->offs;
+		else if (wbuf->offs % c->max_write_size)
+			wbuf->size = UBI_ALIGN(wbuf->offs, c->max_write_size) - wbuf->offs;
+		else
+			wbuf->size = c->max_write_size;
+	 }
 	wbuf->avail = wbuf->size;
 	wbuf->used = 0;
 	wbuf->next_ino = 0;
@@ -579,12 +594,21 @@ int ubifs_wbuf_seek_nolock(struct ubifs_wbuf *wbuf, int lnum, int offs)
 	spin_lock(&wbuf->lock);
 	wbuf->lnum = lnum;
 	wbuf->offs = offs;
-	if (c->leb_size - wbuf->offs < c->max_write_size)
-		wbuf->size = c->leb_size - wbuf->offs;
-	else if (wbuf->offs & (c->max_write_size - 1))
-		wbuf->size = ALIGN(wbuf->offs, c->max_write_size) - wbuf->offs;
-	else
-		wbuf->size = c->max_write_size;
+	if (c->max_write_shift) {
+		if (c->leb_size - wbuf->offs < c->max_write_size)
+			wbuf->size = c->leb_size - wbuf->offs;
+		else if (wbuf->offs & (c->max_write_size - 1))
+			wbuf->size = ALIGN(wbuf->offs, c->max_write_size) - wbuf->offs;
+		else
+			wbuf->size = c->max_write_size;
+	} else {
+		if (c->leb_size - wbuf->offs < c->max_write_size)
+			wbuf->size = c->leb_size - wbuf->offs;
+		else if (wbuf->offs % c->max_write_size)
+			wbuf->size = UBI_ALIGN(wbuf->offs, c->max_write_size) - wbuf->offs;
+		else
+			wbuf->size = c->max_write_size;
+	}
 	wbuf->avail = wbuf->size;
 	wbuf->used = 0;
 	spin_unlock(&wbuf->lock);
@@ -758,7 +782,7 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 		len -= wbuf->avail;
 		aligned_len -= wbuf->avail;
 		written += wbuf->avail;
-	} else if (wbuf->offs & (c->max_write_size - 1)) {
+	} else if (wbuf->offs % c->max_write_size) {
 		/*
 		 * The write-buffer offset is not aligned to
 		 * @c->max_write_size and @wbuf->size is less than
@@ -785,9 +809,15 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 	 * We align node length to 8-byte boundary because we anyway flash wbuf
 	 * if the remaining space is less than 8 bytes.
 	 */
-	n = aligned_len >> c->max_write_shift;
+	if (c->max_write_shift)
+		n = aligned_len >> c->max_write_shift;
+	else
+		n = aligned_len / c->max_write_size;
 	if (n) {
-		n <<= c->max_write_shift;
+		if (c->max_write_shift)
+			n <<= c->max_write_shift;
+		else
+			n *= c->max_write_size;
 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
 		       wbuf->offs);
 		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
@@ -858,7 +888,12 @@ out:
 int ubifs_write_node(struct ubifs_info *c, void *buf, int len, int lnum,
 		     int offs)
 {
-	int err, buf_len = ALIGN(len, c->min_io_size);
+	int err, buf_len;
+
+	if (c->min_io_shift)
+		buf_len = ALIGN(len, c->min_io_size);
+	else
+		buf_len = UBI_ALIGN(len, c->min_io_size);
 
 	dbg_io("LEB %d:%d, %s, length %d (aligned %d)",
 	       lnum, offs, dbg_ntype(((struct ubifs_ch *)buf)->node_type), len,

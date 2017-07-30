@@ -124,7 +124,10 @@ static void do_calc_lpt_geom(struct ubifs_info *c)
 		sz -= c->leb_size;
 		tot_wastage += per_leb_wastage;
 	}
-	tot_wastage += ALIGN(sz, c->min_io_size) - sz;
+	if (c->min_io_shift)
+		tot_wastage += ALIGN(sz, c->min_io_size) - sz;
+	else
+		tot_wastage += UBI_ALIGN(sz, c->min_io_size) - sz;
 	c->lpt_sz += tot_wastage;
 }
 
@@ -659,13 +662,19 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	 * the root inode node and the root index node of the index tree.
 	 */
 	node_sz = ALIGN(ubifs_idx_node_sz(c, 1), 8);
-	iopos = ALIGN(node_sz, c->min_io_size);
+	if (c->min_io_shift)
+		iopos = ALIGN(node_sz, c->min_io_size);
+	else
+		iopos = UBI_ALIGN(node_sz, c->min_io_size);
 	pnode->lprops[0].free = c->leb_size - iopos;
 	pnode->lprops[0].dirty = iopos - node_sz;
 	pnode->lprops[0].flags = LPROPS_INDEX;
 
 	node_sz = UBIFS_INO_NODE_SZ;
-	iopos = ALIGN(node_sz, c->min_io_size);
+	if (c->min_io_shift)
+		iopos = ALIGN(node_sz, c->min_io_size);
+	else
+		iopos = UBI_ALIGN(node_sz, c->min_io_size);
 	pnode->lprops[1].free = c->leb_size - iopos;
 	pnode->lprops[1].dirty = iopos - node_sz;
 
@@ -698,7 +707,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	/* Add all remaining pnodes */
 	for (i = 1; i < cnt; i++) {
 		if (len + c->pnode_sz > c->leb_size) {
-			alen = ALIGN(len, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(len, c->min_io_size);
+			else
+				alen = UBI_ALIGN(len, c->min_io_size);
 			set_ltab(c, lnum, c->leb_size - alen, alen - len);
 			memset(p, 0xff, alen - len);
 			err = ubifs_leb_change(c, lnum++, buf, alen);
@@ -727,7 +739,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 		cnt = DIV_ROUND_UP(cnt, UBIFS_LPT_FANOUT);
 		for (i = 0; i < cnt; i++) {
 			if (len + c->nnode_sz > c->leb_size) {
-				alen = ALIGN(len, c->min_io_size);
+				if (c->min_io_shift)
+					alen = ALIGN(len, c->min_io_size);
+				else
+					alen = UBI_ALIGN(len, c->min_io_size);
 				set_ltab(c, lnum, c->leb_size - alen,
 					    alen - len);
 				memset(p, 0xff, alen - len);
@@ -775,7 +790,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 	if (*big_lpt) {
 		/* Need to add LPT's save table */
 		if (len + c->lsave_sz > c->leb_size) {
-			alen = ALIGN(len, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(len, c->min_io_size);
+			else
+				alen = UBI_ALIGN(len, c->min_io_size);
 			set_ltab(c, lnum, c->leb_size - alen, alen - len);
 			memset(p, 0xff, alen - len);
 			err = ubifs_leb_change(c, lnum++, buf, alen);
@@ -800,7 +818,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 
 	/* Need to add LPT's own LEB properties table */
 	if (len + c->ltab_sz > c->leb_size) {
-		alen = ALIGN(len, c->min_io_size);
+		if (c->min_io_shift)
+			alen = ALIGN(len, c->min_io_size);
+		else
+			alen = UBI_ALIGN(len, c->min_io_size);
 		set_ltab(c, lnum, c->leb_size - alen, alen - len);
 		memset(p, 0xff, alen - len);
 		err = ubifs_leb_change(c, lnum++, buf, alen);
@@ -815,7 +836,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 
 	/* Update ltab before packing it */
 	len += c->ltab_sz;
-	alen = ALIGN(len, c->min_io_size);
+	if (c->min_io_shift)
+		alen = ALIGN(len, c->min_io_size);
+	else
+		alen = UBI_ALIGN(len, c->min_io_size);
 	set_ltab(c, lnum, c->leb_size - alen, alen - len);
 
 	ubifs_pack_ltab(c, p, ltab);
@@ -828,7 +852,10 @@ int ubifs_create_dflt_lpt(struct ubifs_info *c, int *main_lebs, int lpt_first,
 		goto out;
 
 	c->nhead_lnum = lnum;
-	c->nhead_offs = ALIGN(len, c->min_io_size);
+	if (c->min_io_shift)
+		c->nhead_offs = ALIGN(len, c->min_io_size);
+	else
+		c->nhead_offs = UBI_ALIGN(len, c->min_io_size);
 
 	dbg_lp("space_bits %d", c->space_bits);
 	dbg_lp("lpt_lnum_bits %d", c->lpt_lnum_bits);

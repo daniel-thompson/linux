@@ -231,7 +231,10 @@ static int layout_cnodes(struct ubifs_info *c)
 			c->dirty_pn_cnt -= 1;
 		}
 		while (offs + len > c->leb_size) {
-			alen = ALIGN(offs, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(offs, c->min_io_size);
+			else
+				alen = UBI_ALIGN(offs, c->min_io_size);
 			upd_ltab(c, lnum, c->leb_size - alen, alen - offs);
 			dbg_chk_lpt_sz(c, 2, c->leb_size - offs);
 			err = alloc_lpt_leb(c, &lnum);
@@ -274,7 +277,10 @@ static int layout_cnodes(struct ubifs_info *c)
 	/* Make sure to place LPT's save table */
 	if (!done_lsave) {
 		if (offs + c->lsave_sz > c->leb_size) {
-			alen = ALIGN(offs, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(offs, c->min_io_size);
+			else
+				alen = UBI_ALIGN(offs, c->min_io_size);
 			upd_ltab(c, lnum, c->leb_size - alen, alen - offs);
 			dbg_chk_lpt_sz(c, 2, c->leb_size - offs);
 			err = alloc_lpt_leb(c, &lnum);
@@ -294,7 +300,10 @@ static int layout_cnodes(struct ubifs_info *c)
 	/* Make sure to place LPT's own lprops table */
 	if (!done_ltab) {
 		if (offs + c->ltab_sz > c->leb_size) {
-			alen = ALIGN(offs, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(offs, c->min_io_size);
+			else
+				alen = UBI_ALIGN(offs, c->min_io_size);
 			upd_ltab(c, lnum, c->leb_size - alen, alen - offs);
 			dbg_chk_lpt_sz(c, 2, c->leb_size - offs);
 			err = alloc_lpt_leb(c, &lnum);
@@ -311,7 +320,10 @@ static int layout_cnodes(struct ubifs_info *c)
 		dbg_chk_lpt_sz(c, 1, c->ltab_sz);
 	}
 
-	alen = ALIGN(offs, c->min_io_size);
+	if (c->min_io_shift)
+		alen = ALIGN(offs, c->min_io_size);
+	else
+		alen = UBI_ALIGN(offs, c->min_io_size);
 	upd_ltab(c, lnum, c->leb_size - alen, alen - offs);
 	dbg_chk_lpt_sz(c, 4, alen - offs);
 	err = dbg_chk_lpt_sz(c, 3, alen);
@@ -413,7 +425,10 @@ static int write_cnodes(struct ubifs_info *c)
 		while (offs + len > c->leb_size) {
 			wlen = offs - from;
 			if (wlen) {
-				alen = ALIGN(wlen, c->min_io_size);
+				if (c->min_io_shift)
+					alen = ALIGN(wlen, c->min_io_size);
+				else
+					alen = UBI_ALIGN(wlen, c->min_io_size);
 				memset(buf + offs, 0xff, alen - wlen);
 				err = ubifs_leb_write(c, lnum, buf + from, from,
 						       alen);
@@ -472,7 +487,10 @@ static int write_cnodes(struct ubifs_info *c)
 	if (!done_lsave) {
 		if (offs + c->lsave_sz > c->leb_size) {
 			wlen = offs - from;
-			alen = ALIGN(wlen, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(wlen, c->min_io_size);
+			else
+				alen = UBI_ALIGN(wlen, c->min_io_size);
 			memset(buf + offs, 0xff, alen - wlen);
 			err = ubifs_leb_write(c, lnum, buf + from, from, alen);
 			if (err)
@@ -498,7 +516,10 @@ static int write_cnodes(struct ubifs_info *c)
 	if (!done_ltab) {
 		if (offs + c->ltab_sz > c->leb_size) {
 			wlen = offs - from;
-			alen = ALIGN(wlen, c->min_io_size);
+			if (c->min_io_shift)
+				alen = ALIGN(wlen, c->min_io_size);
+			else
+				alen = UBI_ALIGN(wlen, c->min_io_size);
 			memset(buf + offs, 0xff, alen - wlen);
 			err = ubifs_leb_write(c, lnum, buf + from, from, alen);
 			if (err)
@@ -522,19 +543,28 @@ static int write_cnodes(struct ubifs_info *c)
 
 	/* Write remaining data in buffer */
 	wlen = offs - from;
-	alen = ALIGN(wlen, c->min_io_size);
+	if (c->min_io_shift)
+		alen = ALIGN(wlen, c->min_io_size);
+	else
+		alen = UBI_ALIGN(wlen, c->min_io_size);
 	memset(buf + offs, 0xff, alen - wlen);
 	err = ubifs_leb_write(c, lnum, buf + from, from, alen);
 	if (err)
 		return err;
 
 	dbg_chk_lpt_sz(c, 4, alen - wlen);
-	err = dbg_chk_lpt_sz(c, 3, ALIGN(offs, c->min_io_size));
+	if (c->min_io_shift)
+		err = dbg_chk_lpt_sz(c, 3, ALIGN(offs, c->min_io_size));
+	else
+		err = dbg_chk_lpt_sz(c, 3, UBI_ALIGN(offs, c->min_io_size));
 	if (err)
 		return err;
 
 	c->nhead_lnum = lnum;
-	c->nhead_offs = ALIGN(offs, c->min_io_size);
+	if (c->min_io_shift)
+		c->nhead_offs = ALIGN(offs, c->min_io_size);
+	else
+		c->nhead_offs = UBI_ALIGN(offs, c->min_io_size);
 
 	dbg_lp("LPT root is at %d:%d", c->lpt_lnum, c->lpt_offs);
 	dbg_lp("LPT head is at %d:%d", c->nhead_lnum, c->nhead_offs);
@@ -1082,7 +1112,10 @@ static int get_pad_len(const struct ubifs_info *c, uint8_t *buf, int len)
 	if (c->min_io_size == 1)
 		return 0;
 	offs = c->leb_size - len;
-	pad_len = ALIGN(offs, c->min_io_size) - offs;
+	if (c->min_io_shift)
+		pad_len = ALIGN(offs, c->min_io_size) - offs;
+	else
+		pad_len = UBI_ALIGN(offs, c->min_io_size) - offs;
 	return pad_len;
 }
 

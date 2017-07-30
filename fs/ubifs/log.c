@@ -367,7 +367,10 @@ int ubifs_log_start_commit(struct ubifs_info *c, int *ltail_lnum)
 		return err;
 
 	max_len = UBIFS_CS_NODE_SZ + c->jhead_cnt * UBIFS_REF_NODE_SZ;
-	max_len = ALIGN(max_len, c->min_io_size);
+	if (c->min_io_shift)
+		max_len = ALIGN(max_len, c->min_io_size);
+	else
+		max_len = UBI_ALIGN(max_len, c->min_io_size);
 	buf = cs = kmalloc(max_len, GFP_NOFS);
 	if (!buf)
 		return -ENOMEM;
@@ -403,7 +406,10 @@ int ubifs_log_start_commit(struct ubifs_info *c, int *ltail_lnum)
 		len += UBIFS_REF_NODE_SZ;
 	}
 
-	ubifs_pad(c, buf + len, ALIGN(len, c->min_io_size) - len);
+	if (c->min_io_shift)
+		ubifs_pad(c, buf + len, ALIGN(len, c->min_io_size) - len);
+	else
+		ubifs_pad(c, buf + len, UBI_ALIGN(len, c->min_io_size) - len);
 
 	/* Switch to the next log LEB */
 	if (c->lhead_offs) {
@@ -418,7 +424,10 @@ int ubifs_log_start_commit(struct ubifs_info *c, int *ltail_lnum)
 			goto out;
 	}
 
-	len = ALIGN(len, c->min_io_size);
+	if (c->min_io_shift)
+		len = ALIGN(len, c->min_io_size);
+	else
+		len = UBI_ALIGN(len, c->min_io_size);
 	dbg_log("writing commit start at LEB %d:0, len %d", c->lhead_lnum, len);
 	err = ubifs_leb_write(c, c->lhead_lnum, cs, 0, len);
 	if (err)
@@ -623,7 +632,12 @@ static int add_node(struct ubifs_info *c, void *buf, int *lnum, int *offs,
 	int len = le32_to_cpu(ch->len), remains = c->leb_size - *offs;
 
 	if (len > remains) {
-		int sz = ALIGN(*offs, c->min_io_size), err;
+		int sz, err;
+
+		if (c->min_io_shift)
+			sz = ALIGN(*offs, c->min_io_size);
+		else
+			sz = UBI_ALIGN(*offs, c->min_io_size);
 
 		ubifs_pad(c, buf + *offs, sz - *offs);
 		err = ubifs_leb_change(c, *lnum, buf, sz);
@@ -702,13 +716,22 @@ int ubifs_consolidate_log(struct ubifs_info *c)
 		lnum = ubifs_next_log_lnum(c, lnum);
 	}
 	if (offs) {
-		int sz = ALIGN(offs, c->min_io_size);
+		int sz;
+
+		if (c->min_io_shift)
+			sz = ALIGN(offs, c->min_io_size);
+		else
+			sz = UBI_ALIGN(offs, c->min_io_size);
 
 		ubifs_pad(c, buf + offs, sz - offs);
 		err = ubifs_leb_change(c, write_lnum, buf, sz);
 		if (err)
 			goto out_free;
-		offs = ALIGN(offs, c->min_io_size);
+
+		if (c->min_io_shift)
+			offs = ALIGN(offs, c->min_io_size);
+		else
+			offs = UBI_ALIGN(offs, c->min_io_size);
 	}
 	destroy_done_tree(&done_tree);
 	vfree(buf);

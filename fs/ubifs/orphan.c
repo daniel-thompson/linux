@@ -246,7 +246,10 @@ static int do_write_orph_node(struct ubifs_info *c, int len, int atomic)
 	if (atomic) {
 		ubifs_assert(c->ohead_offs == 0);
 		ubifs_prepare_node(c, c->orph_buf, len, 1);
-		len = ALIGN(len, c->min_io_size);
+		if (c->min_io_shift)
+			len = ALIGN(len, c->min_io_size);
+		else
+			len = UBI_ALIGN(len, c->min_io_size);
 		err = ubifs_leb_change(c, c->ohead_lnum, c->orph_buf, len);
 	} else {
 		if (c->ohead_offs == 0) {
@@ -320,7 +323,10 @@ static int write_orph_node(struct ubifs_info *c, int atomic)
 	ubifs_assert(c->ohead_lnum >= c->orph_first);
 	ubifs_assert(c->ohead_lnum <= c->orph_last);
 	err = do_write_orph_node(c, len, atomic);
-	c->ohead_offs += ALIGN(len, c->min_io_size);
+	if (c->min_io_shift)
+		c->ohead_offs += ALIGN(len, c->min_io_size);
+	else
+		c->ohead_offs += UBI_ALIGN(len, c->min_io_size);
 	c->ohead_offs = ALIGN(c->ohead_offs, 8);
 	return err;
 }

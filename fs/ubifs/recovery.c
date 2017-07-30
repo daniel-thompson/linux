@@ -419,7 +419,10 @@ static int is_last_write(const struct ubifs_info *c, void *buf, int offs)
 	 * Round up to the next @c->max_write_size boundary i.e. @offs is in
 	 * the last wbuf written. After that should be empty space.
 	 */
-	empty_offs = ALIGN(offs + 1, c->max_write_size);
+	 if (c->max_write_shift)
+		empty_offs = ALIGN(offs + 1, c->max_write_size);
+	 else
+	empty_offs = UBI_ALIGN(offs + 1, c->max_write_size);
 	check_len = c->leb_size - empty_offs;
 	p = buf + empty_offs - offs;
 	return is_empty(p, check_len);
@@ -446,7 +449,10 @@ static void clean_buf(const struct ubifs_info *c, void **buf, int lnum,
 	dbg_rcvry("cleaning corruption at %d:%d", lnum, *offs);
 
 	ubifs_assert(!(*offs & 7));
-	empty_offs = ALIGN(*offs, c->min_io_size);
+	if (c->min_io_shift)
+		empty_offs = ALIGN(*offs, c->min_io_size);
+	else
+		empty_offs = UBI_ALIGN(*offs, c->min_io_size);
 	pad_len = empty_offs - *offs;
 	ubifs_pad(c, *buf, pad_len);
 	*offs += pad_len;
@@ -474,7 +480,10 @@ static int no_more_nodes(const struct ubifs_info *c, void *buf, int len,
 	int skip, dlen = le32_to_cpu(ch->len);
 
 	/* Check for empty space after the corrupt node's common header */
-	skip = ALIGN(offs + UBIFS_CH_SZ, c->max_write_size) - offs;
+	if (c->max_write_shift)
+		skip = ALIGN(offs + UBIFS_CH_SZ, c->max_write_size) - offs;
+	else
+		skip = UBI_ALIGN(offs + UBIFS_CH_SZ, c->max_write_size) - offs;
 	if (is_empty(buf + skip, len - skip))
 		return 1;
 	/*
@@ -486,7 +495,10 @@ static int no_more_nodes(const struct ubifs_info *c, void *buf, int len,
 		return 0;
 	}
 	/* Now we know the corrupt node's length we can skip over it */
-	skip = ALIGN(offs + dlen, c->max_write_size) - offs;
+	if (c->max_write_shift)
+		skip = ALIGN(offs + dlen, c->max_write_size) - offs;
+	else
+		skip = UBI_ALIGN(offs + dlen, c->max_write_size) - offs;
 	/* After which there should be empty space */
 	if (is_empty(buf + skip, len - skip))
 		return 1;
@@ -537,7 +549,12 @@ static int fix_unclean_leb(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 			if (err)
 				return err;
 		} else {
-			int len = ALIGN(endpt, c->min_io_size);
+			int len;
+
+			if (c->min_io_shift)
+				len = ALIGN(endpt, c->min_io_size);
+			else
+				len = UBI_ALIGN(endpt, c->min_io_size);
 
 			if (start) {
 				err = ubifs_leb_read(c, lnum, sleb->buf, 0,
@@ -712,7 +729,15 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 		}
 	}
 
-	min_io_unit = round_down(offs, c->min_io_size);
+	if (c->min_io_shift)
+		min_io_unit = round_down(offs, c->min_io_size);
+	else
+		min_io_unit = ({ \
+            unsigned long __f = offs; \
+            __f = __f/c->min_io_size; \
+            __f *= c->min_io_size; \
+            __f; \
+            });
 	if (grouped)
 		/*
 		 * If nodes are grouped, always drop the incomplete group at
@@ -1060,7 +1085,10 @@ static int clean_an_unclean_leb(struct ubifs_info *c,
 	}
 
 	/* Pad to min_io_size */
-	len = ALIGN(ucleb->endpt, c->min_io_size);
+	if (c->min_io_shift)
+		len = ALIGN(ucleb->endpt, c->min_io_size);
+	else
+		len = UBI_ALIGN(ucleb->endpt, c->min_io_size);
 	if (len > ucleb->endpt) {
 		int pad_len = len - ALIGN(ucleb->endpt, 8);
 
@@ -1470,7 +1498,10 @@ static int fix_size_in_place(struct ubifs_info *c, struct size_entry *e)
 	len = c->leb_size - 1;
 	while (p[len] == 0xff)
 		len -= 1;
-	len = ALIGN(len + 1, c->min_io_size);
+	if (c->min_io_shift)
+		len = ALIGN(len + 1, c->min_io_size);
+	else
+		len = UBI_ALIGN(len + 1, c->min_io_size);
 	/* Atomically write the fixed LEB back again */
 	err = ubifs_leb_change(c, lnum, c->sbuf, len);
 	if (err)
