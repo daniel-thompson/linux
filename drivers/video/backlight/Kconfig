@@ -425,6 +425,18 @@ config BACKLIGHT_AS3711
 	  If you have an Austrian Microsystems AS3711 say Y to enable the
 	  backlight driver.
 
+config BACKLIGHT_RDA
+	tristate "Backlight driver for RDA"
+	depends on BACKLIGHT_CLASS_DEVICE && ARCH_RDA
+	help
+	  If you using rda, say Y to enable the backlight driver.
+
+config BACKLIGHT_RDA_PWM
+	tristate "RDA PWM Backlight Driver"
+	depends on BACKLIGHT_CLASS_DEVICE && ARCH_RDA
+	help
+	  If you using rda, say Y to enable the backlight pwm driver.
+
 endif # BACKLIGHT_CLASS_DEVICE
 
 endif # BACKLIGHT_LCD_SUPPORT
