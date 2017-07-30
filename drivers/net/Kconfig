@@ -163,6 +163,13 @@ config VXLAN
 	  To compile this driver as a module, choose M here: the module
 	  will be called vxlan.
 
+config RDA_RMNET
+       tristate "Virtual Ethernet Card driver fo RDA8850e"
+       depends on INET
+       depends on ARCH_RDA8850E
+       ---help---
+          This allows one to create virtual Ethernet interfaces 'rmnet0~3'.
+
 config NETCONSOLE
 	tristate "Network console logging support"
 	---help---
