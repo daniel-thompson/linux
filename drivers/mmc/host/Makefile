@@ -24,6 +24,12 @@ obj-$(CONFIG_MMC_TIFM_SD)	+= tifm_sd.o
 obj-$(CONFIG_MMC_MSM)		+= msm_sdcc.o
 obj-$(CONFIG_MMC_MVSDIO)	+= mvsdio.o
 obj-$(CONFIG_MMC_DAVINCI)       += davinci_mmc.o
+ifeq ($(CONFIG_MMC_RDA_GENERAL_IFC),y)
+obj-$(CONFIG_MMC_RDA)		+= rda_mmc.o
+endif
+ifeq ($(CONFIG_MMC_RDA_IFC_SG),y)
+obj-$(CONFIG_MMC_RDA)		+= rda_sgmmc.o
+endif
 obj-$(CONFIG_MMC_GOLDFISH)	+= android-goldfish.o
 obj-$(CONFIG_MMC_SPI)		+= mmc_spi.o
 ifeq ($(CONFIG_OF),y)

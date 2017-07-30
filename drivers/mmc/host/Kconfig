@@ -373,6 +373,32 @@ config MMC_DAVINCI
           If you have an DAVINCI board with a Multimedia Card slot,
           say Y or M here.  If unsure, say N.
 
+config MMC_RDA
+	tristate "RDA SD/SDIO/eMMC Interface support"
+	depends on ARCH_RDA
+	help
+	  This selects the RDA SD/SDIO/eMMC Interface.
+	  If no scatter/gather DMA, MMC_BLOCK_BOUNCE would be selected.
+	  say Y or M here.
+
+	  If unsure, say N.
+
+config MMC_RDA_GENERAL_IFC
+	bool "Use general IFC(DMA) transfers only"
+	depends on MMC_RDA
+	select MMC_BLOCK_BOUNCE
+	help
+	  Use general IFC(DMA) to transfer data between memory and hardware.
+	  This feature has to select MMC_BLOCK_BOUNCE option which helps to
+	  allocate bounce buffers.
+
+config MMC_RDA_IFC_SG
+	bool "Use Scatter/Gather IFC(DMA) transfers only"
+	depends on (ARCH_RDA8810E || ARCH_RDA8850E) && MMC_RDA && MMC_RDA_GENERAL_IFC != y
+	help
+	  Use Scatter/Gather IFC(DMA) to transfer data between memory and hardware.
+	  This feature is supported by 8810E architecture.
+
 config MMC_GOLDFISH
 	tristate "goldfish qemu Multimedia Card Interface support"
 	depends on GOLDFISH
