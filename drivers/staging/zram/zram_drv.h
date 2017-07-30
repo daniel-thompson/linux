@@ -51,23 +51,26 @@ static const size_t max_zpage_size = PAGE_SIZE / 4 * 3;
 #define ZRAM_SECTOR_PER_LOGICAL_BLOCK	\
 	(1 << (ZRAM_LOGICAL_BLOCK_SHIFT - SECTOR_SHIFT))
 
-/* Flags for zram pages (table[page_no].flags) */
+/* store the data len with data into zspage if
+ * sizeof(data_len) + compressed data is smaller
+ * than PAGE_SIZE, otherwise we set the ZRAM_FLAG_NO_COMPRESS flag
+ * in lower bits of handle to indicate data only and data size is PAGE_SIZE
+ * */
 enum zram_pageflags {
-	/* Page consists entirely of zeros */
-	ZRAM_ZERO,
-
+	ZRAM_FLAG_NO_COMPRESS,
 	__NR_ZRAM_PAGEFLAGS,
 };
+#define set_handle_no_compress(handle) (handle |= (1<<ZRAM_FLAG_NO_COMPRESS))
+#define get_handle_no_compress(handle) (handle & (1<<ZRAM_FLAG_NO_COMPRESS))
+
+#define ZERO_PAGE_MAGIC_HANDLE ((unsigned long)-1)
 
 /*-- Data structures */
 
 /* Allocated for each disk page */
 struct table {
 	unsigned long handle;
-	u16 size;	/* object size (excluding header) */
-	u8 count;	/* object ref count (not yet used) */
-	u8 flags;
-} __aligned(4);
+};
 
 struct zram_stats {
 	u64 compr_size;		/* compressed size of pages stored */
@@ -120,5 +123,5 @@ extern void zram_reset_device(struct zram *zram);
 extern struct zram_meta *zram_meta_alloc(u64 disksize);
 extern void zram_meta_free(struct zram_meta *meta);
 extern void zram_init_device(struct zram *zram, struct zram_meta *meta);
-
+extern void dump_zram(void);
 #endif
