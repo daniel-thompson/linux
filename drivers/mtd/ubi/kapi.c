@@ -459,10 +459,17 @@ int ubi_leb_write(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-	if (lnum < 0 || lnum >= vol->reserved_pebs || offset < 0 || len < 0 ||
-	    offset + len > vol->usable_leb_size ||
-	    offset & (ubi->min_io_size - 1) || len & (ubi->min_io_size - 1))
-		return -EINVAL;
+	if (is_power_of_2(ubi->min_io_size)) {
+		if (lnum < 0 || lnum >= vol->reserved_pebs || offset < 0 || len < 0 ||
+			offset + len > vol->usable_leb_size ||
+			offset & (ubi->min_io_size - 1) || len & (ubi->min_io_size - 1))
+			return -EINVAL;
+	} else {
+		if (lnum < 0 || lnum >= vol->reserved_pebs || offset < 0 || len < 0 ||
+			offset + len > vol->usable_leb_size ||
+			(offset % ubi->min_io_size) || (len % ubi->min_io_size))
+			return -EINVAL;
+	}
 
 	if (vol->upd_marker)
 		return -EBADF;
@@ -504,9 +511,15 @@ int ubi_leb_change(struct ubi_volume_desc *desc, int lnum, const void *buf,
 	if (desc->mode == UBI_READONLY || vol->vol_type == UBI_STATIC_VOLUME)
 		return -EROFS;
 
-	if (lnum < 0 || lnum >= vol->reserved_pebs || len < 0 ||
-	    len > vol->usable_leb_size || len & (ubi->min_io_size - 1))
-		return -EINVAL;
+	if (is_power_of_2(ubi->min_io_size)) {
+		if (lnum < 0 || lnum >= vol->reserved_pebs || len < 0 ||
+			len > vol->usable_leb_size || len & (ubi->min_io_size - 1))
+			return -EINVAL;
+	} else {
+		if (lnum < 0 || lnum >= vol->reserved_pebs || len < 0 ||
+			len > vol->usable_leb_size || (len % ubi->min_io_size))
+			return -EINVAL;
+	}
 
 	if (vol->upd_marker)
 		return -EBADF;

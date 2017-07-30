@@ -133,6 +133,10 @@ int ubi_start_update(struct ubi_device *ubi, struct ubi_volume *vol,
 	ubi_assert(!vol->updating && !vol->changing_leb);
 	vol->updating = 1;
 
+	vol->upd_buf = vmalloc(ubi->leb_size);
+	if (!vol->upd_buf)
+		return -ENOMEM;
+
 	err = set_update_marker(ubi, vol);
 	if (err)
 		return err;
@@ -152,13 +156,11 @@ int ubi_start_update(struct ubi_device *ubi, struct ubi_volume *vol,
 		err = clear_update_marker(ubi, vol, 0);
 		if (err)
 			return err;
+
+		vfree(vol->upd_buf);
 		vol->updating = 0;
 		return 0;
 	}
-
-	vol->upd_buf = vmalloc(ubi->leb_size);
-	if (!vol->upd_buf)
-		return -ENOMEM;
 
 	vol->upd_ebs = div_u64(bytes + vol->usable_leb_size - 1,
 			       vol->usable_leb_size);
@@ -233,7 +235,12 @@ static int write_leb(struct ubi_device *ubi, struct ubi_volume *vol, int lnum,
 	int err;
 
 	if (vol->vol_type == UBI_DYNAMIC_VOLUME) {
-		int l = ALIGN(len, ubi->min_io_size);
+		int l;
+
+		if (is_power_of_2(ubi->min_io_size))
+			l = ALIGN(len, ubi->min_io_size);
+		else
+			l = UBI_ALIGN(len, ubi->min_io_size);
 
 		memset(buf + len, 0xFF, l - len);
 		len = ubi_calc_data_len(ubi, buf, l);
@@ -409,7 +416,11 @@ int ubi_more_leb_change_data(struct ubi_device *ubi, struct ubi_volume *vol,
 	vol->upd_received += count;
 
 	if (vol->upd_received == vol->upd_bytes) {
-		int len = ALIGN((int)vol->upd_bytes, ubi->min_io_size);
+		int len;
+		if (is_power_of_2(ubi->min_io_size))
+			len= ALIGN((int)vol->upd_bytes, ubi->min_io_size);
+		else
+			len= UBI_ALIGN((int)vol->upd_bytes, ubi->min_io_size);
 
 		memset(vol->upd_buf + vol->upd_bytes, 0xFF,
 		       len - vol->upd_bytes);

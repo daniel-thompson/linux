@@ -727,7 +727,10 @@ static int self_check_volume(struct ubi_device *ubi, int vol_id)
 		goto fail;
 	}
 
-	n = vol->alignment & (ubi->min_io_size - 1);
+	if (is_power_of_2(ubi->min_io_size))
+		n = vol->alignment & (ubi->min_io_size - 1);
+	else
+		n = vol->alignment % ubi->min_io_size;
 	if (vol->alignment != 1 && n) {
 		ubi_err("alignment is not multiple of min I/O unit");
 		goto fail;

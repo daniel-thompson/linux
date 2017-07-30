@@ -216,7 +216,10 @@ static int vtbl_check(const struct ubi_device *ubi,
 			goto bad;
 		}
 
-		n = alignment & (ubi->min_io_size - 1);
+		if (is_power_of_2(ubi->min_io_size))
+			n = alignment & (ubi->min_io_size - 1);
+		else
+			n = alignment % ubi->min_io_size;
 		if (alignment != 1 && n) {
 			err = 5;
 			goto bad;
@@ -790,7 +793,10 @@ int ubi_read_volume_table(struct ubi_device *ubi, struct ubi_attach_info *ai)
 		ubi->vtbl_slots = UBI_MAX_VOLUMES;
 
 	ubi->vtbl_size = ubi->vtbl_slots * UBI_VTBL_RECORD_SIZE;
-	ubi->vtbl_size = ALIGN(ubi->vtbl_size, ubi->min_io_size);
+	if (is_power_of_2(ubi->min_io_size))
+		ubi->vtbl_size = ALIGN(ubi->vtbl_size, ubi->min_io_size);
+	else
+		ubi->vtbl_size = UBI_ALIGN(ubi->vtbl_size, ubi->min_io_size);
 
 	av = ubi_find_av(ai, UBI_LAYOUT_VOLUME_ID);
 	if (!av) {

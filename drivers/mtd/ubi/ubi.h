@@ -44,6 +44,25 @@
 
 #include "ubi-media.h"
 
+#ifndef UBI_ALIGN
+#define UBI_ALIGN(x, a) \
+    ({ \
+     long long __f1 = 0, __f2 = 0, __f3 = (long long)x; \
+     unsigned int __f4 = (unsigned int)a; \
+     if(__f4!=0) { \
+         __f2=__f3+__f4; \
+         __f1=do_div(__f2,__f4); \
+         if(__f1!=0) \
+             __f1=__f2*__f4; \
+         else \
+             __f1=__f3; \
+     } \
+     else \
+         __f1=__f3; \
+     __f1; \
+     })
+#endif
+
 /* Maximum number of supported UBI devices */
 #define UBI_MAX_DEVICES 32
 

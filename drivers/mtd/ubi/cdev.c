@@ -234,8 +234,12 @@ static ssize_t vol_cdev_read(struct file *file, __user char *buf, size_t count,
 		count_save = count = vol->used_bytes - *offp;
 
 	tbuf_size = vol->usable_leb_size;
-	if (count < tbuf_size)
-		tbuf_size = ALIGN(count, ubi->min_io_size);
+	if (count < tbuf_size) {
+		if (is_power_of_2(ubi->min_io_size))
+			tbuf_size = ALIGN(count, ubi->min_io_size);
+		else
+			tbuf_size = UBI_ALIGN(count, ubi->min_io_size);
+	}
 	tbuf = vmalloc(tbuf_size);
 	if (!tbuf)
 		return -ENOMEM;
@@ -300,23 +304,41 @@ static ssize_t vol_cdev_direct_write(struct file *file, const char __user *buf,
 		return -EROFS;
 
 	lnum = div_u64_rem(*offp, vol->usable_leb_size, &off);
-	if (off & (ubi->min_io_size - 1)) {
-		ubi_err("unaligned position");
-		return -EINVAL;
+	if (is_power_of_2(ubi->min_io_size)) {
+		if (off & (ubi->min_io_size - 1)) {
+			ubi_err("unaligned position");
+			return -EINVAL;
+		}
+	} else {
+		if (off % ubi->min_io_size) {
+			ubi_err("unaligned position");
+			return -EINVAL;
+		}
 	}
 
 	if (*offp + count > vol->used_bytes)
 		count_save = count = vol->used_bytes - *offp;
 
 	/* We can write only in fractions of the minimum I/O unit */
-	if (count & (ubi->min_io_size - 1)) {
-		ubi_err("unaligned write length");
-		return -EINVAL;
+	if (is_power_of_2(ubi->min_io_size)) {
+		if (count & (ubi->min_io_size - 1)) {
+			ubi_err("unaligned write length");
+			return -EINVAL;
+		}
+	} else {
+		if (count % ubi->min_io_size) {
+			ubi_err("unaligned write length");
+			return -EINVAL;
+		}
 	}
 
 	tbuf_size = vol->usable_leb_size;
-	if (count < tbuf_size)
-		tbuf_size = ALIGN(count, ubi->min_io_size);
+	if (count < tbuf_size) {
+		if (is_power_of_2(ubi->min_io_size))
+			tbuf_size = ALIGN(count, ubi->min_io_size);
+		else
+			tbuf_size = UBI_ALIGN(count, ubi->min_io_size);
+	}
 	tbuf = vmalloc(tbuf_size);
 	if (!tbuf)
 		return -ENOMEM;
@@ -625,7 +647,10 @@ static int verify_mkvol_req(const struct ubi_device *ubi,
 	if (req->alignment > ubi->leb_size)
 		goto bad;
 
-	n = req->alignment & (ubi->min_io_size - 1);
+	if (is_power_of_2(ubi->min_io_size))
+		n = req->alignment & (ubi->min_io_size - 1);
+	else
+		n = req->alignment % ubi->min_io_size;
 	if (req->alignment != 1 && n)
 		goto bad;
 

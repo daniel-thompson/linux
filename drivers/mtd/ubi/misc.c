@@ -37,14 +37,20 @@ int ubi_calc_data_len(const struct ubi_device *ubi, const void *buf,
 {
 	int i;
 
-	ubi_assert(!(length & (ubi->min_io_size - 1)));
+	if (is_power_of_2(ubi->min_io_size))
+		ubi_assert(!(length & (ubi->min_io_size - 1)));
+	else
+		ubi_assert(!(length % ubi->min_io_size));
 
 	for (i = length - 1; i >= 0; i--)
 		if (((const uint8_t *)buf)[i] != 0xFF)
 			break;
 
 	/* The resulting length must be aligned to the minimum flash I/O size */
-	length = ALIGN(i + 1, ubi->min_io_size);
+	if (is_power_of_2(ubi->min_io_size))
+		length = ALIGN(i + 1, ubi->min_io_size);
+	else
+		length = UBI_ALIGN(i + 1, ubi->min_io_size);
 	return length;
 }
 

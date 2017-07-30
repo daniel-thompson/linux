@@ -682,12 +682,6 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 	 * fundamental reason for this assumption. It is just an optimization
 	 * which allows us to avoid costly division operations.
 	 */
-	if (!is_power_of_2(ubi->min_io_size)) {
-		ubi_err("min. I/O unit (%d) is not power of 2",
-			ubi->min_io_size);
-		return -EINVAL;
-	}
-
 	ubi_assert(ubi->hdrs_min_io_size > 0);
 	ubi_assert(ubi->hdrs_min_io_size <= ubi->min_io_size);
 	ubi_assert(ubi->min_io_size % ubi->hdrs_min_io_size == 0);
@@ -698,42 +692,51 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 	 * size, and be multiple of min. I/O size.
 	 */
 	if (ubi->max_write_size < ubi->min_io_size ||
-	    ubi->max_write_size % ubi->min_io_size ||
-	    !is_power_of_2(ubi->max_write_size)) {
+	    ubi->max_write_size % ubi->min_io_size) {
 		ubi_err("bad write buffer size %d for %d min. I/O unit",
 			ubi->max_write_size, ubi->min_io_size);
 		return -EINVAL;
 	}
 
 	/* Calculate default aligned sizes of EC and VID headers */
-	ubi->ec_hdr_alsize = ALIGN(UBI_EC_HDR_SIZE, ubi->hdrs_min_io_size);
-	ubi->vid_hdr_alsize = ALIGN(UBI_VID_HDR_SIZE, ubi->hdrs_min_io_size);
-
-	dbg_gen("min_io_size      %d", ubi->min_io_size);
-	dbg_gen("max_write_size   %d", ubi->max_write_size);
-	dbg_gen("hdrs_min_io_size %d", ubi->hdrs_min_io_size);
-	dbg_gen("ec_hdr_alsize    %d", ubi->ec_hdr_alsize);
-	dbg_gen("vid_hdr_alsize   %d", ubi->vid_hdr_alsize);
+	if ( !is_power_of_2(ubi->hdrs_min_io_size)) {
+		ubi->ec_hdr_alsize = UBI_ALIGN(UBI_EC_HDR_SIZE, ubi->hdrs_min_io_size);
+		ubi->vid_hdr_alsize = UBI_ALIGN(UBI_VID_HDR_SIZE, ubi->hdrs_min_io_size);
+	} else {
+		ubi->ec_hdr_alsize = ALIGN(UBI_EC_HDR_SIZE, ubi->hdrs_min_io_size);
+		ubi->vid_hdr_alsize = ALIGN(UBI_VID_HDR_SIZE, ubi->hdrs_min_io_size);
+	}
+	ubi_msg("min_io_size      %d", ubi->min_io_size);
+	ubi_msg("max_write_size   %d", ubi->max_write_size);
+	ubi_msg("hdrs_min_io_size %d", ubi->hdrs_min_io_size);
+	ubi_msg("ec_hdr_alsize    %d", ubi->ec_hdr_alsize);
+	ubi_msg("vid_hdr_alsize   %d", ubi->vid_hdr_alsize);
 
 	if (ubi->vid_hdr_offset == 0)
 		/* Default offset */
 		ubi->vid_hdr_offset = ubi->vid_hdr_aloffset =
 				      ubi->ec_hdr_alsize;
 	else {
-		ubi->vid_hdr_aloffset = ubi->vid_hdr_offset &
+		if (is_power_of_2(ubi->hdrs_min_io_size))
+			ubi->vid_hdr_aloffset = ubi->vid_hdr_offset &
 						~(ubi->hdrs_min_io_size - 1);
-		ubi->vid_hdr_shift = ubi->vid_hdr_offset -
-						ubi->vid_hdr_aloffset;
+		else
+			ubi->vid_hdr_aloffset = (ubi->vid_hdr_offset / ubi->hdrs_min_io_size) *
+						ubi->hdrs_min_io_size;
+		ubi->vid_hdr_shift = ubi->vid_hdr_offset - ubi->vid_hdr_aloffset;
 	}
 
 	/* Similar for the data offset */
 	ubi->leb_start = ubi->vid_hdr_offset + UBI_VID_HDR_SIZE;
-	ubi->leb_start = ALIGN(ubi->leb_start, ubi->min_io_size);
+	if (is_power_of_2(ubi->min_io_size))
+		ubi->leb_start = ALIGN(ubi->leb_start, ubi->min_io_size);
+	else
+		ubi->leb_start = UBI_ALIGN(ubi->leb_start, ubi->min_io_size);
 
-	dbg_gen("vid_hdr_offset   %d", ubi->vid_hdr_offset);
-	dbg_gen("vid_hdr_aloffset %d", ubi->vid_hdr_aloffset);
-	dbg_gen("vid_hdr_shift    %d", ubi->vid_hdr_shift);
-	dbg_gen("leb_start        %d", ubi->leb_start);
+	ubi_msg("vid_hdr_offset   %d", ubi->vid_hdr_offset);
+	ubi_msg("vid_hdr_aloffset %d", ubi->vid_hdr_aloffset);
+	ubi_msg("vid_hdr_shift    %d", ubi->vid_hdr_shift);
+	ubi_msg("leb_start        %d", ubi->leb_start);
 
 	/* The shift must be aligned to 32-bit boundary */
 	if (ubi->vid_hdr_shift % 4) {
@@ -743,13 +746,24 @@ static int io_init(struct ubi_device *ubi, int max_beb_per1024)
 	}
 
 	/* Check sanity */
-	if (ubi->vid_hdr_offset < UBI_EC_HDR_SIZE ||
-	    ubi->leb_start < ubi->vid_hdr_offset + UBI_VID_HDR_SIZE ||
-	    ubi->leb_start > ubi->peb_size - UBI_VID_HDR_SIZE ||
-	    ubi->leb_start & (ubi->min_io_size - 1)) {
-		ubi_err("bad VID header (%d) or data offsets (%d)",
-			ubi->vid_hdr_offset, ubi->leb_start);
-		return -EINVAL;
+	if (is_power_of_2(ubi->min_io_size)) {
+		if (ubi->vid_hdr_offset < UBI_EC_HDR_SIZE ||
+				ubi->leb_start < ubi->vid_hdr_offset + UBI_VID_HDR_SIZE ||
+				ubi->leb_start > ubi->peb_size - UBI_VID_HDR_SIZE ||
+				ubi->leb_start & (ubi->min_io_size - 1)) {
+			ubi_err("bad VID header (%d) or data offsets (%d)",
+				ubi->vid_hdr_offset, ubi->leb_start);
+			return -EINVAL;
+		}
+	} else {
+		if (ubi->vid_hdr_offset < UBI_EC_HDR_SIZE ||
+				ubi->leb_start < ubi->vid_hdr_offset + UBI_VID_HDR_SIZE ||
+				ubi->leb_start > ubi->peb_size - UBI_VID_HDR_SIZE ||
+				(ubi->leb_start % ubi->min_io_size)) {
+			ubi_err("bad VID header (%d) or data offsets (%d)",
+				ubi->vid_hdr_offset, ubi->leb_start);
+			return -EINVAL;
+		}
 	}
 
 	/*

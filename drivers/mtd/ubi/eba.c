@@ -735,12 +735,19 @@ int ubi_eba_write_leb_st(struct ubi_device *ubi, struct ubi_volume *vol,
 	if (ubi->ro_mode)
 		return -EROFS;
 
-	if (lnum == used_ebs - 1)
-		/* If this is the last LEB @len may be unaligned */
-		len = ALIGN(data_size, ubi->min_io_size);
-	else
-		ubi_assert(!(len & (ubi->min_io_size - 1)));
-
+	if (is_power_of_2(ubi->min_io_size)) {
+		if (lnum == used_ebs - 1)
+			/* If this is the last LEB @len may be unaligned */
+			len = ALIGN(data_size, ubi->min_io_size);
+		else
+			ubi_assert(!(len & (ubi->min_io_size - 1)));
+	} else {
+		if (lnum == used_ebs - 1)
+			/* If this is the last LEB @len may be unaligned */
+			len = UBI_ALIGN(data_size, ubi->min_io_size);
+		else
+			ubi_assert(!(len % ubi->min_io_size));
+	}
 	vid_hdr = ubi_zalloc_vid_hdr(ubi, GFP_NOFS);
 	if (!vid_hdr)
 		return -ENOMEM;
@@ -1000,7 +1007,10 @@ int ubi_eba_copy_leb(struct ubi_device *ubi, int from, int to,
 
 	if (vid_hdr->vol_type == UBI_VID_STATIC) {
 		data_size = be32_to_cpu(vid_hdr->data_size);
-		aldata_size = ALIGN(data_size, ubi->min_io_size);
+		if (is_power_of_2(ubi->min_io_size))
+			aldata_size = ALIGN(data_size, ubi->min_io_size);
+		else
+			aldata_size = UBI_ALIGN(data_size, ubi->min_io_size);
 	} else
 		data_size = aldata_size =
 			    ubi->leb_size - be32_to_cpu(vid_hdr->data_pad);
