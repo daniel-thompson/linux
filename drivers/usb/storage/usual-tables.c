@@ -97,6 +97,7 @@ static struct ignore_entry ignore_ids[] = {
 #	include "unusual_sddr09.h"
 #	include "unusual_sddr55.h"
 #	include "unusual_usbat.h"
+#	include "unusual_dongle.h"
 	{ }		/* Terminating entry */
 };
 
@@ -116,8 +117,10 @@ int usb_usual_ignore_device(struct usb_interface *intf)
 
 	for (p = ignore_ids; p->vid; ++p) {
 		if (p->vid == vid && p->pid == pid &&
-				p->bcdmin <= bcd && p->bcdmax >= bcd)
+				p->bcdmin <= bcd && p->bcdmax >= bcd) {
+			printk("usb_unual_ignore_device,bcd=%x\n", bcd);
 			return -ENXIO;
+		}
 	}
 	return 0;
 }
