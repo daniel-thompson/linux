@@ -362,6 +362,12 @@ config BATTERY_GOLDFISH
 	  Say Y to enable support for the battery and AC power in the
 	  Goldfish emulator.
 
+config BATTERY_RDA
+	tristate "rda micro battery driver"
+	help
+	  Say Y to enable support for the battery and AC power in the rda smartphone
+	  platform.
+
 source "drivers/power/reset/Kconfig"
 
 endif # POWER_SUPPLY
