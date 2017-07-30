@@ -195,6 +195,12 @@ config BT_HCIVHCI
 	  Say Y here to compile support for virtual HCI devices into the
 	  kernel or say M to compile it as module (hci_vhci).
 
+config BLUEZ_SUPPORT
+	tristate "RDA Bluetooth Chip Sleep Method Based On Bluez Support"
+
+config BT_RANDADDR
+	tristate "RDA Bluetooth Chip Generate Random BT Adddress Support"
+
 config BT_MRVL
 	tristate "Marvell Bluetooth driver support"
 	help
