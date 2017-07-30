@@ -1248,5 +1248,12 @@ config RTC_DRV_HID_SENSOR_TIME
 	  If this driver is compiled as a module, it will be named
 	  rtc-hid-sensor-time.
 
+config RTC_DRV_RDA
+    tristate "RDA RTC support"
+    depends on PLAT_RDA=y
+    default y
+    help
+      This a drive for rda's rtc
+
 
 endif # RTC_CLASS
