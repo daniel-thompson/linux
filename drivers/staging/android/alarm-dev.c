@@ -23,6 +23,7 @@
 #include <linux/spinlock.h>
 #include <linux/uaccess.h>
 #include <linux/alarmtimer.h>
+#include <linux/reboot.h>
 #include "android_alarm.h"
 
 #define ANDROID_ALARM_PRINT_INFO (1U << 0)
@@ -30,6 +31,7 @@
 #define ANDROID_ALARM_PRINT_INT (1U << 2)
 
 static int debug_mask = ANDROID_ALARM_PRINT_INFO;
+
 module_param_named(debug_mask, debug_mask, int, S_IRUGO | S_IWUSR | S_IWGRP);
 
 #define alarm_dbg(debug_level_mask, fmt, ...)				\
@@ -40,7 +42,8 @@ do {									\
 
 #define ANDROID_ALARM_WAKEUP_MASK ( \
 	ANDROID_ALARM_RTC_WAKEUP_MASK | \
-	ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP_MASK)
+	ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP_MASK |\
+	ANDROID_ALARM_POWER_OFF_WAKEUP_MASK)
 
 static int alarm_opened;
 static DEFINE_SPINLOCK(alarm_slock);
@@ -64,7 +67,8 @@ static struct devalarm alarms[ANDROID_ALARM_TYPE_COUNT];
 static int is_wakeup(enum android_alarm_type type)
 {
 	return (type == ANDROID_ALARM_RTC_WAKEUP ||
-		type == ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP);
+		type == ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP ||
+		type == ANDROID_ALARM_POWER_OFF_WAKEUP);
 }
 
 
@@ -181,6 +185,7 @@ static int alarm_get_time(enum android_alarm_type alarm_type,
 	switch (alarm_type) {
 	case ANDROID_ALARM_RTC_WAKEUP:
 	case ANDROID_ALARM_RTC:
+	case ANDROID_ALARM_POWER_OFF_WAKEUP:
 		getnstimeofday(ts);
 		break;
 	case ANDROID_ALARM_ELAPSED_REALTIME_WAKEUP:
@@ -385,6 +390,58 @@ static enum alarmtimer_restart devalarm_alarmhandler(struct alarm *alrm,
 	return ALARMTIMER_NORESTART;
 }
 
+static int devalarm_notify_reboot(struct notifier_block *this, unsigned long code, void *x)
+{
+	struct rtc_time rtc_current_time;
+	ktime_t off_ktime;
+	struct timespec rtc_delta;
+	struct timespec wall_time;
+	struct rtc_wkalrm alarm_time;
+	unsigned long current_sec;
+	unsigned long rtc_alarm_time;
+	unsigned long flags;
+	struct rtc_device *alarm_rtc_dev;
+	enum android_alarm_type off_type = ANDROID_ALARM_POWER_OFF_WAKEUP;
+
+	alarm_rtc_dev = alarmtimer_get_rtcdev();
+
+	if (code != SYS_POWER_OFF) {
+		/* Force to stop alarm. */
+		rtc_alarm_irq_enable(alarm_rtc_dev, 0);
+		return NOTIFY_DONE;
+	}
+
+	if (alarm_enabled & ANDROID_ALARM_POWER_OFF_WAKEUP_MASK) {
+		spin_lock_irqsave(&alarm_slock, flags);
+		off_ktime = alarms[off_type].u.alrm.node.expires;
+
+		devalarm_cancel(&alarms[off_type]);
+		alarm_enabled &= ~ANDROID_ALARM_POWER_OFF_WAKEUP_MASK;
+		spin_unlock_irqrestore(&alarm_slock, flags);
+
+		rtc_read_time(alarm_rtc_dev, &rtc_current_time);
+		getnstimeofday(&wall_time);
+		rtc_tm_to_time(&rtc_current_time, &current_sec);
+
+		set_normalized_timespec(&rtc_delta, wall_time.tv_sec - current_sec, wall_time.tv_nsec);
+
+		rtc_alarm_time = timespec_sub(ktime_to_timespec(off_ktime), rtc_delta).tv_sec;
+
+		rtc_time_to_tm(rtc_alarm_time, &alarm_time.time);
+		alarm_time.enabled = 1;
+		rtc_set_alarm(alarm_rtc_dev, &alarm_time);
+
+		rtc_read_time(alarm_rtc_dev, &rtc_current_time);
+		rtc_tm_to_time(&rtc_current_time, &current_sec);
+		/*if the current time is greater than alarm time, the alarm should turn off*/
+		if (current_sec >= rtc_alarm_time) {
+			pr_info("alarm about to go off\n");
+			rtc_alarm_irq_enable(alarm_rtc_dev, 0);
+		}
+	}
+
+	return NOTIFY_OK;
+}
 
 static const struct file_operations alarm_fops = {
 	.owner = THIS_MODULE,
@@ -400,6 +457,12 @@ static struct miscdevice alarm_device = {
 	.minor = MISC_DYNAMIC_MINOR,
 	.name = "alarm",
 	.fops = &alarm_fops,
+};
+
+static struct notifier_block devalarm_notifier = {
+	.notifier_call = devalarm_notify_reboot,
+	.next = NULL,
+	.priority = INT_MAX,
 };
 
 static int __init alarm_dev_init(void)
@@ -421,6 +484,8 @@ static int __init alarm_dev_init(void)
 			CLOCK_BOOTTIME, HRTIMER_MODE_ABS);
 	hrtimer_init(&alarms[ANDROID_ALARM_SYSTEMTIME].u.hrt,
 			CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	alarm_init(&alarms[ANDROID_ALARM_POWER_OFF_WAKEUP].u.alrm,
+			ALARM_BOOTTIME, devalarm_alarmhandler);
 
 	for (i = 0; i < ANDROID_ALARM_TYPE_COUNT; i++) {
 		alarms[i].type = i;
@@ -429,11 +494,16 @@ static int __init alarm_dev_init(void)
 	}
 
 	wakeup_source_init(&alarm_wake_lock, "alarm");
+
+	register_reboot_notifier(&devalarm_notifier);
+
 	return 0;
 }
 
 static void  __exit alarm_dev_exit(void)
 {
+	unregister_reboot_notifier(&devalarm_notifier);
+
 	misc_deregister(&alarm_device);
 	wakeup_source_trash(&alarm_wake_lock);
 }
