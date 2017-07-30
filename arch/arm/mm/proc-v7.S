@@ -101,11 +101,11 @@ ENTRY(cpu_v7_do_suspend)
 	stmia	r0!, {r4 - r5}
 	mrc	p15, 0, r6, c3, c0, 0	@ Domain ID
 	mrc	p15, 0, r7, c2, c0, 1	@ TTB 1
-	mrc	p15, 0, r11, c2, c0, 2	@ TTB control register
+	mrc	p15, 0, r12, c2, c0, 2	@ TTB control register
 	mrc	p15, 0, r8, c1, c0, 0	@ Control register
 	mrc	p15, 0, r9, c1, c0, 1	@ Auxiliary control register
 	mrc	p15, 0, r10, c1, c0, 2	@ Co-processor access control
-	stmia	r0, {r6 - r11}
+	stmia	r0, {r6 - r10, r12}
 	ldmfd	sp!, {r4 - r10, pc}
 ENDPROC(cpu_v7_do_suspend)
 
@@ -185,14 +185,14 @@ __v7_ca7mp_setup:
 __v7_ca15mp_setup:
 	mov	r10, #0
 1:
-#ifdef CONFIG_SMP
+//#ifdef CONFIG_SMP -- according to ARM manual, this SMP bit must be set
 	ALT_SMP(mrc	p15, 0, r0, c1, c0, 1)
 	ALT_UP(mov	r0, #(1 << 6))		@ fake it for UP
 	tst	r0, #(1 << 6)			@ SMP/nAMP mode enabled?
 	orreq	r0, r0, #(1 << 6)		@ Enable SMP/nAMP mode
 	orreq	r0, r0, r10			@ Enable CPU-specific SMP bits
 	mcreq	p15, 0, r0, c1, c0, 1
-#endif
+//#endif
 	b	__v7_setup
 
 __v7_pj4b_setup:

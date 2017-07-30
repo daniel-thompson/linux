@@ -95,6 +95,13 @@ void show_mem(unsigned int filter)
 	int free = 0, total = 0, reserved = 0;
 	int shared = 0, cached = 0, slab = 0, i;
 	struct meminfo * mi = &meminfo;
+	int no_mapping = 0, map_anon = 0, map_file = 0;
+	int no_mapping_reserve = 0, no_mapping_free = 0;
+	int no_mapping_slab = 0, no_mapping_others = 0;
+	int map_anon_swapcache = 0, map_anon_shared = 0;
+	int map_file_shared = 0;
+	int total_cma = 0, map_anon_cma = 0, map_file_cma = 0;
+	int free_cma = 0, no_mapping_slab_cma = 0, no_mapping_other_cma = 0;
 
 	printk("Mem-info:\n");
 	show_free_areas(filter);
@@ -106,6 +113,7 @@ void show_mem(unsigned int filter)
 		struct membank *bank = &mi->bank[i];
 		unsigned int pfn1, pfn2;
 		struct page *page, *end;
+		int mt;
 
 		pfn1 = bank_pfn_start(bank);
 		pfn2 = bank_pfn_end(bank);
@@ -125,6 +133,48 @@ void show_mem(unsigned int filter)
 				free++;
 			else
 				shared += page_count(page) - 1;
+
+			mt = get_pageblock_migratetype(page);
+			if (is_migrate_cma(mt))
+				total_cma ++;
+
+			if (!page->mapping) {
+				no_mapping++;
+				if (PageReserved(page))
+					no_mapping_reserve++;
+				else if (!page_count(page)) {
+					no_mapping_free++;
+					if (is_migrate_cma(mt))
+						free_cma++;
+				}
+				else if (PageSlab(page)) {
+					no_mapping_slab++;
+					if (is_migrate_cma(mt))
+						no_mapping_slab_cma++;
+				}
+				else {
+					no_mapping_others++;
+					if (is_migrate_cma(mt))
+						no_mapping_other_cma++;
+				}
+			}
+			else if (PageAnon(page)) {
+				map_anon++;
+				if (PageSwapCache(page))
+					map_anon_swapcache++;
+				else if (page_count(page) > 1)
+					map_anon_shared++;
+				if (is_migrate_cma(mt))
+					map_anon_cma++;
+			}
+			else {
+				map_file++;
+				if (page_count(page) > 1)
+					map_file_shared++;
+				if (is_migrate_cma(mt))
+					map_file_cma++;
+			}
+
 			page++;
 		} while (page < end);
 	}
@@ -135,6 +185,28 @@ void show_mem(unsigned int filter)
 	printk("%d slab pages\n", slab);
 	printk("%d pages shared\n", shared);
 	printk("%d pages swap cached\n", cached);
+	printk("====================\n");
+	printk("%d pages no mapping\n", no_mapping);
+	printk("  %d pages no mapping reserved\n", no_mapping_reserve);
+	printk("  %d pages no mapping free\n", no_mapping_free);
+	printk("  %d pages no mapping slab\n", no_mapping_slab);
+	printk("  %d pages no mapping others\n", no_mapping_others);
+	printk("%d pages map anon\n", map_anon);
+	printk("  %d pages map anon swapcache\n", map_anon_swapcache);
+	printk("  %d pages map anon shared\n", map_anon_shared);
+	printk("%d pages map file\n", map_file);
+	printk("  %d pages map file shared\n", map_file_shared);
+	printk("%d total cma pages\n", total_cma);
+	printk("  %d free cma\n", free_cma);
+	printk("  %d map anon cma\n", map_anon_cma);
+	printk("  %d map file cma\n", map_file_cma);
+	printk("  %d no map slab cma\n", no_mapping_slab_cma);
+	printk("  %d no map other cma\n", no_mapping_other_cma);
+
+#ifdef CONFIG_ZRAM
+	extern dump_zram();
+	dump_zram();
+#endif
 }
 
 static void __init find_limits(unsigned long *min, unsigned long *max_low,
@@ -646,7 +718,7 @@ void __init mem_init(void)
 		free_pages << (PAGE_SHIFT-10),
 		reserved_pages << (PAGE_SHIFT-10),
 		totalhigh_pages << (PAGE_SHIFT-10));
-
+	memblock_dump_all();
 #define MLK(b, t) b, t, ((t) - (b)) >> 10
 #define MLM(b, t) b, t, ((t) - (b)) >> 20
 #define MLK_ROUNDUP(b, t) b, t, DIV_ROUND_UP(((t) - (b)), SZ_1K)
