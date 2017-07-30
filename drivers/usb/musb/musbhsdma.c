@@ -34,6 +34,7 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
+#include <plat/pm_ddr.h>
 #include "musb_core.h"
 #include "musbhsdma.h"
 
@@ -57,7 +58,7 @@ static int dma_controller_stop(struct dma_controller *c)
 		dev_err(musb->controller,
 			"Stopping DMA controller while channel active\n");
 
-		for (bit = 0; bit < MUSB_HSDMA_CHANNELS; bit++) {
+		for (bit = 0; bit < controller->channel_count; bit++) {
 			if (controller->used_channels & (1 << bit)) {
 				channel = &controller->channel[bit].channel;
 				dma_channel_release(channel);
@@ -80,7 +81,7 @@ static struct dma_channel *dma_channel_allocate(struct dma_controller *c,
 	struct dma_channel *channel = NULL;
 	u8 bit;
 
-	for (bit = 0; bit < MUSB_HSDMA_CHANNELS; bit++) {
+	for (bit = 0; bit < controller->channel_count; bit++) {
 		if (!(controller->used_channels & (1 << bit))) {
 			controller->used_channels |= (1 << bit);
 			musb_channel = &(controller->channel[bit]);
@@ -161,6 +162,7 @@ static int dma_channel_program(struct dma_channel *channel,
 	struct musb_dma_channel *musb_channel = channel->private_data;
 	struct musb_dma_controller *controller = musb_channel->controller;
 	struct musb *musb = controller->private_data;
+	enum ddr_master ddr_master_idx = PM_DDR_USB_DMA0 + musb_channel->idx;
 
 	dev_dbg(musb->controller, "ep%d-%s pkt_sz %d, dma_addr 0x%x length %d, mode %d\n",
 		musb_channel->epnum,
@@ -196,6 +198,7 @@ static int dma_channel_program(struct dma_channel *channel,
 	musb_channel->max_packet_sz = packet_sz;
 	channel->status = MUSB_DMA_STATUS_BUSY;
 
+	pm_ddr_get(ddr_master_idx);
 	configure_channel(channel, packet_sz, mode, dma_addr, len);
 
 	return true;
@@ -207,6 +210,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 	void __iomem *mbase = musb_channel->controller->base;
 
 	u8 bchannel = musb_channel->idx;
+	int ddr_master_idx = PM_DDR_USB_DMA0 + bchannel;
 	int offset;
 	u16 csr;
 
@@ -241,6 +245,7 @@ static int dma_channel_abort(struct dma_channel *channel)
 		musb_write_hsdma_addr(mbase, bchannel, 0);
 		musb_write_hsdma_count(mbase, bchannel, 0);
 		channel->status = MUSB_DMA_STATUS_FREE;
+		pm_ddr_put(ddr_master_idx);
 	}
 
 	return 0;
@@ -277,7 +282,7 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 	if (!int_hsdma) {
 		dev_dbg(musb->controller, "spurious DMA irq\n");
 
-		for (bchannel = 0; bchannel < MUSB_HSDMA_CHANNELS; bchannel++) {
+		for (bchannel = 0; bchannel < controller->channel_count; bchannel++) {
 			musb_channel = (struct musb_dma_channel *)
 					&(controller->channel[bchannel]);
 			channel = &musb_channel->channel;
@@ -295,12 +300,14 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 			goto done;
 	}
 
-	for (bchannel = 0; bchannel < MUSB_HSDMA_CHANNELS; bchannel++) {
+	for (bchannel = 0; bchannel < controller->channel_count; bchannel++) {
 		if (int_hsdma & (1 << bchannel)) {
+			int ddr_master_idx;
+
 			musb_channel = (struct musb_dma_channel *)
 					&(controller->channel[bchannel]);
 			channel = &musb_channel->channel;
-
+			ddr_master_idx = PM_DDR_USB_DMA0 + musb_channel->idx;
 			csr = musb_readw(mbase,
 					MUSB_HSDMA_CHANNEL_OFFSET(bchannel,
 							MUSB_HSDMA_CONTROL));
@@ -357,6 +364,7 @@ static irqreturn_t dma_controller_irq(int irq, void *private_data)
 				musb_dma_completion(musb, musb_channel->epnum,
 						    musb_channel->transmit);
 			}
+			pm_ddr_put(ddr_master_idx);
 		}
 	}
 
@@ -386,6 +394,7 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	struct device *dev = musb->controller;
 	struct platform_device *pdev = to_platform_device(dev);
 	int irq = platform_get_irq_byname(pdev, "dma");
+	u8 count;
 
 	if (irq <= 0) {
 		dev_err(dev, "No DMA interrupt line!\n");
@@ -396,7 +405,9 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	if (!controller)
 		return NULL;
 
-	controller->channel_count = MUSB_HSDMA_CHANNELS;
+	count = musb_readb(musb->mregs, MUSB_RAMINFO) >> 4;
+	controller->channel_count = (count > MUSB_HSDMA_CHANNELS) ?
+					MUSB_HSDMA_CHANNELS : count;
 	controller->private_data = musb;
 	controller->base = base;
 
@@ -407,7 +418,7 @@ struct dma_controller *dma_controller_create(struct musb *musb, void __iomem *ba
 	controller->controller.channel_program = dma_channel_program;
 	controller->controller.channel_abort = dma_channel_abort;
 
-	if (request_irq(irq, dma_controller_irq, 0,
+	if (request_irq(irq, dma_controller_irq, IRQF_SHARED,
 			dev_name(musb->controller), &controller->controller)) {
 		dev_err(dev, "request_irq %d failed!\n", irq);
 		dma_controller_destroy(&controller->controller);

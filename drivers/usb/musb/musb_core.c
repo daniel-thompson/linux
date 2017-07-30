@@ -123,6 +123,8 @@ MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" MUSB_DRIVER_NAME);
 
 
+static int retry_session = 0;
+static struct workqueue_struct *musb_wq;
 /*-------------------------------------------------------------------------*/
 
 static inline struct musb *dev_to_musb(struct device *dev)
@@ -425,6 +427,7 @@ void musb_hnp_stop(struct musb *musb)
 	musb->port1_status &= ~(USB_PORT_STAT_C_CONNECTION << 16);
 }
 
+int otg_usb_id_state(struct usb_phy *phy);
 /*
  * Interrupt Service Routine to record USB "global" interrupts.
  * Since these do not happen often and signify things of
@@ -586,12 +589,14 @@ static irqreturn_t musb_stage0_irq(struct musb *musb, u8 int_usb,
 		case OTG_STATE_A_WAIT_BCON:
 		case OTG_STATE_A_WAIT_VRISE:
 			if (musb->vbuserr_retry) {
-				void __iomem *mbase = musb->mregs;
-
-				musb->vbuserr_retry--;
-				ignore = 1;
-				devctl |= MUSB_DEVCTL_SESSION;
-				musb_writeb(mbase, MUSB_DEVCTL, devctl);
+				if (!otg_usb_id_state(musb->xceiv)) {
+					void __iomem *mbase = musb->mregs;
+					retry_session = 1;
+					musb->vbuserr_retry--;
+					ignore = 1;
+					devctl &= ~MUSB_DEVCTL_SESSION;
+					musb_writeb(mbase, MUSB_DEVCTL, devctl);
+				}
 			} else {
 				musb->port1_status |=
 					  USB_PORT_STAT_OVERCURRENT
@@ -784,7 +789,8 @@ b_host:
 			/* FALLTHROUGH */
 		case OTG_STATE_B_PERIPHERAL:
 		case OTG_STATE_B_IDLE:
-			musb_g_disconnect(musb);
+			/*will be handled by charger interrupt*/
+			//musb_g_disconnect(musb);
 			break;
 		default:
 			WARNING("unhandled DISCONNECT transition (%s)\n",
@@ -813,7 +819,7 @@ b_host:
 				musb_writeb(musb->mregs, MUSB_DEVCTL, 0);
 			}
 		} else {
-			dev_dbg(musb->controller, "BUS RESET as %s\n",
+			dev_dbg(musb->controller, "BUS RESET/BABBLE as %s\n",
 				usb_otg_state_string(musb->xceiv->state));
 			switch (musb->xceiv->state) {
 			case OTG_STATE_A_SUSPEND:
@@ -824,7 +830,7 @@ b_host:
 				musb->ignore_disconnect = 1;
 				musb_g_reset(musb);
 				/* FALLTHROUGH */
-			case OTG_STATE_A_WAIT_BCON:	/* OPT TD.4.7-900ms */
+			//case OTG_STATE_A_WAIT_BCON:	/* OPT TD.4.7-900ms */
 				/* never use invalid T(a_wait_bcon) */
 				dev_dbg(musb->controller, "HNP: in %s, %d msec timeout\n",
 					usb_otg_state_string(musb->xceiv->state),
@@ -848,6 +854,18 @@ b_host:
 				/* FALLTHROUGH */
 			case OTG_STATE_B_PERIPHERAL:
 				musb_g_reset(musb);
+				break;
+			case OTG_STATE_A_HOST:
+			case OTG_STATE_A_WAIT_BCON:
+				dev_info(musb->controller, "BUS BABBLE as %s\n",
+					usb_otg_state_string(musb->xceiv->state));
+				if (!otg_usb_id_state(musb->xceiv)) {
+					dev_info(musb->controller,
+						"usb otg cable is still on, and id is low\n");
+					retry_session = 1;
+				}
+				usb_hcd_resume_root_hub(musb_to_hcd(musb));
+				musb_root_disconnect(musb);
 				break;
 			default:
 				dev_dbg(musb->controller, "Unhandled BUS RESET as %s\n",
@@ -901,10 +919,55 @@ b_host:
 	}
 #endif
 
-	schedule_work(&musb->irq_work);
+	queue_work(musb_wq, &musb->irq_work);
 
 	return handled;
 }
+
+extern int android_usb_ready(void);
+
+static ssize_t
+musb_speed_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	struct musb *musb = dev_to_musb(dev);
+	unsigned long flags;
+	u8 power;
+	char *state = "HIGH-SPEED";
+	void __iomem *mbase = musb->mregs;
+
+	spin_lock_irqsave(&musb->lock, flags);
+	power = musb_readb(mbase, MUSB_POWER);
+	state = (power & MUSB_POWER_HSMODE)
+			? "HIGH-SPEED" : "FULL-SPEED";
+	spin_unlock_irqrestore(&musb->lock, flags);
+	return sprintf(buf, "%s\n", state);
+}
+
+static ssize_t
+musb_speed_store(struct device *dev, struct device_attribute *attr,
+		const char *buf, size_t n)
+{
+	struct musb *musb = dev_to_musb(dev);
+	unsigned long flags;
+	u8 power;
+	void __iomem *regs;
+
+	regs = musb->mregs;
+	spin_lock_irqsave(&musb->lock, flags);
+	if (sysfs_streq(buf, "full")) {
+		power = musb_readb(regs, MUSB_POWER);
+		power &= ~MUSB_POWER_HSENAB;
+		musb_writeb(regs, MUSB_POWER, power);
+	} else if (sysfs_streq(buf, "high")) {
+		power = musb_readb(regs, MUSB_POWER);
+		power |= MUSB_POWER_HSENAB;
+		musb_writeb(regs, MUSB_POWER, power);
+	} else
+		n = -EINVAL;
+	spin_unlock_irqrestore(&musb->lock, flags);
+	return n;
+}
+static DEVICE_ATTR(speed, S_IRUGO | S_IWUSR, musb_speed_show, musb_speed_store);
 
 /*-------------------------------------------------------------------------*/
 
@@ -924,6 +987,9 @@ void musb_start(struct musb *musb)
 	musb->intrrxe = musb->epmask & 0xfffe;
 	musb_writew(regs, MUSB_INTRRXE, musb->intrrxe);
 	musb_writeb(regs, MUSB_INTRUSBE, 0xf7);
+	musb_writeb(regs, MUSB_HS_EOF1, 0xff);
+	musb_writeb(regs, MUSB_FS_EOF1, 0xff);
+	musb_writeb(regs, MUSB_LS_EOF1, 0xff);
 
 	musb_writeb(regs, MUSB_TESTMODE, 0);
 
@@ -938,18 +1004,23 @@ void musb_start(struct musb *musb)
 	devctl = musb_readb(regs, MUSB_DEVCTL);
 	devctl &= ~MUSB_DEVCTL_SESSION;
 
-	/* session started after:
-	 * (a) ID-grounded irq, host mode;
-	 * (b) vbus present/connect IRQ, peripheral mode;
-	 * (c) peripheral initiates, using SRP
-	 */
-	if ((devctl & MUSB_DEVCTL_VBUS) == MUSB_DEVCTL_VBUS)
-		musb->is_active = 1;
-	else
-		devctl |= MUSB_DEVCTL_SESSION;
-
+	if (android_usb_ready()) {
+		/* session started after:
+		 * (a) ID-grounded irq, host mode;
+		 * (b) vbus present/connect IRQ, peripheral mode;
+		 * (c) peripheral initiates, using SRP
+		 */
+		if ((devctl & MUSB_DEVCTL_VBUS) == MUSB_DEVCTL_VBUS){
+			pr_info("musb is active\n");
+			musb->is_active = 1;
+		}
+		else
+			devctl |= MUSB_DEVCTL_SESSION;
+	}
 	musb_platform_enable(musb);
+	/*
 	musb_writeb(regs, MUSB_DEVCTL, devctl);
+	*/
 }
 
 
@@ -1500,8 +1571,6 @@ static int musb_core_init(u16 musb_type, struct musb *musb)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
-
 /*
  * handle all the irqs defined by the HDRC core. for now we expect:  other
  * irq sources (phy, dma, etc) will be handled first, musb->int_* values
@@ -1734,6 +1803,7 @@ static struct attribute *musb_attributes[] = {
 	&dev_attr_mode.attr,
 	&dev_attr_vbus.attr,
 	&dev_attr_srp.attr,
+	&dev_attr_speed.attr,
 	NULL
 };
 
@@ -1749,6 +1819,37 @@ static void musb_irq_work(struct work_struct *data)
 	if (musb->xceiv->state != musb->xceiv_old_state) {
 		musb->xceiv_old_state = musb->xceiv->state;
 		sysfs_notify(&musb->controller->kobj, NULL, "mode");
+	}
+	if (retry_session) {
+		void __iomem *mbase = musb->mregs;
+		u8 devctl = musb_readb(mbase, MUSB_DEVCTL);
+		unsigned long timeout;
+
+		retry_session = 0;
+		musb_platform_set_vbus(musb, 0);
+		msleep(1000);
+		if (otg_usb_id_state(musb->xceiv)) {
+			pr_info("usb id is put to high, ignore the retry...\n");
+			return;
+		}
+		musb_platform_set_vbus(musb, 1);
+		msleep(10);
+
+		devctl |= MUSB_DEVCTL_SESSION;
+		musb_writeb(mbase, MUSB_DEVCTL, devctl);
+
+		dev_dbg(musb->controller, "restart session\n");
+		timeout = jiffies + msecs_to_jiffies(1000);
+		while (musb_readb(musb->mregs, MUSB_DEVCTL) & 0x80) {
+
+			cpu_relax();
+
+			if (time_after(jiffies, timeout)) {
+				dev_err(musb->controller,
+						"configured as host timeout");
+				break;
+			}
+		}
 	}
 }
 
@@ -1922,9 +2023,14 @@ musb_init_controller(struct device *dev, int nIrq, void __iomem *ctrl)
 
 	/* Init IRQ workqueue before request_irq */
 	INIT_WORK(&musb->irq_work, musb_irq_work);
+	musb_wq = create_singlethread_workqueue("musb-work");
+	if (!musb_wq) {
+		dev_err(dev, "create work fail\n");
+		goto fail3;
+	}
 
 	/* attach to the IRQ */
-	if (request_irq(nIrq, musb->isr, 0, dev_name(dev), musb)) {
+	if (request_irq(nIrq, musb->isr, IRQF_SHARED, dev_name(dev), musb)) {
 		dev_err(dev, "request_irq %d failed!\n", nIrq);
 		status = -ENODEV;
 		goto fail3;
@@ -2279,7 +2385,7 @@ static struct platform_driver musb_driver = {
 	},
 	.probe		= musb_probe,
 	.remove		= musb_remove,
-	.shutdown	= musb_shutdown,
+/*	.shutdown	= musb_shutdown,*/
 };
 
 /*-------------------------------------------------------------------------*/

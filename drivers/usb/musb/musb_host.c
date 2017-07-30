@@ -118,6 +118,8 @@ static void musb_h_tx_flush_fifo(struct musb_hw_ep *ep)
 			dev_dbg(musb->controller, "Host TX FIFONOTEMPTY csr: %02x\n", csr);
 		lastcsr = csr;
 		csr |= MUSB_TXCSR_FLUSHFIFO;
+		csr &= ~MUSB_TXCSR_TXPKTRDY;
+		musb_writew(epio, MUSB_TXCSR, csr);
 		musb_writew(epio, MUSB_TXCSR, csr);
 		csr = musb_readw(epio, MUSB_TXCSR);
 		if (WARN(retries-- < 1,
@@ -321,6 +323,7 @@ __acquires(musb->lock)
 static inline void musb_save_toggle(struct musb_qh *qh, int is_in,
 				    struct urb *urb)
 {
+#if 0
 	void __iomem		*epio = qh->hw_ep->regs;
 	u16			csr;
 
@@ -335,6 +338,7 @@ static inline void musb_save_toggle(struct musb_qh *qh, int is_in,
 		csr = musb_readw(epio, MUSB_TXCSR) & MUSB_TXCSR_H_DATATOGGLE;
 
 	usb_settoggle(urb->dev, qh->epnum, !is_in, csr ? 1 : 0);
+#endif
 }
 
 /*
@@ -438,6 +442,7 @@ static u16 musb_h_flush_rxfifo(struct musb_hw_ep *hw_ep, u16 csr)
 	csr |= MUSB_RXCSR_FLUSHFIFO | MUSB_RXCSR_RXPKTRDY;
 	csr &= ~(MUSB_RXCSR_H_REQPKT
 		| MUSB_RXCSR_H_AUTOREQ
+		| MUSB_RXCSR_CLRDATATOG
 		| MUSB_RXCSR_AUTOCLEAR);
 
 	/* write 2x to allow double buffering */
@@ -703,7 +708,7 @@ static void musb_ep_program(struct musb *musb, u8 epnum,
 	void __iomem		*epio = hw_ep->regs;
 	struct musb_qh		*qh = musb_ep_get_qh(hw_ep, !is_out);
 	u16			packet_sz = qh->maxpacket;
-	u8			use_dma = 1;
+	u8			use_dma = 0;
 	u16			csr;
 
 	dev_dbg(musb->controller, "%s hw%d urb %p spd%d dev%d ep%d%s "
@@ -777,14 +782,11 @@ static void musb_ep_program(struct musb *musb, u8 epnum,
 					| MUSB_TXCSR_H_ERROR
 					| MUSB_TXCSR_TXPKTRDY
 					);
-			csr |= MUSB_TXCSR_MODE;
+		//	csr |= MUSB_TXCSR_MODE;
 
-			if (!hw_ep->tx_double_buffered) {
-				if (usb_gettoggle(urb->dev, qh->epnum, 1))
-					csr |= MUSB_TXCSR_H_WR_DATATOGGLE
-						| MUSB_TXCSR_H_DATATOGGLE;
-				else
-					csr |= MUSB_TXCSR_CLRDATATOG;
+			if (usb_gettoggle(urb->dev, qh->epnum, 1) == 0) {
+				usb_settoggle(urb->dev, qh->epnum, 1, 1);
+				csr |= MUSB_TXCSR_CLRDATATOG;
 			}
 
 			musb_writew(epio, MUSB_TXCSR, csr);
@@ -836,6 +838,8 @@ static void musb_ep_program(struct musb *musb, u8 epnum,
 		else
 			load_count = min((u32) packet_sz, len);
 
+		load_count = min((u32)load_count, (u32)qh->maxpacket);
+
 		if (dma_channel && musb_tx_dma_program(dma_controller,
 					hw_ep, qh, urb, offset, len))
 			load_count = 0;
@@ -879,8 +883,10 @@ finish:
 			if (usb_gettoggle(urb->dev, qh->epnum, 0))
 				csr = MUSB_RXCSR_H_WR_DATATOGGLE
 					| MUSB_RXCSR_H_DATATOGGLE;
-			else
-				csr = 0;
+			else {
+				csr = MUSB_RXCSR_CLRDATATOG;
+				usb_settoggle(urb->dev, qh->epnum, 0, 1);
+			}
 			if (qh->type == USB_ENDPOINT_XFER_INT)
 				csr |= MUSB_RXCSR_DISNYET;
 
@@ -1187,6 +1193,7 @@ irqreturn_t musb_h_ep0_irq(struct musb *musb)
 			dev_dbg(musb->controller, "ep0 STATUS, csr %04x\n", csr);
 
 		}
+		csr |= MUSB_CSR0_H_DIS_PING;
 		musb_writew(epio, MUSB_CSR0, csr);
 		retval = IRQ_HANDLED;
 	} else
@@ -1284,6 +1291,8 @@ void musb_host_tx(struct musb *musb, u8 epnum)
 					| MUSB_TXCSR_TXPKTRDY);
 		}
 			return;
+	} else if (tx_csr & MUSB_TXCSR_FIFONOTEMPTY) {
+		dev_dbg(musb->controller, "tx not empty, csr %x\n", tx_csr);
 	}
 
 done:
@@ -1452,8 +1461,8 @@ done:
 	 * (and presumably, FIFO is not half-full) we should write *two*
 	 * packets before updating TXCSR; other docs disagree...
 	 */
-	if (length > qh->maxpacket)
-		length = qh->maxpacket;
+	if (length > qh->segsize)
+		length = qh->segsize;
 	/* Unmap the buffer so that CPU can use it */
 	usb_hcd_unmap_urb_for_dma(musb_to_hcd(musb), urb);
 
@@ -1632,6 +1641,7 @@ void musb_host_rx(struct musb *musb, u8 epnum)
 
 	/* faults abort the transfer */
 	if (status) {
+		u16 temp_csr;
 		/* clean up dma and collect transfer count */
 		if (dma_channel_status(dma) == MUSB_DMA_STATUS_BUSY) {
 			dma->status = MUSB_DMA_STATUS_CORE_ABORT;
@@ -1640,6 +1650,9 @@ void musb_host_rx(struct musb *musb, u8 epnum)
 		}
 		musb_h_flush_rxfifo(hw_ep, MUSB_RXCSR_CLRDATATOG);
 		musb_writeb(epio, MUSB_RXINTERVAL, 0);
+		temp_csr = musb_readw(epio, MUSB_RXCSR);
+		temp_csr |= MUSB_RXCSR_CLRDATATOG;
+		musb_writew(epio, MUSB_RXCSR, temp_csr);
 		done = true;
 		goto finish;
 	}

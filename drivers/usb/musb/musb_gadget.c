@@ -32,7 +32,6 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #include <linux/kernel.h>
 #include <linux/list.h>
 #include <linux/timer.h>
@@ -307,7 +306,7 @@ static void txstate(struct musb *musb, struct musb_request *req)
 
 #if defined(CONFIG_USB_INVENTRA_DMA) || defined(CONFIG_USB_UX500_DMA)
 		{
-			if (request_size < musb_ep->packet_sz)
+			if (request_size <= musb_ep->packet_sz)
 				musb_ep->dma->desired_mode = 0;
 			else
 				musb_ep->dma->desired_mode = 1;
@@ -491,6 +490,16 @@ void musb_g_tx(struct musb *musb, u8 epnum)
 			request->actual += musb_ep->dma->actual_len;
 			dev_dbg(musb->controller, "TXCSR%d %04x, DMA off, len %zu, req %p\n",
 				epnum, csr, musb_ep->dma->actual_len, request);
+
+			if ((csr & MUSB_TXCSR_DMAMODE)
+				&& (musb_ep->dma->actual_len % 512 == 0)
+				&& ((musb_ep->dma->actual_len / 512) % 2 == 1)) {
+				if (csr & MUSB_TXCSR_TXPKTRDY)
+					return;
+				musb_writew(epio, MUSB_TXCSR, MUSB_TXCSR_MODE
+						| MUSB_TXCSR_TXPKTRDY);
+				request->zero = 0;
+			}
 		}
 
 		/*
@@ -1647,11 +1656,16 @@ static int musb_gadget_vbus_draw(struct usb_gadget *gadget, unsigned mA)
 	return usb_phy_set_power(musb->xceiv, mA);
 }
 
+extern int android_usb_ready(void);
 static int musb_gadget_pullup(struct usb_gadget *gadget, int is_on)
 {
 	struct musb	*musb = gadget_to_musb(gadget);
 	unsigned long	flags;
 
+	if (!android_usb_ready()) {
+		pr_info("%s android usb didn't ready\n", __func__);
+		return 0;
+	}
 	is_on = !!is_on;
 
 	pm_runtime_get_sync(musb->controller);
@@ -2075,7 +2089,6 @@ __acquires(musb->lock)
 				? musb->gadget_driver->driver.name
 				: NULL
 			);
-
 	/* report disconnect, if we didn't already (flushing EP state) */
 	if (musb->g.speed != USB_SPEED_UNKNOWN)
 		musb_g_disconnect(musb);
@@ -2115,4 +2128,25 @@ __acquires(musb->lock)
 
 	/* start with default limits on VBUS power draw */
 	(void) musb_gadget_vbus_draw(&musb->g, 8);
+}
+
+int musb_g_addressed(struct usb_gadget *gadget)
+{
+	struct musb *musb = gadget_to_musb(gadget);
+
+	return (musb->address > 0);
+}
+
+
+int musb_disconnect_gadget(struct usb_gadget *gadget)
+{
+	struct musb *musb = gadget_to_musb(gadget);
+	unsigned long flags;
+
+	spin_lock_irqsave(&musb->lock, flags);
+	musb_g_disconnect(musb);
+	if (musb->address > 0)
+		musb->address = 0;
+	spin_unlock_irqrestore(&musb->lock, flags);
+	return 0;
 }
