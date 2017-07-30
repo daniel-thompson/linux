@@ -296,8 +296,18 @@ static int mmc_read_ext_csd(struct mmc_card *card, u8 *ext_csd)
 	if (card->ext_csd.rev > 6) {
 		pr_err("%s: unrecognised EXT_CSD revision %d\n",
 			mmc_hostname(card->host), card->ext_csd.rev);
-		err = -EINVAL;
-		goto out;
+
+		/* MMC v5.0 works, but need to complete its support in future. FIXME */
+		if( card->ext_csd.rev == 7 )
+		{
+			pr_err("%s: WARNING, EXT_CSD revision 7(MMC v5.0) support is not completed.\n",
+					mmc_hostname(card->host));
+		}
+		else
+		{
+			err = -EINVAL;
+			goto out;
+		}
 	}
 
 	card->ext_csd.raw_sectors[0] = ext_csd[EXT_CSD_SEC_CNT + 0];
