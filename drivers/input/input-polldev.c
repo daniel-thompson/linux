@@ -112,7 +112,7 @@ static ssize_t input_polldev_set_poll(struct device *dev,
 	return count;
 }
 
-static DEVICE_ATTR(poll, S_IRUGO | S_IWUSR, input_polldev_get_poll,
+static DEVICE_ATTR(poll, S_IRUGO | S_IWUGO, input_polldev_get_poll,
 					    input_polldev_set_poll);
 
 
