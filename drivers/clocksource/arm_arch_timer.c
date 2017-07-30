@@ -331,6 +331,7 @@ out:
 	return err;
 }
 
+#ifdef CONFIG_OF
 static void __init arch_timer_init(struct device_node *np)
 {
 	u32 freq;
@@ -373,3 +374,53 @@ static void __init arch_timer_init(struct device_node *np)
 }
 CLOCKSOURCE_OF_DECLARE(armv7_arch_timer, "arm,armv7-timer", arch_timer_init);
 CLOCKSOURCE_OF_DECLARE(armv8_arch_timer, "arm,armv8-timer", arch_timer_init);
+#else
+#ifdef CONFIG_ARCH_RDA8810E
+#include <mach/irqs.h>
+
+int __init arch_timer_init(void)
+{
+	u32 freq = 500000000;  /* 500M Hz */
+
+	pr_info("arch_timer_init for RDA8810E\n");
+
+	arch_timer_rate = freq;
+
+	arch_timer_ppi[PHYS_SECURE_PPI] = RDA_IRQ_ARCH_TIMER_PHYS_SEC;
+	arch_timer_ppi[PHYS_NONSECURE_PPI] = RDA_IRQ_ARCH_TIMER_PHYS_NONSEC;
+	arch_timer_ppi[VIRT_PPI] = RDA_IRQ_ARCH_TIMER_VIRT;
+	arch_timer_ppi[HYP_PPI] = RDA_IRQ_ARCH_TIMER_HYP;
+
+	/*
+	 * If HYP mode is available, we know that the physical timer
+	 * has been configured to be accessible from PL1. Use it, so
+	 * that a guest can use the virtual timer instead.
+	 *
+	 * If no interrupt provided for virtual timer, we'll have to
+	 * stick to the physical timer. It'd better be accessible...
+	 */
+	if (1) {
+		arch_timer_use_virtual = false;
+
+		if (!arch_timer_ppi[PHYS_SECURE_PPI] ||
+		    !arch_timer_ppi[PHYS_NONSECURE_PPI]) {
+			pr_warn("arch_timer: No interrupt available, giving up\n");
+			return -ENODEV;
+		}
+	}
+
+	if (arch_timer_use_virtual)
+		arch_timer_read_counter = arch_counter_get_cntvct;
+	else
+		arch_timer_read_counter = arch_counter_get_cntpct;
+
+	arch_timer_register();
+	arch_timer_arch_init();
+
+	return 0;
+}
+
+//arch_initcall(arch_timer_init);
+#endif
+#endif
+
