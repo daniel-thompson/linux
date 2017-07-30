@@ -37,6 +37,7 @@
 #include <media/videobuf2-core.h>
 #include <media/soc_mediabus.h>
 
+#include <plat/pm_ddr.h>
 /* Default to VGA resolution */
 #define DEFAULT_WIDTH	640
 #define DEFAULT_HEIGHT	480
@@ -250,9 +251,12 @@ static int soc_camera_g_input(struct file *file, void *priv, unsigned int *i)
 
 static int soc_camera_s_input(struct file *file, void *priv, unsigned int i)
 {
+//	rda_dbg_camera("%s, camera_id=%d\n", __func__, i);
+//	if (i > 1)
 	if (i > 0)
 		return -EINVAL;
 
+//	return rda_sensor_select(i);
 	return 0;
 }
 
@@ -607,6 +611,7 @@ static int soc_camera_open(struct file *file)
 	file->private_data = icd;
 	dev_dbg(icd->pdev, "camera device open\n");
 
+	vpu_bug_ddr_freq_adjust();
 	return 0;
 
 	/*
@@ -656,6 +661,7 @@ static int soc_camera_close(struct file *file)
 
 	dev_dbg(icd->pdev, "camera device close\n");
 
+	vpu_bug_ddr_freq_adjust_restore();
 	return 0;
 }
 
@@ -847,6 +853,7 @@ static int soc_camera_streamon(struct file *file, void *priv,
 		return -EBUSY;
 
 	/* This calls buf_queue from host driver's videobuf_queue_ops */
+//	v4l2_subdev_call(sd, video, s_stream, 1);
 	if (ici->ops->init_videobuf)
 		ret = videobuf_streamon(&icd->vb_vidq);
 	else
