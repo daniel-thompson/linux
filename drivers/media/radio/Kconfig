@@ -226,6 +226,7 @@ config RADIO_WL1273
 
 # TI's ST based wl128x FM radio
 source "drivers/media/radio/wl128x/Kconfig"
+source "drivers/media/radio/fmradio/Kconfig"
 
 #
 # ISA drivers configuration
