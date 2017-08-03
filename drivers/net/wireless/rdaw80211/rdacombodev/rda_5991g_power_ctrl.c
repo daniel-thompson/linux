@@ -150,9 +150,11 @@ static const u16 wf_rf_setting_5991g[][2] = {
 };
 #endif
 
+#if 0
 static const u16 wf_agc_setting_for_dccal_5991g[][2] = {
 
 };
+#endif
 
 static const u16 wf_agc_setting_5991g[][2] = {
 	{0x3F,  0x0000},
@@ -324,12 +326,14 @@ static const u16 rda_5991g_bt_no_force_swtrx[][2] =
 
 
 
+#if 0
 static const u16  bt_dc_cal_5991g[][2] = {
 	{0x3F,  0x0000},
 	{0x30,  0x0140},
 	{0x30,  0x0141},
 	 DELAY_MS(50)
 };
+#endif
 #endif
 
 static int check_wifi_power_on(void)
