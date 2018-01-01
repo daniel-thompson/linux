@@ -2399,6 +2399,23 @@ static void uart_poll_put_char(struct tty_driver *driver, int line, char ch)
 	port->ops->poll_put_char(port, ch);
 	uart_port_deref(port);
 }
+
+static int uart_poll_get_irq(struct tty_driver *driver, int line)
+{
+	struct uart_driver *drv = driver->driver_state;
+	struct uart_state *state = drv->state + line;
+	struct uart_port *port;
+	int ret = -ENODEV;
+
+	port = uart_port_ref(state);
+	if (port && port->ops->poll_get_irq) {
+		ret = port->ops->poll_get_irq(port);
+		uart_port_deref(port);
+	}
+
+	return ret;
+}
+
 #endif
 
 static const struct tty_operations uart_ops = {
@@ -2431,6 +2448,7 @@ static const struct tty_operations uart_ops = {
 	.poll_init	= uart_poll_init,
 	.poll_get_char	= uart_poll_get_char,
 	.poll_put_char	= uart_poll_put_char,
+	.poll_get_irq 	= uart_poll_get_irq,
 #endif
 };
 
