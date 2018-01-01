@@ -90,6 +90,10 @@ struct uart_ops {
 	int		(*poll_init)(struct uart_port *);
 	void		(*poll_put_char)(struct uart_port *, unsigned char);
 	int		(*poll_get_char)(struct uart_port *);
+	int		(*poll_request_irq)(struct uart_port *,
+				irq_handler_t fn, unsigned long irqflags,
+				void *dev_id);
+	void		(*poll_free_irq)(struct uart_port *, void *dev_id);
 #endif
 };
 
