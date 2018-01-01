@@ -2121,6 +2121,21 @@ static void serial8250_put_poll_char(struct uart_port *port,
 	serial8250_rpm_put(up);
 }
 
+static int serial8250_get_poll_irq(struct uart_port *port)
+{
+	unsigned int ier;
+	struct uart_8250_port *up = up_to_u8250p(port);
+
+	serial8250_rpm_get(up);
+
+	ier = serial_port_in(port, UART_IER);
+	ier |= UART_IER_RLSI | UART_IER_RDI;
+	serial_port_out(port, UART_IER, ier);
+
+	serial8250_rpm_put(up);
+	return port->irq;
+}
+
 #endif /* CONFIG_CONSOLE_POLL */
 
 int serial8250_do_startup(struct uart_port *port)
@@ -3124,6 +3139,7 @@ static const struct uart_ops serial8250_pops = {
 #ifdef CONFIG_CONSOLE_POLL
 	.poll_get_char = serial8250_get_poll_char,
 	.poll_put_char = serial8250_put_poll_char,
+	.poll_get_irq  = serial8250_get_poll_irq,
 #endif
 };
 
