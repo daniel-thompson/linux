@@ -16,6 +16,7 @@
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <linux/atomic.h>
+#include <linux/interrupt.h>
 #ifdef CONFIG_HAVE_ARCH_KGDB
 #include <asm/kgdb.h>
 #endif
@@ -267,6 +268,9 @@ struct kgdb_arch {
  * the I/O driver.
  * @post_exception: Pointer to a function that will do any cleanup work
  * for the I/O driver.
+ * @request_irq: Pointer to a function that can install an interrupt
+ * handler that will be called when a character is pending and that
+ * can be cleared by calling @read_char until it returns NO_POLL_CHAR.
  * @is_console: 1 if the end device is a console 0 if the I/O device is
  * not a console
  */
@@ -278,6 +282,9 @@ struct kgdb_io {
 	int			(*init) (void);
 	void			(*pre_exception) (void);
 	void			(*post_exception) (void);
+	int			(*request_irq)(irq_handler_t thread_fn,
+					       unsigned long irqflags,
+					       void *dev_id);
 	int			is_console;
 };
 

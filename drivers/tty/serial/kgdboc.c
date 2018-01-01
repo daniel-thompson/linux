@@ -17,6 +17,7 @@
 #include <linux/vt_kern.h>
 #include <linux/input.h>
 #include <linux/module.h>
+#include <linux/interrupt.h>
 
 #define MAX_CONFIG_LEN		40
 
@@ -302,12 +303,23 @@ static void kgdboc_post_exp_handler(void)
 	kgdboc_restore_input();
 }
 
+static int kgdboc_request_irq(irq_handler_t fn, unsigned long irqflags,
+			      void *dev_id)
+{
+	if (!kgdb_tty_driver->ops->poll_request_irq)
+		return -ENODEV;
+
+	return kgdb_tty_driver->ops->poll_request_irq(
+	    kgdb_tty_driver, kgdb_tty_line, fn, irqflags, dev_id);
+}
+
 static struct kgdb_io kgdboc_io_ops = {
 	.name			= "kgdboc",
 	.read_char		= kgdboc_get_char,
 	.write_char		= kgdboc_put_char,
 	.pre_exception		= kgdboc_pre_exp_handler,
 	.post_exception		= kgdboc_post_exp_handler,
+	.request_irq		= kgdboc_request_irq,
 };
 
 #ifdef CONFIG_KGDB_SERIAL_CONSOLE
