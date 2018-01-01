@@ -291,6 +291,7 @@ struct tty_operations {
 	int (*poll_init)(struct tty_driver *driver, int line, char *options);
 	int (*poll_get_char)(struct tty_driver *driver, int line);
 	void (*poll_put_char)(struct tty_driver *driver, int line, char ch);
+	int (*poll_get_irq)(struct tty_driver *driver, int line);
 #endif
 	const struct file_operations *proc_fops;
 } __randomize_layout;
