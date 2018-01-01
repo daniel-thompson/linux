@@ -41,9 +41,46 @@ MODULE_PARM_DESC(magic, "magic sequence to enter NMI debugger (default $3#33)");
 
 static atomic_t kgdb_nmi_num_readers = ATOMIC_INIT(0);
 
+static int kgdb_nmi_poll_one_knock(void);
+
+static irqreturn_t kgdb_nmi_handle_irq(int irq, void *dev_id)
+{
+	int ret;
+
+	if (kgdb_nmi_knock < 0) {
+		kgdb_breakpoint();
+		return IRQ_HANDLED;
+	}
+
+	ret = kgdb_nmi_poll_one_knock();
+	if (ret == NO_POLL_CHAR)
+		return IRQ_NONE;
+
+	while (ret != 1) {
+		ret = kgdb_nmi_poll_one_knock();
+		if (ret == NO_POLL_CHAR)
+			return IRQ_HANDLED;
+	}
+
+	kgdb_breakpoint();
+	return IRQ_HANDLED;
+}
+
 static int kgdb_nmi_console_setup(struct console *co, char *options)
 {
-	arch_kgdb_ops.enable_nmi(1);
+	int res;
+
+	if (arch_kgdb_ops.enable_nmi) {
+		arch_kgdb_ops.enable_nmi(1);
+	} else if (dbg_io_ops->request_irq) {
+		res = dbg_io_ops->request_irq(kgdb_nmi_handle_irq, 0, NULL);
+		if (res) {
+			pr_err("ttyNMI0: Cannot request irq\n");
+			return res;
+		}
+	} else {
+		return -ENODEV;
+	}
 
 	/* The NMI console uses the dbg_io_ops to issue console messages. To
 	 * avoid duplicate messages during kdb sessions we must inform kdb's
@@ -327,9 +364,6 @@ int kgdb_register_nmi_console(void)
 {
 	int ret;
 
-	if (!arch_kgdb_ops.enable_nmi)
-		return 0;
-
 	kgdb_nmi_tty_driver = alloc_tty_driver(1);
 	if (!kgdb_nmi_tty_driver) {
 		pr_err("%s: cannot allocate tty\n", __func__);
@@ -365,9 +399,8 @@ int kgdb_unregister_nmi_console(void)
 {
 	int ret;
 
-	if (!arch_kgdb_ops.enable_nmi)
-		return 0;
-	arch_kgdb_ops.enable_nmi(0);
+	if (arch_kgdb_ops.enable_nmi)
+		arch_kgdb_ops.enable_nmi(0);
 
 	ret = unregister_console(&kgdb_nmi_console);
 	if (ret)
