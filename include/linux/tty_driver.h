@@ -241,6 +241,7 @@
 
 #include <linux/export.h>
 #include <linux/fs.h>
+#include <linux/interrupt.h>
 #include <linux/list.h>
 #include <linux/cdev.h>
 #include <linux/termios.h>
@@ -292,6 +293,11 @@ struct tty_operations {
 	int (*poll_init)(struct tty_driver *driver, int line, char *options);
 	int (*poll_get_char)(struct tty_driver *driver, int line);
 	void (*poll_put_char)(struct tty_driver *driver, int line, char ch);
+	int (*poll_request_irq)(struct tty_driver *driver, int line,
+				irq_handler_t fn, unsigned long irqflags,
+				void *dev_id);
+	void (*poll_free_irq)(struct tty_driver *driver, int line,
+				void *dev_id);
 #endif
 	const struct file_operations *proc_fops;
 } __randomize_layout;
