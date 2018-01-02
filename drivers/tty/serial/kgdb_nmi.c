@@ -21,7 +21,7 @@
 #include <linux/tty_flip.h>
 #include <linux/serial_core.h>
 #include <linux/interrupt.h>
-#include <linux/hrtimer.h>
+#include <linux/irq_work.h>
 #include <linux/tick.h>
 #include <linux/kfifo.h>
 #include <linux/kgdb.h>
@@ -126,7 +126,7 @@ static struct console kgdb_nmi_console = {
 
 struct kgdb_nmi_tty_priv {
 	struct tty_port port;
-	struct timer_list timer;
+	struct irq_work work;
 	STRUCT_KFIFO(char, KGDB_NMI_FIFO_SIZE) fifo;
 };
 
@@ -147,6 +147,7 @@ static void kgdb_tty_recv(int ch)
 	 */
 	priv = container_of(kgdb_nmi_port, struct kgdb_nmi_tty_priv, port);
 	kfifo_in(&priv->fifo, &c, 1);
+	irq_work_queue(&priv->work);
 }
 
 static int kgdb_nmi_poll_one_knock(void)
@@ -221,17 +222,11 @@ bool kgdb_nmi_poll_knock(void)
 	return true;
 }
 
-/*
- * The tasklet is cheap, it does not cause wakeups when reschedules itself,
- * instead it waits for the next tick.
- */
-static void kgdb_nmi_tty_receiver(struct timer_list *t)
+static void kgdb_nmi_tty_receiver(struct irq_work *work)
 {
-	struct kgdb_nmi_tty_priv *priv = from_timer(priv, t, timer);
+	struct kgdb_nmi_tty_priv *priv =
+	    container_of(work, struct kgdb_nmi_tty_priv, work);
 	char ch;
-
-	priv->timer.expires = jiffies + (HZ/100);
-	add_timer(&priv->timer);
 
 	if (likely(!atomic_read(&kgdb_nmi_num_readers) ||
 		   !kfifo_len(&priv->fifo)))
@@ -244,22 +239,13 @@ static void kgdb_nmi_tty_receiver(struct timer_list *t)
 
 static int kgdb_nmi_tty_activate(struct tty_port *port, struct tty_struct *tty)
 {
-	struct kgdb_nmi_tty_priv *priv =
-	    container_of(port, struct kgdb_nmi_tty_priv, port);
-
 	kgdb_nmi_port = port;
-	priv->timer.expires = jiffies + (HZ/100);
-	add_timer(&priv->timer);
 
 	return 0;
 }
 
 static void kgdb_nmi_tty_shutdown(struct tty_port *port)
 {
-	struct kgdb_nmi_tty_priv *priv =
-	    container_of(port, struct kgdb_nmi_tty_priv, port);
-
-	del_timer(&priv->timer);
 	kgdb_nmi_port = NULL;
 }
 
@@ -278,7 +264,8 @@ static int kgdb_nmi_tty_install(struct tty_driver *drv, struct tty_struct *tty)
 		return -ENOMEM;
 
 	INIT_KFIFO(priv->fifo);
-	timer_setup(&priv->timer, kgdb_nmi_tty_receiver, 0);
+	init_irq_work(&priv->work, kgdb_nmi_tty_receiver);
+	priv->work.flags = IRQ_WORK_LAZY;
 	tty_port_init(&priv->port);
 	priv->port.ops = &kgdb_nmi_tty_port_ops;
 	tty->driver_data = priv;
