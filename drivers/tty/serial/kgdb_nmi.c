@@ -27,6 +27,10 @@
 #include <linux/kgdb.h>
 #include <linux/kdb.h>
 
+/* TODO: move code to right place so we don't need this */
+extern int kdb_parse(const char *cmdstr);
+extern char *kdbgetenv(const char *);
+
 static int kgdb_nmi_knock = 1;
 module_param_named(knock, kgdb_nmi_knock, int, 0600);
 MODULE_PARM_DESC(knock, "if set to 1 (default), the special '$3#33' command " \
@@ -150,6 +154,46 @@ static void kgdb_tty_recv(int ch)
 	irq_work_queue(&priv->work);
 }
 
+
+#ifdef CONFIG_KGDB_KDB
+static void kgdb_nmi_kdb_local(int ch)
+{
+	static char cmdbuf[256];
+	static int cmdpos;
+
+
+	/*
+	 * TODO: This is a quick example for the RFC. It really needs
+	 *       to be based on a refactored version of kdb_read().
+	 */
+	switch (ch) {
+	case 8: /* backspace */
+		if (cmdpos) {
+			kdb_printf("\b \b");
+			cmdpos--;
+		}
+		break;
+	case '\r':
+	case '\n':
+		cmdbuf[cmdpos++] = '\n';
+		cmdbuf[cmdpos++] = '\0';
+		kdb_printf("\nParsing '%s'\n", cmdbuf);
+		kdb_parse(cmdbuf);
+
+		cmdpos = 0;
+		kdb_printf(kdbgetenv("PROMPT"), raw_smp_processor_id());
+		break;
+	default:
+		cmdbuf[cmdpos] = ch;
+		kdb_printf("%c", ch);
+
+		if (cmdpos <= sizeof(cmdbuf) - 3)
+			cmdpos++;
+		break;
+	}
+}
+#endif
+
 static int kgdb_nmi_poll_one_knock(void)
 {
 	static int n;
@@ -183,11 +227,15 @@ static int kgdb_nmi_poll_one_knock(void)
 		return 0;
 	}
 
+#ifdef CONFIG_KGDB_KDB
+	kgdb_nmi_kdb_local(c);
+#else
 	kdb_printf("\r%s %s to enter the debugger> %*s",
 		   kgdb_nmi_knock ? "Type" : "Hit",
 		   kgdb_nmi_knock ? magic  : "<return>", (int)m, "");
 	while (m--)
 		kdb_printf("\b");
+#endif
 	return 0;
 }
 
