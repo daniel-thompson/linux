@@ -380,6 +380,7 @@
 	status = "okay";
 	pinctrl-names = "default";
 	pinctrl-0 = <&edp_hpd>;
+	force-hpd;
 
 	ports {
 		edp_out: port@1 {
