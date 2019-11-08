@@ -1038,15 +1038,15 @@ static const struct panel_desc boe_nv101wxmn51 = {
 
 static const struct drm_display_mode boe_nv140fhmn49_modes[] = {
 	{
-		.clock = 150000,
+		.clock = 148500,
 		.hdisplay = 1920,
 		.hsync_start = 1920 + 48,
 		.hsync_end = 1920 + 48 + 32,
-		.htotal = 1920 + 48 + 32 + 80,
+		.htotal = 2200,
 		.vdisplay = 1080,
 		.vsync_start = 1080 + 3,
 		.vsync_end = 1080 + 3 + 5,
-		.vtotal = 1080 + 3 + 5 + 24,
+		.vtotal = 1125,
 		.vrefresh = 60,
 	},
 };
