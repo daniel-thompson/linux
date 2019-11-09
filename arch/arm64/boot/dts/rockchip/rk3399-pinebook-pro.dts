@@ -8,6 +8,7 @@
 #include <dt-bindings/input/linux-event-codes.h>
 #include <dt-bindings/pwm/pwm.h>
 #include <dt-bindings/usb/pd.h>
+//#include <dt-bindings/leds/common.h>
 #include "rk3399.dtsi"
 #include "rk3399-opp.dtsi"
 
@@ -40,6 +41,32 @@
 	chosen {
 		bootargs = "earlycon=uart8250,mmio32,0xff1a0000";
 		stdout-path = "serial2:1500000n8";
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pwrled &slpled>;
+
+		/* Hack using active_low as inversion. A real, inverted trigger would be nicer */
+		green-led {
+			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_LOW>;
+			label = "green:disk-activity";
+//			function = LED_FUNCTION_POWER;
+			linux,default-trigger = "disk-activity";
+			default-state = "off";
+//			color = <LED_COLOR_ID_GREEN>;
+		};
+
+		red-led {
+			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
+			label = "red:standby";
+//			function = LED_FUNCTION_STANDBY;
+			default-state = "off";
+			panic-indicator;
+			retain-state-suspended;
+//			color = <LED_COLOR_ID_RED>;
+		};
 	};
 
 	reserved-memory {
@@ -142,25 +169,6 @@
 
 		regulator-state-mem {
 			regulator-off-in-suspend;
-		};
-	};
-
-	leds {
-
-		compatible = "gpio-leds";
-		pinctrl-names = "default";
-		pinctrl-0 = <&work_led_gpio>, <&diy_led_gpio>;
-
-		work-led {
-			label = "work";
-			default-state = "on";
-			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
-		};
-
-		diy-led {
-			label = "diy";
-			default-state = "off";
-			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
 		};
 	};
 
@@ -824,11 +832,11 @@
 	};
 
 	leds {
-		work_led_gpio: work_led-gpio {
+		pwrled: pwrled {
 			rockchip,pins = <0 RK_PB3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 
-		diy_led_gpio: diy_led-gpio {
+		slpled: slpled {
 			rockchip,pins = <0 RK_PA2 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
