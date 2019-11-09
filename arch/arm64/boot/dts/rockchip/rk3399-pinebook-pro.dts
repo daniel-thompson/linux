@@ -803,6 +803,13 @@
 	status = "okay";
 };
 
+&cluster1_opp {
+	opp08 {
+		opp-hz = /bits/ 64 <2000000000>;
+		opp-microvolt = <1300000>;
+	};
+};
+
 &pinctrl {
 	buttons {
 		pwrbtn: pwrbtn {
