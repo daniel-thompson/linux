@@ -622,5 +622,6 @@ struct rk808 {
 	const struct regmap_irq_chip	*regmap_irq_chip;
 	void				(*pm_pwroff_fn)(void);
 	void				(*pm_pwroff_prep_fn)(void);
+	bool				use_syscore_powerdown;
 };
 #endif /* __LINUX_REGULATOR_RK808_H */
