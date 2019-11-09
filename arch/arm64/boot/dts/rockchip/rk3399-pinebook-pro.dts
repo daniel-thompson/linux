@@ -93,17 +93,24 @@
 		compatible = "gpio-keys";
 		autorepeat;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pwrbtn>;
+		pinctrl-0 = <&pwrbtn &lidbtn>;
 
 		power {
-			debounce-interval = <100>;
+			debounce-interval = <20>;
 			gpios = <&gpio0 RK_PA5 GPIO_ACTIVE_LOW>;
-			label = "GPIO Key Power";
+			label = "Power";
 			linux,code = <KEY_POWER>;
 			wakeup-source;
 		};
-	};
 
+		lid {
+			debounce-interval = <20>;
+			gpios = <&gpio1 RK_PA1 GPIO_ACTIVE_LOW>;
+			label = "Lid";
+			linux,code = <SW_LID>;
+			linux,input-type = <EV_SW>;
+		};
+	};
 	
 	backlight: edp-backlight {
 		compatible = "pwm-backlight";
@@ -816,6 +823,9 @@
 	buttons {
 		pwrbtn: pwrbtn {
 			rockchip,pins = <0 RK_PA5 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+		lidbtn: lidbtn {
+			rockchip,pins = <1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
