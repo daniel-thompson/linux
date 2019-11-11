@@ -726,7 +726,7 @@
 	status = "okay";
 
 	fusb0: fusb30x@22 {
-		compatible = "fairchild,fusb302";
+		compatible = "fcs,fusb302";
 		reg = <0x22>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&fusb0_int>;
