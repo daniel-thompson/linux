@@ -234,8 +234,10 @@
 			"MIC1", "Mic Jack",
 			"Headphones", "HPOL",
 			"Headphones", "HPOR",
-			"Speaker", "HPOL",
-			"Speaker", "HPOR";
+			"Speaker Amplifier INL", "HPOL",
+			"Speaker Amplifier INR", "HPOR",
+			"Speaker", "Speaker Amplifier OUTL",
+			"Speaker", "Speaker Amplifier OUTR";
 
 		simple-audio-card,hp-det-gpio = <&gpio0 RK_PB0 GPIO_ACTIVE_HIGH>;
 		simple-audio-card,aux-devs = <&speaker_amp>;
@@ -254,6 +256,7 @@
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&gpio4 RK_PD3 GPIO_ACTIVE_HIGH>;
 		VCC-supply = <&vcc5v0_host>;
+		sound-name-prefix = "Speaker Amplifier";
 	};
 
 	fan0: pwm-fan {
