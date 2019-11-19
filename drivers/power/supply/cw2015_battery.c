@@ -238,7 +238,7 @@ static int get_charge_state(struct cw_battery *cw_bat)
 	struct device_node* supply_of;
 	struct device *cw_dev = &cw_bat->client->dev;
 	if (!cw_dev->of_node) {
-		dev_info(cw_dev, "Charger does not have an of node, scanning all supplies\n");
+		dev_dbg(cw_dev, "Charger does not have an of node, scanning all supplies\n");
 #endif
 		return !!class_for_each_device(power_supply_class, NULL, cw_dev, check_charger_online);
 #ifdef CONFIG_OF
