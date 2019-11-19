@@ -1,0 +1,37 @@
+cw2015_battery
+~~~~~~~~~~~~~~~~
+
+The cellwise CW2015 is a shuntless single/multi-cell battery fuel gauge.
+
+Required properties :
+ - compatible : "cellwise,cw2015"
+ - cellwise,bat-config-info : Binary battery info
+
+Optional properties :
+ - cellwise,monitor-interval : Measurement interval in seconds
+ - cellwise,divider-res1 : Resistance of high side voltage divider resistor
+ - cellwise,divider-res2 : Resistance of low side voltage divider resistor
+ - cellwise,virtual-power : Default to disconnected battery state (gauge in pack mode)
+ - cellwise,design-capacity : Design capacity of the battery cell in milliampere hours
+ - cellwise,alert-level : Low battery alarm level in percent
+
+Example:
+	cw2015@62 {
+		status = "okay";
+		compatible = "cellwise,cw201x";
+		reg = <0x62>;
+		cellwise,bat-config-info = <
+			0x17 0x67 0x80 0x73 0x6E 0x6C 0x6B 0x63
+			0x77 0x51 0x5C 0x58 0x50 0x4C 0x48 0x36
+			0x15 0x0C 0x0C 0x19 0x5B 0x7D 0x6F 0x69
+			0x69 0x5B 0x0C 0x29 0x20 0x40 0x52 0x59
+			0x57 0x56 0x54 0x4F 0x3B 0x1F 0x7F 0x17
+			0x06 0x1A 0x30 0x5A 0x85 0x93 0x96 0x2D
+			0x48 0x77 0x9C 0xB3 0x80 0x52 0x94 0xCB
+			0x2F 0x00 0x64 0xA5 0xB5 0x11 0xF0 0x11
+		>;
+		cellwise,monitor-interval = <5>;
+		cellwise,virtual-power;
+		cellwise,design-capacity = <9800>;
+		power-supplies = <&mains_charger>, <&usb_charger>;
+	}
