@@ -5,12 +5,12 @@ The cellwise CW2015 is a shuntless single/multi-cell battery fuel gauge.
 
 Required properties :
  - compatible : "cellwise,cw2015"
- - cellwise,bat-config-info : Binary battery info
+ - cellwise,bat-config-info : Binary battery info blob
 
 Optional properties :
  - cellwise,monitor-interval : Measurement interval in seconds
- - cellwise,divider-res1 : Resistance of high side voltage divider resistor
- - cellwise,divider-res2 : Resistance of low side voltage divider resistor
+ - cellwise,voltage-divider : Voltage divider for multi-cell packs,
+   specified as two integer values <high side>, <low side> in ohms.
  - cellwise,virtual-power : Default to disconnected battery state (gauge in pack mode)
  - cellwise,design-capacity : Design capacity of the battery cell in milliampere hours
  - cellwise,alert-level : Low battery alarm level in percent
