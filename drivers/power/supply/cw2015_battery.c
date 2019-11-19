@@ -811,7 +811,7 @@ static int cw_bat_probe(struct i2c_client *client,
 	if (ret < 0) {
 		dev_err(&client->dev,
 			"failed to find cw2015 platform data\n");
-		return -1;
+		return ret;
 	}
 
 	cw_bat->capacity = 1;
