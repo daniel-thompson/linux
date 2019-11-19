@@ -699,7 +699,7 @@ static enum power_supply_property cw_battery_properties[] = {
 };
 
 static const struct power_supply_desc cw2015_bat_desc = {
-	.name		= "rk-bat",
+	.name		= "cw2015-battery",
 	.type		= POWER_SUPPLY_TYPE_BATTERY,
 	.properties	= cw_battery_properties,
 	.num_properties	= ARRAY_SIZE(cw_battery_properties),
