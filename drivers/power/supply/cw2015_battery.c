@@ -448,10 +448,10 @@ static int cw_get_voltage(struct cw_battery *cw_bat)
 
 	voltage = value16_1 * 312 / 1024;
 
-	if (cw_bat->plat_data.divider_res1 &&
-	    cw_bat->plat_data.divider_res2) {
-		res1 = cw_bat->plat_data.divider_res1;
-		res2 = cw_bat->plat_data.divider_res2;
+	if (cw_bat->plat_data.divider_high &&
+	    cw_bat->plat_data.divider_low) {
+		res1 = cw_bat->plat_data.divider_high;
+		res2 = cw_bat->plat_data.divider_low;
 		voltage = voltage * (res1 + res2) / res2;
 	}
 
@@ -746,15 +746,29 @@ static int cw2015_parse_dt(struct cw_battery *cw_bat)
 	cw_bat->bat_mode = MODE_BATTERY;
 	cw_bat->monitor_sec = CW2015_DEFAULT_MONITOR_SEC * CW2015_TIMER_MS_COUNTS;
 
-	ret = of_property_read_u32(node, PREFIX"divider-res1", &value);
-	if (ret < 0)
-		value = 0;
-	data->divider_res1 = value;
+	prop = of_find_property(node, PREFIX"voltage-divider", &length);
+	if (prop) {
+		length /= sizeof(u32);
+		if (length != 2) {
+			dev_err(dev, "Length of voltage divider array must be 2, not %u\n", length);
+			return -EINVAL;
+		}
+		ret = of_property_read_u32_index(node, PREFIX"voltage-divider", 0, &data->divider_high);
+		if (ret) {
+			dev_err(dev, "Failed to read value of high side voltage divider resistor: %d\n", ret);
+			return ret;
+		}
+		ret = of_property_read_u32_index(node, PREFIX"voltage-divider", 1, &data->divider_low);
+		if (ret) {
+			dev_err(dev, "Failed to read value of low side voltage divider resistor: %d\n", ret);
+			return ret;
+		}
+	}
 
 	ret = of_property_read_u32(node, PREFIX"divider-res2", &value);
 	if (ret < 0)
 		value = 0;
-	data->divider_res2 = value;
+	data->divider_low = value;
 
 	ret = of_property_read_u32(node, PREFIX"virtual-power", &value);
 	if (ret < 0)
