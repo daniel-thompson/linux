@@ -117,11 +117,10 @@ config BATTERY_CPCAP
 	  phones and tablets such as droid 4.
 
 config BATTERY_CW2015
-	bool "CW2015 Battery driver"
-	default n
+	tristate "CW2015 Battery driver"
 	help
-	  If you say yes here you will get support for the battery of CW2015.
-	  This driver can give support for CW2015 Battery Interface.
+	  Say Y here to enable support for the cellwise cw2015
+	  battery fuel gauge (used in the Pinebook Pro & others)
 
 config BATTERY_DS2760
 	tristate "DS2760 battery driver (HP iPAQ & others)"
