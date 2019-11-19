@@ -22,6 +22,7 @@
 #include <linux/platform_device.h>
 #include <linux/power_supply.h>
 #include <linux/slab.h>
+#include <linux/timekeeping.h>
 #include <linux/workqueue.h>
 
 #include <linux/power/cw2015_battery.h>
@@ -851,7 +852,7 @@ static int cw_bat_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct cw_battery *cw_bat = i2c_get_clientdata(client);
-	read_persistent_clock64(&cw_bat->suspend_time_before);
+	ktime_get_boottime_ts64(&cw_bat->suspend_time_before);
 	cancel_delayed_work(&cw_bat->battery_delay_work);
 	return 0;
 }
@@ -861,7 +862,7 @@ static int cw_bat_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct cw_battery *cw_bat = i2c_get_clientdata(client);
 	cw_bat->suspend_resume_mark = 1;
-	read_persistent_clock64(&cw_bat->after);
+	ktime_get_boottime_ts64(&cw_bat->after);
 	cw_bat->after = timespec64_sub(cw_bat->after,
 				     cw_bat->suspend_time_before);
 	queue_delayed_work(cw_bat->battery_workqueue,
@@ -885,13 +886,31 @@ static int cw_bat_remove(struct i2c_client *client)
 }
 
 static const struct i2c_device_id cw_bat_id_table[] = {
-	{"cw201x", 0},
+	{ "cw201x", 0 },
+	{ "cw2013", 0 },
+	{ "cw2015", 0 },
 	{}
 };
 
+static const struct of_device_id cw2015_of_match[] = {
+	{ .compatible = PREFIX"cw201x" },
+	{ .compatible = PREFIX"cw2013" },
+	{ .compatible = PREFIX"cw2015" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, cw2015_of_match);
+
+static const struct of_device_id max17040_of_match[] = {
+	{ .compatible = "maxim,max17040" },
+	{ .compatible = "maxim,max77836-battery" },
+	{ },
+};
+
+MODULE_DEVICE_TABLE(of, max17040_of_match);
+
 static struct i2c_driver cw_bat_driver = {
 	.driver = {
-		.name = "cellwise,cw201x",
+		.name = PREFIX"cw201x",
 #ifdef CONFIG_PM
 		.pm = &cw_bat_pm_ops,
 #endif
