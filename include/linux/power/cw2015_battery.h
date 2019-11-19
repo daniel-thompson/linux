@@ -40,7 +40,7 @@
 #define CW2015_MODE_RESTART            (0xf<<0)
 
 #define CW2015_CONFIG_UPDATE_FLG       (0x01<<1)
-#define CW2015_ATHD                    (0x00<<3)
+#define CW2015_ATHD(x)                 ((x)<<3)
 #define CW2015_MASK_ATHD               (0x1f<<3)
 #define CW2015_MASK_SOC                (0x1fff)
 
@@ -115,8 +115,8 @@ struct cw_battery {
 	u32 monitor_sec;
 	u32 bat_mode;
 	int bat_change;
-	bool dual_battery;
 	int charge_count;
+	u8 alert_level;
 };
 
 #endif

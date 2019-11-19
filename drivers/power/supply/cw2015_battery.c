@@ -36,6 +36,9 @@ module_param_named(dbg_level, dbg_enable, int, 0644);
 		} \
 	} while (0)
 
+
+#define PREFIX "cellwise,"
+
 static int cw_read(struct i2c_client *client, u8 reg, u8 buf[])
 {
 	return i2c_smbus_read_i2c_block_data(client, reg, 1, buf);
@@ -85,7 +88,7 @@ int cw_update_config_info(struct cw_battery *cw_bat)
 
 	reg_val |= CW2015_CONFIG_UPDATE_FLG;	/* set UPDATE_FLAG */
 	reg_val &= ~CW2015_MASK_ATHD;	/* clear ATHD */
-	reg_val |= CW2015_ATHD;	/* set CW2015_ATHD */
+	reg_val |= CW2015_ATHD(cw_bat->alert_level);	/* set CW2015_ATHD */
 	ret = cw_write(cw_bat->client, CW2015_REG_CONFIG, &reg_val);
 	if (ret < 0)
 		return ret;
@@ -100,7 +103,7 @@ int cw_update_config_info(struct cw_battery *cw_bat)
 			 "update flag for new battery info have not set..\n");
 	}
 
-	if ((reg_val & CW2015_MASK_ATHD) != CW2015_ATHD)
+	if ((reg_val & CW2015_MASK_ATHD) != CW2015_ATHD(cw_bat->alert_level))
 		dev_info(&cw_bat->client->dev, "the new CW2015_ATHD have not set..\n");
 
 	/* reset */
@@ -137,10 +140,10 @@ static int cw_init(struct cw_battery *cw_bat)
 	if (ret < 0)
 		return ret;
 
-	if ((reg_val & CW2015_MASK_ATHD) != CW2015_ATHD) {
+	if ((reg_val & CW2015_MASK_ATHD) != CW2015_ATHD(cw_bat->alert_level)) {
 		dev_info(&cw_bat->client->dev, "the new CW2015_ATHD have not set\n");
 		reg_val &= ~CW2015_MASK_ATHD;	/* clear CW2015_ATHD */
-		reg_val |= CW2015_ATHD;	/* set CW2015_ATHD */
+		reg_val |= ~CW2015_ATHD(cw_bat->alert_level);	/* set CW2015_ATHD */
 		ret = cw_write(cw_bat->client, CW2015_REG_CONFIG, &reg_val);
 		if (ret < 0)
 			return ret;
@@ -449,8 +452,6 @@ static int cw_get_voltage(struct cw_battery *cw_bat)
 		res1 = cw_bat->plat_data.divider_res1;
 		res2 = cw_bat->plat_data.divider_res2;
 		voltage = voltage * (res1 + res2) / res2;
-	} else if (cw_bat->dual_battery) {
-		voltage = voltage * 2;
 	}
 
 	dev_dbg(&cw_bat->client->dev, "the cw201x voltage=%d,reg_val=%x %x\n",
@@ -714,51 +715,14 @@ static int cw2015_parse_dt(struct cw_battery *cw_bat)
 	u32 value;
 	int ret;
 	struct cw_bat_platform_data *data = &cw_bat->plat_data;
-	struct gpio_desc *hw_id0_io;
-	struct gpio_desc *hw_id1_io;
-	int hw_id0_val;
-	int hw_id1_val;
 
 	if (!node)
 		return -ENODEV;
 
 	memset(data, 0, sizeof(*data));
 
-	ret = of_property_read_u32(node, "hw_id_check", &value);
-	if (!ret && value) {
-		hw_id0_io = gpiod_get_optional(dev, "hw-id0", GPIOD_IN);
-		if (!hw_id0_io)
-			return -EINVAL;
-		if (IS_ERR(hw_id0_io))
-			return PTR_ERR(hw_id0_io);
-
-		hw_id0_val = gpiod_get_value(hw_id0_io);
-		gpiod_put(hw_id0_io);
-
-		hw_id1_io = gpiod_get_optional(dev, "hw-id1", GPIOD_IN);
-		if (!hw_id1_io)
-			return -EINVAL;
-		if (IS_ERR(hw_id1_io))
-			return PTR_ERR(hw_id1_io);
-
-		hw_id1_val = gpiod_get_value(hw_id1_io);
-		gpiod_put(hw_id1_io);
-
-		/*
-		 * ID1 = 0, ID0 = 1 : Battery
-		 * ID1 = 1, ID0 = 0 : Dual Battery
-		 * ID1 = 0, ID0 = 0 : Adapter
-		 */
-		if (hw_id0_val == 1 && hw_id1_val == 0)
-			cw_bat->dual_battery = false;
-		else if (hw_id0_val == 0 && hw_id1_val == 1)
-			cw_bat->dual_battery = true;
-		else
-			return -EINVAL;
-	}
-
 	/* determine the number of config info */
-	prop = of_find_property(node, "bat_config_info", &length);
+	prop = of_find_property(node, PREFIX"bat-config-info", &length);
 	if (!prop)
 		return -EINVAL;
 
@@ -771,7 +735,7 @@ static int cw2015_parse_dt(struct cw_battery *cw_bat)
 		if (!data->cw_bat_config_info)
 			return -ENOMEM;
 
-		ret = of_property_read_u32_array(node, "bat_config_info",
+		ret = of_property_read_u32_array(node, PREFIX"bat-config-info",
 						 data->cw_bat_config_info,
 						 length);
 		if (ret < 0)
@@ -781,33 +745,39 @@ static int cw2015_parse_dt(struct cw_battery *cw_bat)
 	cw_bat->bat_mode = MODE_BATTERY;
 	cw_bat->monitor_sec = CW2015_DEFAULT_MONITOR_SEC * CW2015_TIMER_MS_COUNTS;
 
-	ret = of_property_read_u32(node, "divider_res1", &value);
+	ret = of_property_read_u32(node, PREFIX"divider-res1", &value);
 	if (ret < 0)
 		value = 0;
 	data->divider_res1 = value;
 
-	ret = of_property_read_u32(node, "divider_res2", &value);
+	ret = of_property_read_u32(node, PREFIX"divider-res2", &value);
 	if (ret < 0)
 		value = 0;
 	data->divider_res2 = value;
 
-	ret = of_property_read_u32(node, "virtual_power", &value);
+	ret = of_property_read_u32(node, PREFIX"virtual-power", &value);
 	if (ret < 0)
 		value = 0;
 	cw_bat->bat_mode = value;
 
-	ret = of_property_read_u32(node, "monitor_sec", &value);
+	ret = of_property_read_u32(node, PREFIX"monitor-interval", &value);
 	if (ret < 0)
-		dev_err(dev, "monitor_sec missing!\n");
+		dev_err(dev, "monitor-interval missing!\n");
 	else
 		cw_bat->monitor_sec = value * CW2015_TIMER_MS_COUNTS;
 
-	ret = of_property_read_u32(node, "design_capacity", &value);
+	ret = of_property_read_u32(node, PREFIX"design-capacity", &value);
 	if (ret < 0) {
-		dev_err(dev, "design_capacity missing!\n");
+		dev_err(dev, "design-capacity missing!\n");
 		data->design_capacity = 2000;
 	} else {
 		data->design_capacity = value;
+	}
+
+	of_property_read_u8(node, PREFIX"alert-level", &cw_bat->alert_level);
+	if (cw_bat->alert_level > 100) {
+		dev_err(dev, "invalid alert_level, clamping to 100 %%\n");
+		cw_bat->alert_level = 100;
 	}
 
 	return 0;
