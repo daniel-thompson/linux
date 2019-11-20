@@ -206,16 +206,14 @@
 	};
 
 	wireless-bluetooth {
-		compatible = "bluetooth-platdata";
+		compatible = "rfkill,gpio", "bluetooth-platdata";
 		clocks = <&rk808 1>;
 		clock-names = "ext_clock";
-		uart_rts_gpios = <&gpio2 RK_PC3 GPIO_ACTIVE_LOW>;
-		pinctrl-names = "default", "rts_gpio";
-		pinctrl-0 = <&uart0_rts>;
-		pinctrl-1 = <&uart0_gpios>;
-		BT,reset_gpio    = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
-		BT,wake_gpio     = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
-		BT,wake_host_irq = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&bt_reset_gpio &bt_wake_gpio>;
+		type = "bluetooth";
+		reset-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
+		shutdown-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
 		status = "okay";
 	};
 
@@ -912,9 +910,13 @@
 	};
 
 	wireless-bluetooth {
-		uart0_gpios: uart0-gpios {
+		bt_wake_gpio: bt-wake {
 			rockchip,pins =
-				<2 RK_PC3 RK_FUNC_GPIO &pcfg_pull_none>;
+				<2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+		bt_reset_gpio: bt-reset {
+			rockchip,pins =
+				<0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 };
@@ -1021,7 +1023,8 @@
 
 &uart0 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&uart0_xfer &uart0_cts>;
+	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
+	uart-has-rtscts;
 	status = "okay";
 };
 

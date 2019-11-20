@@ -148,6 +148,14 @@ static int rfkill_gpio_remove(struct platform_device *pdev)
 	return 0;
 }
 
+#ifdef CONFIG_OF
+static const struct of_device_id rfkill_of_match[] = {
+	{ .compatible = "rfkill,gpio", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, rfkill_of_match);
+#endif
+
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id rfkill_acpi_match[] = {
 	{ "BCM4752", RFKILL_TYPE_GPS },
@@ -162,6 +170,9 @@ static struct platform_driver rfkill_gpio_driver = {
 	.remove = rfkill_gpio_remove,
 	.driver = {
 		.name = "rfkill_gpio",
+#ifdef CONFIG_OF
+		.of_match_table = rfkill_of_match,
+#endif
 		.acpi_match_table = ACPI_PTR(rfkill_acpi_match),
 	},
 };
