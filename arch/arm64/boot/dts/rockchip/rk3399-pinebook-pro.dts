@@ -205,18 +205,6 @@
 		status = "okay";
 	};
 
-	wireless-bluetooth {
-		compatible = "rfkill,gpio", "bluetooth-platdata";
-		clocks = <&rk808 1>;
-		clock-names = "ext_clock";
-		pinctrl-names = "default";
-		pinctrl-0 = <&bt_reset_gpio &bt_wake_gpio>;
-		type = "bluetooth";
-		reset-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
-		shutdown-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
-		status = "okay";
-	};
-
 	es8316-sound {
 		status = "okay";
 		compatible = "simple-audio-card";
@@ -914,6 +902,11 @@
 			rockchip,pins =
 				<2 RK_PD3 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
+		bt_host_wake_gpio: bt-host-wake {
+			rockchip,pins =
+				<0 RK_PA4 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
 		bt_reset_gpio: bt-reset {
 			rockchip,pins =
 				<0 RK_PB1 RK_FUNC_GPIO &pcfg_pull_none>;
@@ -1021,11 +1014,25 @@
 	};
 };
 
+
 &uart0 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
 	uart-has-rtscts;
 	status = "okay";
+	bluetooth {
+		compatible = "brcm,bcm4345c5";
+		pinctrl-names = "default";
+		pinctrl-0 = <&bt_host_wake_gpio &bt_wake_gpio &bt_reset_gpio>;
+		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
+		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
+// Enabling the host wakeup GPIO seems to make bluetooth less stable
+// further investigation required
+//		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
+		max-speed = <1500000>;
+		vbat-supply = <&vcc3v3_sys>;
+		vddio-supply = <&vcc_1v8>;
+	};
 };
 
 &uart2 {
