@@ -186,6 +186,8 @@
 		clock-names = "ext_clock";
 		pinctrl-names = "default";
 		pinctrl-0 = <&wifi_enable_h>;
+		power-off-delay-us = <500000>;
+		post-power-on-delay-ms = <100>;
 
 		/*
 		 * On the module itself this is one of these (depending
