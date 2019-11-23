@@ -1020,8 +1020,11 @@
 	pinctrl-0 = <&uart0_xfer &uart0_cts &uart0_rts>;
 	uart-has-rtscts;
 	status = "okay";
+
 	bluetooth {
 		compatible = "brcm,bcm4345c5";
+		clocks = <&rk808 1>;
+		clock-names = "lpo";
 		pinctrl-names = "default";
 		pinctrl-0 = <&bt_host_wake_gpio &bt_wake_gpio &bt_reset_gpio>;
 		shutdown-gpios = <&gpio0 RK_PB1 GPIO_ACTIVE_HIGH>;
