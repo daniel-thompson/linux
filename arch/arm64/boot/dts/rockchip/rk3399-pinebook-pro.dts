@@ -247,15 +247,6 @@
 		sound-name-prefix = "Speaker Amplifier";
 	};
 
-	fan0: pwm-fan {
-		compatible = "pwm-fan";
-		pwms = <&pwm1 0 10000 0>;
-		cooling-min-state = <0>;
-		cooling-max-state = <3>;
-		#cooling-cells = <2>;
-		cooling-levels = <0 102 170 230>;
-	};
-
 	/* switched by pmic_sleep */
 	vcc1v8_s3: vcca1v8_s3: vcc1v8-s3 {
 		compatible = "regulator-fixed";
@@ -353,32 +344,7 @@
 		extcon = <&fusb0>;
 	};
 };
-/*
-&display_subsystem {
-	status = "okay";
 
-	ports = <&vopb_out>, <&vopl_out>;
-	logo-memory-region = <&drm_logo>;
-
-	route {
-		route_dp: route-dp {
-			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
-			logo,mode = "center";
-			charge_logo,mode = "center";
-			connect = <&vopl_out_dp>;
-		};
-
-		route_edp: route-edp {
-			logo,uboot = "logo.bmp";
-			logo,kernel = "logo_kernel.bmp";
-			logo,mode = "center";
-			charge_logo,mode = "center";
-			connect = <&vopb_out_edp>;
-		};
-	};
-};
-*/
 &edp {
 	status = "okay";
 	pinctrl-names = "default";
@@ -917,10 +883,6 @@
 };
 
 &pwm0 {
-	status = "okay";
-};
-
-&pwm1 {
 	status = "okay";
 };
 
