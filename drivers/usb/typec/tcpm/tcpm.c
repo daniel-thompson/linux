@@ -8,6 +8,7 @@
 #include <linux/completion.h>
 #include <linux/debugfs.h>
 #include <linux/device.h>
+#include <linux/extcon-provider.h>
 #include <linux/jiffies.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -322,6 +323,12 @@ struct tcpm_port {
 	/* port belongs to a self powered device */
 	bool self_powered;
 
+
+#ifdef CONFIG_EXTCON
+	struct extcon_dev *extcon;
+	unsigned int *extcon_cables;
+#endif
+
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *dentry;
 	struct mutex logbuffer_lock;	/* log buffer access lock */
@@ -599,6 +606,33 @@ static void tcpm_debugfs_exit(const struct tcpm_port *port) { }
 
 #endif
 
+static void tcpm_update_extcon_data(struct tcpm_port *port, bool attached) {
+#ifdef CONFIG_EXTCON
+	unsigned int *capability = port->extcon_cables;
+	if (port->data_role == TYPEC_HOST) {
+		extcon_set_state(port->extcon, EXTCON_USB, false);
+		extcon_set_state(port->extcon, EXTCON_USB_HOST, attached);
+	} else {
+		extcon_set_state(port->extcon, EXTCON_USB, true);
+		extcon_set_state(port->extcon, EXTCON_USB_HOST, attached);
+	}
+	while(*capability != EXTCON_NONE) {
+		union extcon_property_value val;
+		val.intval = true;
+		extcon_set_property(port->extcon, *capability, EXTCON_PROP_USB_SS, val);
+		val.intval = (port->polarity == TYPEC_POLARITY_CC2);
+		extcon_set_property(port->extcon, *capability,
+			EXTCON_PROP_USB_TYPEC_POLARITY, val);
+		extcon_sync(port->extcon, *capability);
+		capability++;
+	}
+	tcpm_log(port, "Extcon update (%s): %s, %s",
+		attached ? "attached" : "detached",
+		port->data_role == TYPEC_HOST ? "host" : "device",
+		port->polarity == TYPEC_POLARITY_CC1 ? "normal" : "flipped");
+#endif
+}
+
 static int tcpm_pd_transmit(struct tcpm_port *port,
 			    enum tcpm_transmit_type type,
 			    const struct pd_message *msg)
@@ -788,10 +822,11 @@ static int tcpm_set_roles(struct tcpm_port *port, bool attached,
 	else
 		orientation = TYPEC_ORIENTATION_REVERSE;
 
-	if (data == TYPEC_HOST)
+	if (data == TYPEC_HOST) {
 		usb_role = USB_ROLE_HOST;
-	else
+	} else {
 		usb_role = USB_ROLE_DEVICE;
+	}
 
 	ret = tcpm_mux_set(port, TYPEC_STATE_USB, usb_role, orientation);
 	if (ret < 0)
@@ -805,6 +840,8 @@ static int tcpm_set_roles(struct tcpm_port *port, bool attached,
 	port->data_role = data;
 	typec_set_data_role(port->typec_port, data);
 	typec_set_pwr_role(port->typec_port, role);
+
+	tcpm_update_extcon_data(port, attached);
 
 	return 0;
 }
@@ -1016,7 +1053,7 @@ static void svdm_consume_modes(struct tcpm_port *port, const __le32 *payload,
 		paltmode->mode = i;
 		paltmode->vdo = le32_to_cpu(payload[i]);
 
-		tcpm_log(port, " Alternate mode %d: SVID 0x%04x, VDO %d: 0x%08x",
+		tcpm_log(port, "Alternate mode %d: SVID 0x%04x, VDO %d: 0x%08x",
 			 pmdata->altmodes, paltmode->svid,
 			 paltmode->mode, paltmode->vdo);
 
@@ -2721,6 +2758,8 @@ static void tcpm_detach(struct tcpm_port *port)
 		port->hard_reset_count = 0;
 
 	tcpm_reset_port(port);
+
+	tcpm_update_extcon_data(port, false);
 }
 
 static void tcpm_src_detach(struct tcpm_port *port)
@@ -4363,6 +4402,10 @@ void tcpm_tcpc_reset(struct tcpm_port *port)
 }
 EXPORT_SYMBOL_GPL(tcpm_tcpc_reset);
 
+unsigned int default_supported_cables[] = {
+	EXTCON_NONE
+};
+
 static int tcpm_fw_get_caps(struct tcpm_port *port,
 			    struct fwnode_handle *fwnode)
 {
@@ -4372,6 +4415,23 @@ static int tcpm_fw_get_caps(struct tcpm_port *port,
 
 	if (!fwnode)
 		return -EINVAL;
+
+#ifdef CONFIG_EXTCON
+	ret = fwnode_property_count_u32(fwnode, "extcon-cables");
+	if (ret > 0) {
+		port->extcon_cables = devm_kzalloc(port->dev, sizeof(u32) * ret, GFP_KERNEL);
+		if (!port->extcon_cables) {
+			dev_err(port->dev, "Failed to allocate memory for extcon cable types. "\
+				"Using default tyes");
+			goto extcon_default;
+		}
+		fwnode_property_read_u32_array(fwnode, "extcon-cables", port->extcon_cables, ret);
+	} else {
+extcon_default:
+		dev_info(port->dev, "No cable types defined, using default cables");
+		port->extcon_cables = default_supported_cables;
+	}
+#endif
 
 	/* USB data support is optional */
 	ret = fwnode_property_read_string(fwnode, "data-role", &cap_str);
@@ -4705,6 +4765,17 @@ struct tcpm_port *tcpm_register_port(struct device *dev, struct tcpc_dev *tcpc)
 		goto out_destroy_wq;
 
 	port->try_role = port->typec_caps.prefer_role;
+#ifdef CONFIG_EXTCON
+	port->extcon = devm_extcon_dev_allocate(dev, port->extcon_cables);
+	if (IS_ERR(port->extcon)) {
+		dev_err(dev, "Failed to allocate extcon device: %ld", PTR_ERR(port->extcon));
+		goto out_destroy_wq;
+	}
+	if((err = devm_extcon_dev_register(dev, port->extcon))) {
+		dev_err(dev, "Failed to register extcon device: %d", err);
+		goto out_destroy_wq;
+	}
+#endif
 
 	port->typec_caps.fwnode = tcpc->fwnode;
 	port->typec_caps.revision = 0x0120;	/* Type-C spec release 1.2 */
