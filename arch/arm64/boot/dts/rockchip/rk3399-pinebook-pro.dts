@@ -698,6 +698,7 @@
 			source-pdos = <PDO_FIXED(5000, 1400, PDO_FIXED_USB_COMM)>;
 			sink-pdos = <PDO_FIXED(5000, 2500, PDO_FIXED_USB_COMM)>;
 			op-sink-microwatt = <1000000>;
+			extcon-cables = <1 2 5 6 9 10 12 44>;
 		};
 	};
 
@@ -936,7 +937,7 @@
 };
 
 &tcphy0 {
-//	extcon = <&fusb0>;
+	extcon = <&fusb0>;
 	status = "okay";
 };
 
@@ -1021,13 +1022,12 @@
 };
 
 &usbdrd3_0 {
-//	extcon = <&fusb0>;
 	status = "okay";
 };
 
 &usbdrd_dwc3_0 {
 	status = "okay";
-	dr_mode = "otg";
+	dr_mode = "host";
 };
 
 &usbdrd3_1 {
