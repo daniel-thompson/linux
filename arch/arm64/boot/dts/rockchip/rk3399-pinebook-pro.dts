@@ -936,7 +936,7 @@
 };
 
 &tcphy0 {
-	extcon = <&fusb0>;
+//	extcon = <&fusb0>;
 	status = "okay";
 };
 
@@ -1021,7 +1021,7 @@
 };
 
 &usbdrd3_0 {
-	extcon = <&fusb0>;
+//	extcon = <&fusb0>;
 	status = "okay";
 };
 
