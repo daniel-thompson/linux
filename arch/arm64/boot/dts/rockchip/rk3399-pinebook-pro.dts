@@ -365,6 +365,11 @@
 	};
 };
 
+&cdn_dp {
+	status = "okay";
+	extcon = <&fusb0>;
+};
+
 &cpu_l0 {
 	cpu-supply = <&vdd_cpu_l>;
 };
