@@ -704,6 +704,7 @@
 			sink-pdos = <PDO_FIXED(5000, 2500, PDO_FIXED_USB_COMM)>;
 			op-sink-microwatt = <1000000>;
 			extcon-cables = <1 2 5 6 9 10 12 44>;
+			typec-altmodes = <0xff01 1 0x001c0000 1>;
 		};
 	};
 
