@@ -617,10 +617,8 @@ static void tcpm_update_extcon_data(struct tcpm_port *port, bool attached) {
 		extcon_set_state(port->extcon, EXTCON_USB_HOST, attached);
 	}
 	while (*capability != EXTCON_NONE) {
-		union extcon_property_value val;
 		if (attached) {
-			val.intval = true;
-			extcon_set_property(port->extcon, *capability, EXTCON_PROP_USB_SS, val);
+			union extcon_property_value val;
 			val.intval = (port->polarity == TYPEC_POLARITY_CC2);
 			extcon_set_property(port->extcon, *capability,
 				EXTCON_PROP_USB_TYPEC_POLARITY, val);
