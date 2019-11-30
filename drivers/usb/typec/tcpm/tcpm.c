@@ -616,13 +616,17 @@ static void tcpm_update_extcon_data(struct tcpm_port *port, bool attached) {
 		extcon_set_state(port->extcon, EXTCON_USB, true);
 		extcon_set_state(port->extcon, EXTCON_USB_HOST, attached);
 	}
-	while(*capability != EXTCON_NONE) {
+	while (*capability != EXTCON_NONE) {
 		union extcon_property_value val;
-		val.intval = true;
-		extcon_set_property(port->extcon, *capability, EXTCON_PROP_USB_SS, val);
-		val.intval = (port->polarity == TYPEC_POLARITY_CC2);
-		extcon_set_property(port->extcon, *capability,
-			EXTCON_PROP_USB_TYPEC_POLARITY, val);
+		if (attached) {
+			val.intval = true;
+			extcon_set_property(port->extcon, *capability, EXTCON_PROP_USB_SS, val);
+			val.intval = (port->polarity == TYPEC_POLARITY_CC2);
+			extcon_set_property(port->extcon, *capability,
+				EXTCON_PROP_USB_TYPEC_POLARITY, val);
+		} else {
+			extcon_set_state(port->extcon, *capability, false);
+		}
 		extcon_sync(port->extcon, *capability);
 		capability++;
 	}
@@ -2706,6 +2710,7 @@ out_disable_mux:
 static void tcpm_typec_disconnect(struct tcpm_port *port)
 {
 	if (port->connected) {
+		tcpm_update_extcon_data(port, false);
 		typec_unregister_partner(port->partner);
 		port->partner = NULL;
 		port->connected = false;
