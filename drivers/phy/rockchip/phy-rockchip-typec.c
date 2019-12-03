@@ -1162,7 +1162,6 @@ static int rockchip_typec_phy_probe(struct platform_device *pdev)
 			return PTR_ERR(tcphy->extcon);
 		}
 	} else {
-		union extcon_property_value extcon_true = { .intval = true };
 		extcon_set_property_capability(tcphy->extcon, EXTCON_USB,
 					       EXTCON_PROP_USB_SS);
 		extcon_set_property_capability(tcphy->extcon, EXTCON_USB_HOST,
@@ -1175,12 +1174,6 @@ static int rockchip_typec_phy_probe(struct platform_device *pdev)
 					       EXTCON_PROP_USB_TYPEC_POLARITY);
 		extcon_set_property_capability(tcphy->extcon, EXTCON_DISP_DP,
 					       EXTCON_PROP_USB_TYPEC_POLARITY);
-		extcon_set_property(tcphy->extcon, EXTCON_USB, EXTCON_PROP_USB_SS,
-				    extcon_true);
-		extcon_set_property(tcphy->extcon, EXTCON_USB_HOST, EXTCON_PROP_USB_SS,
-				    extcon_true);
-		extcon_set_property(tcphy->extcon, EXTCON_DISP_DP, EXTCON_PROP_USB_SS,
-				    extcon_true);
 		extcon_sync(tcphy->extcon, EXTCON_USB);
 		extcon_sync(tcphy->extcon, EXTCON_USB_HOST);
 		extcon_sync(tcphy->extcon, EXTCON_DISP_DP);
