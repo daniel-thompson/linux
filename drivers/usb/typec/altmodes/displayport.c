@@ -155,12 +155,16 @@ static void dp_altmode_update_extcon(struct dp_altmode *dp, bool disconnect) {
 	if (disconnect || !dp->data.conf) {
 		extcon_set_state_sync(edev, EXTCON_DISP_DP, false);
 	} else {
-		extcon_set_state_sync(edev, EXTCON_DISP_DP, true);
+		union extcon_property_value extcon_true = { .intval = true };
+		extcon_set_state(edev, EXTCON_DISP_DP, true);
 		if (DP_CONF_GET_PIN_ASSIGN(dp->data.conf) & DP_PIN_ASSIGN_MULTI_FUNC_MASK) {
 			extcon_set_state_sync(edev, EXTCON_USB_HOST, true);
+			extcon_set_property(edev, EXTCON_DISP_DP, EXTCON_PROP_USB_SS,
+						 extcon_true);
 		} else {
 			extcon_set_state_sync(edev, EXTCON_USB_HOST, false);
 		}
+		extcon_sync(edev, EXTCON_DISP_DP);
 		extcon_set_state_sync(edev, EXTCON_USB, false);
 	}
 
