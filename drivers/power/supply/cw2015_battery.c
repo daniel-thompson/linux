@@ -913,14 +913,6 @@ static const struct of_device_id cw2015_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, cw2015_of_match);
 
-static const struct of_device_id max17040_of_match[] = {
-	{ .compatible = "maxim,max17040" },
-	{ .compatible = "maxim,max77836-battery" },
-	{ },
-};
-
-MODULE_DEVICE_TABLE(of, max17040_of_match);
-
 static struct i2c_driver cw_bat_driver = {
 	.driver = {
 		.name = PREFIX"cw201x",
