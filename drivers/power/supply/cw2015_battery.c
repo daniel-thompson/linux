@@ -140,8 +140,8 @@ static int cw_init(struct cw_battery *cw_bat)
 
 	if ((reg_val & CW2015_MASK_ATHD) != CW2015_ATHD(cw_bat->alert_level)) {
 		dev_info(&cw_bat->client->dev, "the new CW2015_ATHD have not set\n");
-		reg_val &= ~CW2015_MASK_ATHD;	/* clear CW2015_ATHD */
-		reg_val |= ~CW2015_ATHD(cw_bat->alert_level);	/* set CW2015_ATHD */
+		reg_val &= ~CW2015_MASK_ATHD;
+		reg_val |= ~CW2015_ATHD(cw_bat->alert_level);
 		ret = cw_write(cw_bat->client, CW2015_REG_CONFIG, &reg_val);
 		if (ret < 0)
 			return ret;
@@ -199,27 +199,31 @@ static int cw_init(struct cw_battery *cw_bat)
 	return 0;
 }
 
-static int check_charger_online(struct device *dev, void *data) {
+static int check_charger_online(struct device *dev, void *data)
+{
 	struct device *cw_dev = data;
 	struct power_supply *supply = dev_get_drvdata(dev);
 	union power_supply_propval val;
 
 	if (supply->desc->type == POWER_SUPPLY_TYPE_BATTERY) {
-		dev_dbg(cw_dev, "Skipping power supply %s since it is a battery\n", dev_name(dev));
+		dev_dbg(cw_dev, "Skipping power supply %s since it is a battery\n",
+			dev_name(dev));
 		return 0; // Bail out, not a charger
 	}
-	if(!supply->desc->get_property(supply, POWER_SUPPLY_PROP_ONLINE, &val)) {
+	if (!supply->desc->get_property(supply, POWER_SUPPLY_PROP_ONLINE,
+					&val)) {
 		return val.intval;
-	} else {
-		dev_dbg(cw_dev, "Skipping power supply %s since it does not have an online property\n", dev_name(dev));
 	}
+	dev_dbg(cw_dev, "Skipping power supply %s since it does not "
+		"have an online property\n", dev_name(dev));
 	return 0;
 }
 
 #ifdef CONFIG_OF
-static int device_parent_match_of_node(struct device *dev, const void *np) {
-	while(dev) {
-		if(dev->of_node == np) {
+static int device_parent_match_of_node(struct device *dev, const void *np)
+{
+	while (dev) {
+		if (dev->of_node == np) {
 			return 1;
 		}
 		dev = dev->parent;
@@ -232,33 +236,42 @@ static int get_charge_state(struct cw_battery *cw_bat)
 {
 #ifdef CONFIG_OF
 	int i = 0, online = 0;
-	struct device_node* supply_of;
+	struct device_node *supply_of;
 	struct device *cw_dev = &cw_bat->client->dev;
+
 	if (!cw_dev->of_node) {
-		dev_dbg(cw_dev, "Charger does not have an of node, scanning all supplies\n");
+		dev_dbg(cw_dev, "Charger does not have an of node, scanning "
+			"all supplies\n");
 #endif
-		return !!class_for_each_device(power_supply_class, NULL, cw_dev, check_charger_online);
+		return !!class_for_each_device(power_supply_class, NULL,
+					       cw_dev, check_charger_online);
 #ifdef CONFIG_OF
 	}
 	do {
 		struct device *supply_dev;
-		dev_dbg(cw_dev, "Scanning linked supplies of %s\n", cw_dev->of_node->name);
-		supply_of = of_parse_phandle(cw_dev->of_node, "power-supplies", i++);
+
+		dev_dbg(cw_dev, "Scanning linked supplies of %s\n",
+			cw_dev->of_node->name);
+		supply_of = of_parse_phandle(cw_dev->of_node, "power-supplies",
+					     i++);
 		if (!supply_of) {
 			dev_dbg(cw_dev, "Got empty of node, scan done\n");
 			break;
 		}
 		dev_dbg(cw_dev, "Got power supply %s\n", supply_of->name);
-		supply_dev = class_find_device(power_supply_class, NULL, supply_of, device_parent_match_of_node);
+		supply_dev = class_find_device(power_supply_class, NULL,
+					       supply_of,
+					       device_parent_match_of_node);
 		if (supply_dev) {
 			online = check_charger_online(supply_dev, NULL);
 			dev_dbg(supply_dev, "Charger online: %d\n", online);
 			put_device(supply_dev);
 		} else {
-			dev_warn(cw_dev, "Failed to get device for device node %s\n", supply_of->name);
+			dev_warn(cw_dev, "Failed to get device for device "
+				 "node %s\n", supply_of->name);
 		}
 		of_node_put(supply_of);
-	} while(!online);
+	} while (!online);
 	return online;
 #endif
 }
@@ -311,9 +324,8 @@ static int cw_get_capacity(struct cw_battery *cw_bat)
 			reset_loop = 0;
 		}
 		return cw_bat->capacity;
-	} else {
-		reset_loop = 0;
 	}
+	reset_loop = 0;
 
 	/* case 1 : aviod swing */
 	if (((cw_bat->charger_mode > 0) &&
@@ -357,17 +369,16 @@ static int cw_get_capacity(struct cw_battery *cw_bat)
 
 			if (cw_capacity >= cw_bat->capacity - sleep_cap) {
 				return cw_capacity;
-			} else {
-				if (!sleep_cap)
-					discharging_loop = discharging_loop +
-						1 + cw_bat->after.tv_sec /
-						(cw_bat->monitor_sec / 1000);
-				else
-					discharging_loop = 0;
-				cw_printk("discharging_loop = %d\n",
-					  discharging_loop);
-				return cw_bat->capacity - sleep_cap;
 			}
+			if (!sleep_cap)
+				discharging_loop = discharging_loop +
+					1 + cw_bat->after.tv_sec /
+					(cw_bat->monitor_sec / 1000);
+			else
+				discharging_loop = 0;
+			cw_printk("discharging_loop = %d\n",
+				  discharging_loop);
+			return cw_bat->capacity - sleep_cap;
 		}
 #endif
 		discharging_loop++;
@@ -594,7 +605,8 @@ static void cw_bat_work(struct work_struct *work)
 
 static bool cw_battery_valid_time_to_empty(struct cw_battery *cw_bat)
 {
-	return cw_bat->time_to_empty > 0 && cw_bat->time_to_empty < CW2015_MASK_SOC &&
+	return cw_bat->time_to_empty > 0 &&
+		cw_bat->time_to_empty < CW2015_MASK_SOC &&
 		cw_bat->status == POWER_SUPPLY_STATUS_DISCHARGING;
 }
 
@@ -743,23 +755,29 @@ static int cw2015_parse_dt(struct cw_battery *cw_bat)
 	}
 
 	cw_bat->bat_mode = MODE_BATTERY;
-	cw_bat->monitor_sec = CW2015_DEFAULT_MONITOR_SEC * CW2015_TIMER_MS_COUNTS;
+	cw_bat->monitor_sec = CW2015_DEFAULT_MONITOR_SEC *
+			      CW2015_TIMER_MS_COUNTS;
 
 	prop = of_find_property(node, PREFIX"voltage-divider", &length);
 	if (prop) {
 		length /= sizeof(u32);
 		if (length != 2) {
-			dev_err(dev, "Length of voltage divider array must be 2, not %u\n", length);
+			dev_err(dev, "Length of voltage divider array must be "
+				"2, not %u\n", length);
 			return -EINVAL;
 		}
-		ret = of_property_read_u32_index(node, PREFIX"voltage-divider", 0, &data->divider_high);
+		ret = of_property_read_u32_index(node, PREFIX"voltage-divider",
+						 0, &data->divider_high);
 		if (ret) {
-			dev_err(dev, "Failed to read value of high side voltage divider resistor: %d\n", ret);
+			dev_err(dev, "Failed to read value of high side "
+				"voltage divider resistor: %d\n", ret);
 			return ret;
 		}
-		ret = of_property_read_u32_index(node, PREFIX"voltage-divider", 1, &data->divider_low);
+		ret = of_property_read_u32_index(node, PREFIX"voltage-divider",
+						 1, &data->divider_low);
 		if (ret) {
-			dev_err(dev, "Failed to read value of low side voltage divider resistor: %d\n", ret);
+			dev_err(dev, "Failed to read value of low side "
+				"voltage divider resistor: %d\n", ret);
 			return ret;
 		}
 	}
@@ -812,8 +830,6 @@ static int cw_bat_probe(struct i2c_client *client,
 
 	cw_bat = devm_kzalloc(&client->dev, sizeof(*cw_bat), GFP_KERNEL);
 	if (!cw_bat) {
-		dev_err(&client->dev,
-			"fail to allocate memory for cw2015\n");
 		return -ENOMEM;
 	}
 
@@ -856,7 +872,7 @@ static int cw_bat_probe(struct i2c_client *client,
 			   &cw_bat->battery_delay_work, msecs_to_jiffies(10));
 
 	dev_info(&cw_bat->client->dev,
-		 "cw2015/cw2013 driver v1.2 probe sucess\n");
+		 "cw2015/cw2013 driver probe success\n");
 	return 0;
 }
 
@@ -865,6 +881,7 @@ static int cw_bat_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct cw_battery *cw_bat = i2c_get_clientdata(client);
+
 	ktime_get_boottime_ts64(&cw_bat->suspend_time_before);
 	cancel_delayed_work(&cw_bat->battery_delay_work);
 	return 0;
@@ -874,6 +891,7 @@ static int cw_bat_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct cw_battery *cw_bat = i2c_get_clientdata(client);
+
 	cw_bat->suspend_resume_mark = 1;
 	ktime_get_boottime_ts64(&cw_bat->after);
 	cw_bat->after = timespec64_sub(cw_bat->after,
