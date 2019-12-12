@@ -48,10 +48,12 @@ create_package() {
 
 version=$KERNELRELEASE
 tmpdir="$objtree/debian/tmp"
+meta_package_dir="$objtree/debian/metapkgtmp"
 kernel_headers_dir="$objtree/debian/hdrtmp"
 libc_headers_dir="$objtree/debian/headertmp"
 dbg_dir="$objtree/debian/dbgtmp"
 packagename=linux-image-$version
+metapackagename=`echo $packagename | sed -e 's/[0-9][0-9.-]*//'`
 kernel_headers_packagename=linux-headers-$version
 libc_headers_packagename=linux-libc-dev
 dbg_packagename=$packagename-dbg
@@ -77,7 +79,7 @@ esac
 BUILD_DEBUG=$(if_enabled_echo CONFIG_DEBUG_INFO Yes)
 
 # Setup the directory structure
-rm -rf "$tmpdir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir" $objtree/debian/files
+rm -rf "$tmpdir" "$meta_package_dir" "$kernel_headers_dir" "$libc_headers_dir" "$dbg_dir" $objtree/debian/files
 mkdir -m 755 -p "$tmpdir/DEBIAN"
 mkdir -p "$tmpdir/lib" "$tmpdir/boot"
 mkdir -p "$kernel_headers_dir/lib/modules/$version/"
@@ -190,6 +192,7 @@ if [ "$ARCH" != "um" ]; then
 fi
 
 create_package "$packagename" "$tmpdir"
+create_package "$metapackagename" "$meta_package_dir"
 
 if [ -n "$BUILD_DEBUG" ] ; then
 	# Build debug package
