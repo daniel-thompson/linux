@@ -217,6 +217,15 @@ cat <<EOF > debian/rules
 
 srctree ?= .
 
+ifneq (,\$(filter parallel=%,\$(DEB_BUILD_OPTIONS)))
+  DEBIAN_KERNEL_JOBS := \$(subst parallel=,,\$(filter parallel=%,\$(DEB_BUILD_OPTIONS)))
+endif
+ifdef DEBIAN_KERNEL_JOBS
+  MAKEFLAGS += -j\$(DEBIAN_KERNEL_JOBS)
+endif
+
+.NOTPARALLEL:
+
 build:
 	\$(MAKE) KERNELRELEASE=${version} ARCH=${ARCH} \
 	KBUILD_BUILD_VERSION=${revision} KBUILD_IMAGE=${KBUILD_IMAGE} \
