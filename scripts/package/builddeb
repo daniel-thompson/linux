@@ -102,8 +102,10 @@ deploy_libc_headers () {
 version=$KERNELRELEASE
 tmpdir=debian/linux-image
 dbg_dir=debian/linux-image-dbg
+meta_package_dir="$objtree/debian/metapkgtmp"
 packagename=linux-image-$version
 dbg_packagename=$packagename-dbg
+metapackagename=`echo $packagename | sed -e 's/[0-9][0-9.-]*//'`
 
 if [ "$ARCH" = "um" ] ; then
 	packagename=user-mode-linux-$version
@@ -126,7 +128,7 @@ esac
 BUILD_DEBUG=$(if_enabled_echo CONFIG_DEBUG_INFO Yes)
 
 # Setup the directory structure
-rm -rf "$tmpdir" "$dbg_dir" debian/files
+rm -rf "$tmpdir" "$dbg_dir" "$meta_package_dir" debian/files
 mkdir -m 755 -p "$tmpdir/DEBIAN"
 mkdir -p "$tmpdir/lib" "$tmpdir/boot"
 
@@ -210,6 +212,7 @@ if [ "$ARCH" != "um" ]; then
 fi
 
 create_package "$packagename" "$tmpdir"
+create_package "$metapackagename" "$meta_package_dir"
 
 if [ -n "$BUILD_DEBUG" ] ; then
 	# Build debug package
