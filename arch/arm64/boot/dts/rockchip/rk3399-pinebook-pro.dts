@@ -854,12 +854,6 @@
 		};
 	};
 
-	rt5640 {
-		rt5640_hpcon: rt5640-hpcon {
-			rockchip,pins = <4 RK_PC5 RK_FUNC_GPIO &pcfg_pull_none>;
-		};
-	};
-
 	usb2 {
 		vcc5v0_host_en: vcc5v0-host-en {
 			rockchip,pins = <4 RK_PD2 RK_FUNC_GPIO &pcfg_pull_none>;
