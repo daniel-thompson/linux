@@ -93,7 +93,7 @@
 		compatible = "gpio-keys";
 		autorepeat;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pwrbtn &lidbtn &lowbat>;
+		pinctrl-0 = <&pwrbtn &lidbtn>;
 
 		power {
 			debounce-interval = <20>;
@@ -111,14 +111,8 @@
 			linux,input-type = <EV_SW>;
 			wakeup-source;
 		};
-
-		low-battery {
-			gpios = <&gpio4 RK_PC5 GPIO_ACTIVE_LOW>;
-			label = "Low Battery";
-			linux,code = <KEY_POWER>;
-		};
 	};
-
+	
 	backlight: edp-backlight {
 		compatible = "pwm-backlight";
 		pwms = <&pwm0 0 740740 0>;
@@ -731,7 +725,6 @@
 		cellwise,monitor-interval = <5>;
 		cellwise,virtual-power = <0>;
 		cellwise,design-capacity = <9800>;
-		cellwise,alert-level = <3>;
 		power-supplies = <&mains_charger>, <&fusb0>;
 	};
 };
@@ -798,9 +791,6 @@
 		};
 		lidbtn: lidbtn {
 			rockchip,pins = <1 RK_PA1 RK_FUNC_GPIO &pcfg_pull_up>;
-		};
-		lowbat: lowbat {
-			rockchip,pins = <4 RK_PC5 RK_FUNC_GPIO &pcfg_pull_up>;
 		};
 	};
 
