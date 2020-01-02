@@ -208,7 +208,7 @@
 		status = "okay";
 		compatible = "simple-audio-amplifier";
 		enable-gpios = <&gpio4 RK_PD3 GPIO_ACTIVE_HIGH>;
-		vcc-supply = <&vcc5v0_usb>;
+		vcc-supply = <&pa_5v>;
 		sound-name-prefix = "Speaker Amplifier";
 	};
 
@@ -237,7 +237,7 @@
 	};
 
 	/* Main 3.3 V supply */
-	vcc3v3_sys: vcc3v3-sys {
+	vcc3v3_sys: wifi_bat: vcc3v3-sys {
 		compatible = "regulator-fixed";
 		regulator-name = "vcc3v3_sys";
 		regulator-always-on;
@@ -252,7 +252,7 @@
 	};
 
 	/* 5 V USB power supply */
-	vcc5v0_usb: vcc5v0-usb-regulator {
+	vcc5v0_usb: pa_5v: vcc5v0-usb-regulator {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio1 RK_PB5 GPIO_ACTIVE_HIGH>;
@@ -375,7 +375,7 @@
 
 	/* Regualtors supplied by vcc5v0_usb */
 	/* Type C port power supply regulator */
-	vbus_5vout: vbus-5vout {
+	vbus_5vout: vbus_typec: vbus-5vout {
 		compatible = "regulator-fixed";
 		enable-active-high;
 		gpio = <&gpio1 RK_PA3 GPIO_ACTIVE_HIGH>;
@@ -385,6 +385,10 @@
 		regulator-min-microvolt = <5000000>;
 		regulator-max-microvolt = <5000000>;
 		vin-supply = <&vcc5v0_usb>;
+
+		regulator-state-mem {
+			regulator-off-in-suspend;
+		};
 	};
 
 	mains_charger: dc-charger {
@@ -550,7 +554,7 @@
 				};
 			};
 
-			vcc_1v8: DCDC_REG4 {
+			vcc_1v8: vcc_wl: DCDC_REG4 {
 				regulator-name = "vcc_1v8";
 				regulator-always-on;
 				regulator-boot-on;
@@ -752,7 +756,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&fusb0_int>;
 		fcs,int_n = <&gpio1 RK_PA2 GPIO_ACTIVE_HIGH>;
-		vbus-supply = <&vbus_5vout>;
+		vbus-supply = <&vbus_typec>;
 		status = "okay";
 		connector {
 			compatible = "usb-c-connector";
@@ -1068,8 +1072,8 @@
 		device-wakeup-gpios = <&gpio2 RK_PD3 GPIO_ACTIVE_HIGH>;
 		host-wakeup-gpios = <&gpio0 RK_PA4 GPIO_ACTIVE_HIGH>;
 		max-speed = <1500000>;
-		vbat-supply = <&vcc3v3_sys>;
-		vddio-supply = <&vcc_1v8>;
+		vbat-supply = <&wifi_bat>;
+		vddio-supply = <&vcc_wl>;
 	};
 };
 
