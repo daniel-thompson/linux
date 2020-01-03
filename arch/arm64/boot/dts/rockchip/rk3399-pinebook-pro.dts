@@ -16,7 +16,7 @@
 	model = "Pine64 Pinebook Pro";
 	compatible = "pine64,pinebook-pro", "rockchip,rk3399";
 
-	edp_panel: edp-panel { /* "boe,nv140fhmn49" */
+	edp_panel: edp-panel {
 		compatible = "boe,nv140fhmn49", "simple-panel";
 		backlight = <&backlight>;
 		power-supply = <&vcc3v3_panel>;
