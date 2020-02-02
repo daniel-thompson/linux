@@ -39,7 +39,7 @@
 	};
 
 	chosen {
-		bootargs = "earlycon=uart8250,mmio32,0xff1a0000";
+		bootargs = "earlycon=uart8250,mmio32,0xff1a0000 mem_sleep_default=s2idle";
 		stdout-path = "serial2:1500000n8";
 	};
 
