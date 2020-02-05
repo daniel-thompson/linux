@@ -8,7 +8,7 @@
 #include <dt-bindings/input/linux-event-codes.h>
 #include <dt-bindings/pwm/pwm.h>
 #include <dt-bindings/usb/pd.h>
-//#include <dt-bindings/leds/common.h>
+#include <dt-bindings/leds/common.h>
 #include "rk3399.dtsi"
 #include "rk3399-opp.dtsi"
 
@@ -52,20 +52,20 @@
 		green-led {
 			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_LOW>;
 			label = "green:disk-activity";
-//			function = LED_FUNCTION_POWER;
+			function = LED_FUNCTION_POWER;
 			linux,default-trigger = "disk-activity";
 			default-state = "off";
-//			color = <LED_COLOR_ID_GREEN>;
+			color = <LED_COLOR_ID_GREEN>;
 		};
 
 		red-led {
 			gpios = <&gpio0 RK_PA2 GPIO_ACTIVE_HIGH>;
 			label = "red:standby";
-//			function = LED_FUNCTION_STANDBY;
+			function = LED_FUNCTION_STANDBY;
 			default-state = "off";
 			panic-indicator;
 			retain-state-suspended;
-//			color = <LED_COLOR_ID_RED>;
+			color = <LED_COLOR_ID_RED>;
 		};
 	};
 
