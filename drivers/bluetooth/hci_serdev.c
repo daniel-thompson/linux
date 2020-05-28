@@ -362,5 +362,7 @@ void hci_uart_unregister_device(struct hci_uart *hu)
 
 	hu->proto->close(hu);
 	serdev_device_close(hu->serdev);
+
+	clear_bit(HCI_UART_REGISTERED, &hu->flags);
 }
 EXPORT_SYMBOL_GPL(hci_uart_unregister_device);
