@@ -465,6 +465,9 @@ struct regulator_dev {
 
 	/* time when this regulator was disabled last time */
 	unsigned long last_off_jiffy;
+
+	/* state when resuming */
+	int resume_state;
 };
 
 struct regulator_dev *
