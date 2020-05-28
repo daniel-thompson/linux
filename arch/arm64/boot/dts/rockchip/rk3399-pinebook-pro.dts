@@ -110,7 +110,8 @@
 			default-state = "on";
 			function = LED_FUNCTION_POWER;
 			gpios = <&gpio0 RK_PB3 GPIO_ACTIVE_HIGH>;
-			label = "green:power";
+			label = "green:disk-activity";
+			linux,default-trigger = "mmc2-inverted";
 		};
 
 		red_led: led-1 {
