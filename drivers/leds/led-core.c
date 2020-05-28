@@ -175,6 +175,7 @@ static void led_blink_setup(struct led_classdev *led_cdev,
 		     unsigned long *delay_off)
 {
 	if (!test_bit(LED_BLINK_ONESHOT, &led_cdev->work_flags) &&
+	    !test_bit(LED_BLINK_INVERT, &led_cdev->work_flags) &&
 	    led_cdev->blink_set &&
 	    !led_cdev->blink_set(led_cdev, delay_on, delay_off))
 		return;
