@@ -5268,6 +5268,14 @@ void regulator_unregister(struct regulator_dev *rdev)
 EXPORT_SYMBOL_GPL(regulator_unregister);
 
 #ifdef CONFIG_SUSPEND
+static inline int can_enable(struct regulator_dev *rdev) {
+	return rdev->ena_pin || rdev->desc->ops->enable;
+}
+
+static inline int can_disable(struct regulator_dev *rdev) {
+	return rdev->ena_pin || rdev->desc->ops->disable;
+}
+
 /**
  * regulator_suspend - prepare regulators for system wide suspend
  * @dev: ``&struct device`` pointer that is passed to _regulator_suspend()
@@ -5278,10 +5286,33 @@ static int regulator_suspend(struct device *dev)
 {
 	struct regulator_dev *rdev = dev_to_rdev(dev);
 	suspend_state_t state = pm_suspend_target_state;
+	struct regulator_state *rstate;
 	int ret;
 
 	regulator_lock(rdev);
 	ret = suspend_set_state(rdev, state);
+	if (ret) {
+		goto out;
+	}
+
+	rstate = regulator_get_suspend_state(rdev, state);
+	if (rstate == NULL)
+		goto out;
+
+	if (rstate->enabled == ENABLE_IN_SUSPEND && can_enable(rdev)) {
+		if (!rdev->desc->ops->set_suspend_enable) {
+			rdev->resume_state = _regulator_is_enabled(rdev);
+			rdev_info(rdev, "Entering suspend %d, enabling forcibly, was %s\n", state, rdev->resume_state ? "on" : "off");
+			ret = _regulator_do_enable(rdev);
+		}
+	} else if (rstate->enabled == DISABLE_IN_SUSPEND && can_disable(rdev)) {
+		if (!rdev->desc->ops->set_suspend_disable) {
+			rdev->resume_state = _regulator_is_enabled(rdev);
+			rdev_info(rdev, "Entering suspend %d, disabling forcibly, was %s\n", state, rdev->resume_state ? "on" : "off");
+			ret = _regulator_do_disable(rdev);
+		}
+	}
+out:
 	regulator_unlock(rdev);
 
 	return ret;
@@ -5300,10 +5331,19 @@ static int regulator_resume(struct device *dev)
 
 	regulator_lock(rdev);
 
-	if (rdev->desc->ops->resume &&
-	    (rstate->enabled == ENABLE_IN_SUSPEND ||
-	     rstate->enabled == DISABLE_IN_SUSPEND))
-		ret = rdev->desc->ops->resume(rdev);
+	if (rstate->enabled == ENABLE_IN_SUSPEND || rstate->enabled == DISABLE_IN_SUSPEND) {
+		if (rdev->desc->ops->resume) {
+			ret = rdev->desc->ops->resume(rdev);
+		} else if ((rstate->enabled == ENABLE_IN_SUSPEND && !rdev->desc->ops->set_suspend_enable) || 
+		           (rstate->enabled == DISABLE_IN_SUSPEND && !rdev->desc->ops->set_suspend_disable)) {
+			rdev_info(rdev, "Resuming, restoring state to %s\n", rdev->resume_state ? "on" : "off");
+			if (rdev->resume_state && can_enable(rdev)) {
+				ret = _regulator_do_enable(rdev);
+			} else if (!rdev->resume_state && can_disable(rdev)) {
+				ret = _regulator_do_disable(rdev);
+			}
+		}
+	}
 
 	regulator_unlock(rdev);
 
