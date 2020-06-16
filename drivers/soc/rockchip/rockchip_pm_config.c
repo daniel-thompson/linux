@@ -99,7 +99,7 @@ static void rockchip_pm_virt_pwroff_prepare(void)
 
 	regulator_suspend_prepare(PM_SUSPEND_MEM);
 
-	error = disable_nonboot_cpus();
+	error = freeze_secondary_cpus(0);
 	if (error) {
 		pr_err("Disable nonboot cpus failed!\n");
 		return;
