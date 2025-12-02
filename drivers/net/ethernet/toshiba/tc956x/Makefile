@@ -1,6 +1,3 @@
-ifeq ($(RELEASE_PACKAGE),1)
-EXTRA_CFLAGS+=-DRELEASE_PACKAGE
-endif
 LBITS := $(shell getconf LONG_BIT)
 ifeq ($(LBITS),64)
 CCFLAGS += -m64
@@ -12,35 +9,10 @@ endif
 EXTRA_CFLAGS+=-DTC956X
 EXTRA_CFLAGS+=-DCONFIG_TC956X_PLATFORM_SUPPORT
 
-ifeq ($(TC956X_PCIE_GEN3_SETTING),1)
-EXTRA_CFLAGS+=-DTC956X_PCIE_GEN3_SETTING
-endif
-
-ifeq ($(TC956X_LOAD_FW_HEADER),1)
-EXTRA_CFLAGS+=-DTC956X_LOAD_FW_HEADER
-endif
-
-ifeq ($(TC956X_IOCTL_REG_RD_WR_ENABLE),1)
-EXTRA_CFLAGS+=-DTC956X_IOCTL_REG_RD_WR_ENABLE
-endif
-
-ifeq ($(TC956X_MAGIC_PACKET_WOL_GPIO),1)
-EXTRA_CFLAGS+=-DTC956X_MAGIC_PACKET_WOL_GPIO
-endif
-
-ifeq ($(TC956X_MAGIC_PACKET_WOL_CONF),1)
-EXTRA_CFLAGS+=-DTC956X_MAGIC_PACKET_WOL_CONF
-endif
-
-ifeq ($(TC956X_DMA_OFFLOAD_ENABLE),1)
-EXTRA_CFLAGS+=-DTC956X_DMA_OFFLOAD_ENABLE
-DMA_OFFLOAD = 1
-endif
-
-ifeq ($(vf), 1)
+ifdef CONFIG_TC965X_SPIOV_VF
 EXTRA_CFLAGS+=-DTC956X_SRIOV_VF
 
-obj-m := tc956x_vf_pcie_eth.o
+obj-$(CONFIG_TC956X_NET) := tc956x_vf_pcie_eth.o
 tc956x_vf_pcie_eth-y := tc956xmac_main.o tc956xmac_ethtool.o \
 	      mmc_core.o tc956xmac_hwtstamp.o tc956xmac_ptp.o \
 	      hwif.o  tc956xmac_tc.o dwxgmac2_core.o \
@@ -53,7 +25,7 @@ else
 
 EXTRA_CFLAGS+=-DTC956X_SRIOV_PF
 
-obj-m := tc956x_pcie_eth.o
+obj-$(CONFIG_TC956X_NET) := tc956x_pcie_eth.o
 tc956x_pcie_eth-y := tc956xmac_main.o tc956xmac_ethtool.o tc956xmac_mdio.o \
 	      mmc_core.o tc956xmac_hwtstamp.o tc956xmac_ptp.o tc956x_xpcs.o tc956x_pma.o \
 	      hwif.o  tc956xmac_tc.o dwxgmac2_core.o \
@@ -76,19 +48,10 @@ ifeq ($(DMA_OFFLOAD), 1)
 	tc956x_pcie_eth-y += tc956x_ipa_intf.o
 endif
 
-ifeq ($(TC956XMAC_SELFTESTS), 1)
+ifdef CONFIG_TC956X_MAC_SELFTESTS
 	tc956x_pcie_eth-y += tc956xmac_selftests.o
 endif
 #TC956X_Host_Driver-industrial_limited_tested_20241022_V_04-00-01-QPSSW-210.patch
 ccflags-y := -Wmissing-prototypes
 
 endif
-
-#modules:
-#	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) modules
-#
-#modules_install:
-#	make -C $(KERNEL_SRC) M=$(PWD) modules_install
-#
-#clean:
-#	make -C $(KERNEL_SRC) M=$(PWD) clean

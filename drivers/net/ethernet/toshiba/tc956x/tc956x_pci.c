@@ -236,7 +236,7 @@
 #include "tc956xmac_inc.h"
 #include "common.h"
 
-#ifdef TC956X_LOAD_FW_HEADER
+#ifdef CONFIG_TC956X_LOAD_FW_HEADER
 #include "fw.h"
 #endif
 #ifdef TC956X_SRIOV_VF
@@ -271,7 +271,7 @@ uint16_t tc956x_get_shared_mem_offset(struct pci_dev *pdev, uint16_t pci_bd)
 #ifdef CONFIG_PCI_IOV
 static int tc956x_no_of_vf;
 #endif
-#ifdef TC956X_PCIE_GEN3_SETTING
+#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 static unsigned int pcie_link_speed = 3;
 #endif
 #endif
@@ -580,7 +580,7 @@ static const struct tc956x_version tc956x_drv_version = {0, 6, 0, 0, 0, 0};
 int tc956xmac_pm_usage_counter; /* Device Usage Counter */
 int tc956x_dsp_count;
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_GPIO
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO
 static void tc956x_wol_gpio_trigger(void __iomem *reg_base_addr, bool mode);
 #endif
 #endif
@@ -1875,7 +1875,7 @@ static int tc956xmac_xgmac3_default_data(struct pci_dev *pdev,
 #endif
 #endif
 
-#if defined(TC956X_SRIOV_PF) && defined(TC956X_DMA_OFFLOAD_ENABLE)
+#if defined(TC956X_SRIOV_PF) && defined(CONFIG_TC956X_DMA_OFFLOAD_ENABLE)
 	plat->tx_dma_ch_owner[0] = TX_DMA_CH0_OWNER;
 	plat->tx_dma_ch_owner[1] = TX_DMA_CH1_OWNER;
 	plat->tx_dma_ch_owner[2] = TX_DMA_CH2_OWNER;
@@ -2191,7 +2191,7 @@ s32 tc956x_load_firmware(struct device *dev, struct tc956xmac_resources *res)
 {
 	u32 adrs = 0, val = 0;
 	u32 fw_init_sync;
-#ifdef TC956X_LOAD_FW_HEADER
+#ifdef CONFIG_TC956X_LOAD_FW_HEADER
 	u32 fw_size = sizeof(fw_data);
 
 	NMSGPR_INFO(dev,  "FW Loading: .h\n");
@@ -2327,7 +2327,7 @@ s32 tc956x_load_firmware(struct device *dev, struct tc956xmac_resources *res)
 	return 0;
 }
 #endif /*TC956X_SRIOV_VF*/
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 /*
  * brief API to populate the table address map registers.
  *
@@ -2624,7 +2624,7 @@ static void tc956x_pcie_disable_dsp2_port(struct device *dev,
 }
 #endif /*#ifdef TC956X_PCIE_DISABLE_DSP2*/
 
-//#ifdef TC956X_PCIE_GEN3_SETTING
+//#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 static int tc956x_replace_aspm(struct pci_dev *pdev, u16 replace_value, u16 *org_value)
 {
 	int err;
@@ -2777,7 +2777,7 @@ int tc956x_set_pci_speed(struct pci_dev *pdev, u32 speed)
 
 	return ret;
 }
-//#endif /*#ifdef TC956X_PCIE_GEN3_SETTING*/
+//#endif /*#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING*/
 #endif /*#ifdef TC956X*/
 
 uint8_t get_tc956x_index(struct pci_dev *pdev)
@@ -2814,7 +2814,7 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	struct tc956xmac_pci_info *info = (struct tc956xmac_pci_info *)id->driver_data;
 	struct plat_tc956xmacenet_data *plat;
 	struct tc956xmac_resources res;
-#if (defined(TC956X_PCIE_DSP_CUT_THROUGH) || defined(TC956X_PCIE_GEN3_SETTING)) && defined(TC956X_SRIOV_PF)
+#if (defined(TC956X_PCIE_DSP_CUT_THROUGH) || defined(CONFIG_TC956X_PCIE_GEN3_SETTING)) && defined(TC956X_SRIOV_PF)
 	u32 val;
 #endif
 #if defined(TC956X_PCIE_LINK_STATE_LATENCY_CTRL) && defined(TC956X_SRIOV_PF)
@@ -3052,7 +3052,7 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	}
 #endif /* TC956X_PCIE_LOGSTAT */
 
-#ifdef TC956X_PCIE_GEN3_SETTING
+#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 	val = readl(res.addr + TC956X_GLUE_EFUSE_CTRL);
 	if ((val & 0x10) == 0) {
 		DBGPR_FUNC(&(pdev->dev), "<--%s : Applying Gen3 setting\n", __func__);
@@ -3218,7 +3218,7 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 	res.port_num &= RSCMNG_PFN;
 #endif
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_GPIO
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO
 	if (res.port_num == RM_PF0_ID) {
 		KPRINT_INFO("%s: Port %d Bus number %x - Configuring GPIO for WOL", __func__, res.port_num, pdev->bus->number);
 		tc956x_wol_gpio_trigger(res.addr, false); /* Set to LOW */
@@ -3258,7 +3258,7 @@ static int tc956xmac_pci_probe(struct pci_dev *pdev,
 #ifndef TC956X_SRIOV_VF
 	/* User configured/Default Module parameters of TC956x*/
 	NMSGPR_INFO(&pdev->dev, "User Configured/Default Module parameters of TC956x of Port-%d bus number-%x\n", plat->port_num, pdev->bus->number);
-#ifdef TC956X_PCIE_GEN3_SETTING
+#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 	NMSGPR_INFO(&pdev->dev, "pcie_link_speed = %d\n", pcie_link_speed);
 #endif
 	NMSGPR_INFO(&pdev->dev, "macX_interface = %d\n", macX_interface[res.device_num]);
@@ -4019,7 +4019,7 @@ static int tc956x_pcie_suspend(struct device *dev)
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
 	struct tc956xmac_priv *priv = netdev_priv(ndev);
 	int ret = 0;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	u8 i;
 	u32 val;
 #endif
@@ -4041,7 +4041,7 @@ static int tc956x_pcie_suspend(struct device *dev)
 	/* Call tc956xmac_suspend() */
 #ifdef TC956X_SRIOV_PF
 	tc956xmac_suspend(&pdev->dev);
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	if (tx956x_pci_shrd_mem[priv->pci_bd].pci_dev_active_cnt == TC956X_ALL_MAC_PORT_SUSPENDED) {
 		DBGPR_FUNC(&(pdev->dev), "%s : Port %d %s - Tamap Configuration", __func__, priv->port_num, priv->dev->name);
 		/* Since TAMAP is common for Port0 and Port1,
@@ -4081,7 +4081,7 @@ static int tc956x_pcie_suspend(struct device *dev)
 
 	tc956xmac_pm_set_power(priv, SUSPEND);
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_GPIO
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO
 	if (priv->port_num == RM_PF0_ID) {
 		KPRINT_INFO("%s: Port %d %s - Configuring GPIO for WOL", __func__, priv->port_num, priv->dev->name);
 		tc956x_wol_gpio_trigger(priv->ioaddr, true); /* Set to HIGH */
@@ -4092,13 +4092,13 @@ static int tc956x_pcie_suspend(struct device *dev)
 	if (ret < 0)
 		goto err;
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	if (priv->wol_config_enabled == true) {
 		/* Set Flag to configure original interface and speed after resume. */
 		priv->wol_config_enabled = false; /* Note: QC can place this either at end of suspend or beginning of resume */
 		KPRINT_INFO("%s Port %d %s : Updated flag priv->wol_config_enabled to %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 	}
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 #endif
 err:
 	mutex_unlock(&tc956x_pm_suspend_lock);
@@ -4326,10 +4326,10 @@ static int tc956x_pcie_resume(struct device *dev)
 #ifndef TC956X_SRIOV_VF
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
 	struct tc956xmac_priv *priv = netdev_priv(ndev);
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	u8 i;
 #endif
-#ifdef TC956X_PCIE_GEN3_SETTING
+#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 	u32 val;
 #endif
 #endif
@@ -4364,7 +4364,7 @@ static int tc956x_pcie_resume(struct device *dev)
 		goto err;
 	}
 
-#ifdef TC956X_PCIE_GEN3_SETTING
+#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 	if (tx956x_pci_shrd_mem[priv->pci_bd].pci_dev_active_cnt == TC956X_ALL_MAC_PORT_SUSPENDED) {
 		/* Reset Speed to Gen3 after resume */
 		DBGPR_FUNC(&(pdev->dev), "%s : Port %d %s- Set Speed to Gen3", __func__, priv->port_num, priv->dev->name);
@@ -4392,7 +4392,7 @@ static int tc956x_pcie_resume(struct device *dev)
 	if (tx956x_pci_shrd_mem[priv->pci_bd].pci_dev_active_cnt == TC956X_ALL_MAC_PORT_SUSPENDED) {
 		DBGPR_FUNC(&(pdev->dev), "%s : Tamap Re-configuration", __func__);
 		tc956x_config_tamap(&pdev->dev, priv->tc956x_BRIDGE_CFG_pci_base_addr);
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		for (i = 1; i <= MAX_CM3_TAMAP_ENTRIES; i++) {
 			if (priv->cm3_tamap[i-1].valid)
 				tc956x_config_CM3_tamap(&pdev->dev, priv->tc956x_BRIDGE_CFG_pci_base_addr,
@@ -4435,7 +4435,7 @@ static int tc956x_pcie_resume(struct device *dev)
 		queue_work(system_wq, &priv->emac_phy_work);
 	}
 
-#ifdef TC956X_MAGIC_PACKET_WOL_GPIO
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO
 	if (priv->port_num == RM_PF0_ID) {
 		KPRINT_INFO("%s: Port %d - Configuring GPIO for WOL", __func__, priv->port_num);
 		tc956x_wol_gpio_trigger(priv->ioaddr, false); /* Set to LOW */
@@ -4484,7 +4484,7 @@ err:
 }
 
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_GPIO
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO
 /*!
  * \brief API to signal SUSPEND/RESUME to external Host Triggering Device.
  *
@@ -4526,7 +4526,7 @@ static void tc956x_wol_gpio_trigger(void __iomem *reg_base_addr, bool mode)
 		GPIOO0_OFFSET, readl(reg_base_addr + GPIOO0_OFFSET));
 	KPRINT_INFO("<--%s\n", __func__);
 }
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_GPIO */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_GPIO */
 #endif /* TC956X_SRIOV_PF */
 /*!
  * \brief API to shutdown the device.
@@ -4801,7 +4801,7 @@ module_exit(tc956x_exit_module);
 module_param(tc956x_no_of_vf, int, MOD_PARAM_ACCESS);
 #endif
 
-#ifdef TC956X_PCIE_GEN3_SETTING
+#ifdef CONFIG_TC956X_PCIE_GEN3_SETTING
 module_param(pcie_link_speed, uint, 0444);
 MODULE_PARM_DESC(pcie_link_speed,
 		 "PCIe speed Gen TC956X - default is 3, [1..3]");

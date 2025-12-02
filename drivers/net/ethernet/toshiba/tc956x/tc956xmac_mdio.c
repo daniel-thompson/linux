@@ -98,7 +98,7 @@
 #define MII_XGMAC_PSE			BIT(30)
 #define MII_XGMAC_DISABLE_PSE	0xBFFFFFFF
 
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 #define MII_XGMAC_DA_MASK		0x1F
 #define MII_XGMAC_PHYREG_MASK		0xFFFF
 #define MII_AQR113C_PHY_GLOBAL_DEV		0x1E
@@ -106,7 +106,7 @@
 #define MII_AQR113C_PHY_GLBL_1G_REG_ADDR		0x31C
 #define MII_AQR113C_AN_EN_SGMII_MODE_MASK		0xB
 #define MII_AQR113C_AN_DIS_SGMII_DIS		0x0
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 
 #define TC956X_MII_ADDR_C45					(1<<30)
 #define TC956X_MII_DEVADDR_C45_SHIFT		16
@@ -267,7 +267,7 @@ static int __tc956xmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
 	u32 addr, tmp, value = MII_XGMAC_BUSY;
 	int ret;
 	u8 poll_time = 0;
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	u32 devtype = 0, datareg = 0, dataval = 0;
 #endif
 
@@ -319,7 +319,7 @@ static int __tc956xmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
 			       !(tmp & MII_XGMAC_BUSY), /*100*/poll_time + 1, 10000))
 		return -EBUSY;
 
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	/* NOTE: Following changes specific to AQR PHY while configuring WOL. */
 	if (priv->plat->interface != PHY_INTERFACE_MODE_SGMII) {
 		/* If we are updating SGMII configurtaion in Non-SGMII interface mode */

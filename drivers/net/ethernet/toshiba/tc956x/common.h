@@ -775,7 +775,7 @@ enum packets_types {
 /***************** Automotive and Port Bridge Config Starts *************/
 
 
-#if defined(TC956X_DMA_OFFLOAD_ENABLE)
+#if defined(CONFIG_TC956X_DMA_OFFLOAD_ENABLE)
 #define TX_DMA_CH0_OWNER USE_IN_TC956X_SW
 #define TX_DMA_CH1_OWNER NOT_USED
 #define TX_DMA_CH2_OWNER USE_IN_TC956X_SW

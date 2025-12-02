@@ -596,7 +596,7 @@ int tc956x_dump_regs(struct net_device *net_device, struct tc956x_regs *regs)
 		tx_q = &priv->tx_queue[ch];
 		regs->dma_reg.tx_queue[ch].desc_phy_addr = tx_q->dma_tx_phy;
 		regs->dma_reg.tx_queue[ch].desc_va_addr = tx_q->dma_tx;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		regs->dma_reg.tx_queue[ch].buff_phy_addr = tx_q->buff_tx_phy;
 		regs->dma_reg.tx_queue[ch].buff_va_addr = (void *)tx_q->buffer_tx_va_addr;
 #endif
@@ -608,7 +608,7 @@ int tc956x_dump_regs(struct net_device *net_device, struct tc956x_regs *regs)
 		rx_q = &priv->rx_queue[ch];
 		regs->dma_reg.rx_queue[ch].desc_phy_addr = rx_q->dma_rx_phy;
 		regs->dma_reg.rx_queue[ch].desc_va_addr = rx_q->dma_rx;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		regs->dma_reg.rx_queue[ch].buff_phy_addr = rx_q->buff_rx_phy;
 		regs->dma_reg.rx_queue[ch].buff_va_addr = (void *)rx_q->buffer_rx_va_addr;
 #endif
@@ -865,7 +865,7 @@ int tc956x_print_debug_regs(struct net_device *net_device, struct tc956x_regs *r
 	for (ch = 0; ch < tx_queues_cnt; ch++) {
 		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].desc_phy_addr = 0x%llx\n", ch, regs->dma_reg.tx_queue[ch].desc_phy_addr);
 		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].desc_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].desc_va_addr));
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].buff_phy_addr = 0x%llx\n", ch, regs->dma_reg.tx_queue[ch].buff_phy_addr);
 		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].buff_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].buff_va_addr));
 #endif
@@ -876,7 +876,7 @@ int tc956x_print_debug_regs(struct net_device *net_device, struct tc956x_regs *r
 	for (ch = 0; ch < rx_queues_cnt; ch++) {
 		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].desc_phy_addr = 0x%llx\n", ch, regs->dma_reg.rx_queue[ch].desc_phy_addr);
 		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].desc_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].desc_va_addr));
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].buff_phy_addr = 0x%llx\n", ch, regs->dma_reg.rx_queue[ch].buff_phy_addr);
 		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].buff_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].buff_va_addr));
 #endif
@@ -1315,7 +1315,7 @@ static ssize_t read_tc956x_dma_status(struct file *file,
 		tx_q = &priv->tx_queue[ch];
 		printk("dma_reg.tx_queue[%d].desc_phy_addr = 0x%lx\n", ch, (unsigned long)tx_q->dma_tx_phy);
 		printk("dma_reg.tx_queue[%d].desc_va_addr = 0x%lx\n", ch, (unsigned long)tx_q->dma_tx);
-		#ifdef TC956X_DMA_OFFLOAD_ENABLE
+		#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		printk("dma_reg.tx_queue[%d].buff_phy_addr = 0x%lx\n", ch, (unsigned long)tx_q->buff_tx_phy);
 		printk("dma_reg.tx_queue[%d].buff_va_addr = 0x%lx\n", ch, (unsigned long)tx_q->buffer_tx_va_addr);
 		#endif
@@ -1327,7 +1327,7 @@ static ssize_t read_tc956x_dma_status(struct file *file,
 		rx_q = &priv->rx_queue[ch];
 		printk("dma_reg.rx_queue[%d].desc_phy_addr = 0x%lx\n", ch, (unsigned long)rx_q->dma_rx_phy);
 		printk("dma_reg.rx_queue[%d].desc_va_addr = 0x%lx\n", ch, (unsigned long)rx_q->dma_rx);
-		#ifdef TC956X_DMA_OFFLOAD_ENABLE
+		#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 		printk("dma_reg.rx_queue[%d].buff_phy_addr = 0x%lx\n", ch, (unsigned long)rx_q->buff_rx_phy);
 		printk("dma_reg.rx_queue[%d].buff_va_addr = 0x%lx\n", ch, (unsigned long)(void *)rx_q->buffer_rx_va_addr);
 		#endif
@@ -3534,7 +3534,7 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 	u32 ctrl, emac_ctrl, misc_ctrl;
 	u32 val;
 	bool config_done = false;
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	int ret = 0;
 #endif
 
@@ -3565,7 +3565,7 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 			KPRINT_INFO("AN clause 37 complete bit cleared");
 		}
 
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 		if (priv->wol_config_enabled != true) {
 #endif
 			if (state->interface == PHY_INTERFACE_MODE_USXGMII) {
@@ -3699,7 +3699,7 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 			tc956x_xpcs_write(priv->xpcsaddr, XGMAC_SR_MII_CTRL, val);
 			config_done = true;
 		}
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 		} else {
 			/* Configure Speed for WOL SGMII 1Gbps */
 			KPRINT_INFO("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
@@ -3736,7 +3736,7 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 			tc956x_xpcs_write(priv->xpcsaddr, XGMAC_SR_MII_CTRL, val);
 			config_done = true;
 		} /* End of if (priv->wol_config_enabled != true) */
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 	} else if ((state->interface == PHY_INTERFACE_MODE_RGMII) ||
 		(state->interface == PHY_INTERFACE_MODE_RGMII_ID)) {
 		switch (state->speed) {
@@ -4121,7 +4121,7 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 	bool config_done = false;
 	u32 reg_value;
 	u32 val;
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	int ret;
 #endif
 	struct phylink_link_state state;
@@ -4149,7 +4149,7 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 			KPRINT_INFO("AN clause 37 complete bit cleared");
 		}
 
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 		if (priv->wol_config_enabled != true) {
 #endif
 			if (interface == PHY_INTERFACE_MODE_USXGMII) {
@@ -4284,7 +4284,7 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 				tc956x_xpcs_write(priv->xpcsaddr, XGMAC_SR_MII_CTRL, val);
 				config_done = true;
 			}
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 		} else {
 			/* Configure Speed for WOL SGMII 1Gbps */
 			KPRINT_INFO("%s Port %d %s : Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
@@ -4323,7 +4323,7 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 			tc956x_xpcs_write(priv->xpcsaddr, XGMAC_SR_MII_CTRL, val);
 			config_done = true;
 		} /* End of if (priv->wol_config_enabled != true) */
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 	} else if ((interface == PHY_INTERFACE_MODE_RGMII) ||
 		(interface == PHY_INTERFACE_MODE_RGMII_ID)) {
 		switch (speed) {
@@ -9702,7 +9702,7 @@ static irqreturn_t tc956xmac_interrupt_v0(int irq, void *dev_id)
 #endif
 	bool xmac;
 	u32 queue;
-#if defined(TC956X_DMA_OFFLOAD_ENABLE)
+#if defined(CONFIG_TC956X_DMA_OFFLOAD_ENABLE)
 	uint32_t uiIntSts, uiIntclr = 0;
 	u32 value = 0;
 #endif
@@ -9765,7 +9765,7 @@ static irqreturn_t tc956xmac_interrupt_v0(int irq, void *dev_id)
 	if (val & (1 << 24))
 		priv->xstats.sw_msi_n++;
 
-#if defined(TC956X_DMA_OFFLOAD_ENABLE)
+#if defined(CONFIG_TC956X_DMA_OFFLOAD_ENABLE)
 	for (queue = 0; queue < queues_count; queue++) {
 		uiIntSts = readl(priv->ioaddr + XGMAC_DMA_CH_STATUS(queue));
 
@@ -15449,9 +15449,9 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 	else
 		priv->is_sgmii_2p5g = false;
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	priv->wol_config_enabled = false; /* Disable WOL SGMII 1G, configuration by default */
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 #endif
 	priv->dev->irq = res->irq;
 	priv->wol_irq = res->wol_irq;
@@ -15553,7 +15553,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 
 	/* Tx & Rx Queue Configuration */
 	priv->plat->tx_q_in_use[0] = TC956X_ENABLE_QUEUE;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	priv->plat->tx_q_in_use[1] = TC956X_ENABLE_QUEUE;
 #else
 	priv->plat->tx_q_in_use[1] = TC956X_DISABLE_QUEUE;
@@ -15603,7 +15603,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 
 	/* Tx & Rx Queue Configuration */
 	priv->plat->tx_q_in_use[0] = TC956X_ENABLE_QUEUE;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	priv->plat->tx_q_in_use[1] = TC956X_ENABLE_QUEUE;
 #else
 	priv->plat->tx_q_in_use[1] = TC956X_DISABLE_QUEUE;
@@ -15636,7 +15636,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 	spin_lock_init(&priv->spn_lock.cbs);
 #endif
 #ifndef TC956X_SRIOV_PF
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	priv->client_priv = NULL;
 	memset(priv->cm3_tamap, 0, sizeof(struct tc956xmac_cm3_tamap) * MAX_CM3_TAMAP_ENTRIES);
 #endif

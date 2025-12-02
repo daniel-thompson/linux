@@ -53,7 +53,7 @@
  *  VERSION     : 01-00-08
  *  16 Aug 2021 : 1. PHY interrupt mode supported through .config_intr and .ack_interrupt API
  *  VERSION     : 01-00-09
- *  24 Aug 2021 : 1. Disable TC956X_PCIE_GEN3_SETTING and TC956X_LOAD_FW_HEADER macros and provide support via Makefile
+ *  24 Aug 2021 : 1. Disable CONFIG_TC956X_PCIE_GEN3_SETTING and CONFIG_TC956X_LOAD_FW_HEADER macros and provide support via Makefile
  *              : 2. Platform API supported
  *  VERSION     : 01-00-10
  *  02 Sep 2021 : 1. Configuration of Link state L0 and L1 transaction delay for PCIe switch ports & Endpoint.
@@ -234,7 +234,7 @@
 #include "tc956x_pf_rsc_mng.h"
 #endif
 #ifndef TC956X_SRIOV_VF
-//#define TC956X_LOAD_FW_HEADER
+//#define CONFIG_TC956X_LOAD_FW_HEADER
 #endif
 #define PF_DRIVER 4
 
@@ -331,7 +331,7 @@
 #define TC956X_AXI4_SLV00_TRSL_PARAM_VAL   (0x00000000U)
 #define TC956X_AXI4_SLV00_SRC_ADDR_LO_VAL_DEFAULT  (0x0000007FU)
 
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 #define TC956X_AXI4_SLV01_ATR_SIZE	   28U	  /* 28 bit DMA Mask */
 #define TC956X_AXI4_SLV01_SRC_ADDR_LO_VAL  (0x60000000U)
 #define TC956X_AXI4_SLV01_SRC_ADDR_HI_VAL  (0x00000000U)
@@ -467,7 +467,7 @@
 #define XDP_PACKET_HEADROOM 256
 #define TC956X_MAX_RX_BUF_SIZE(num)	(((num) * PAGE_SIZE) - XDP_PACKET_HEADROOM)
 
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 struct tc956xmac_cm3_tamap {
 	u32 trsl_addr_hi;
 	u32 trsl_addr_low;
@@ -542,7 +542,7 @@ struct tc956xmac_tx_queue {
 	dma_addr_t dma_tx_phy;
 	u32 tx_tail_addr;
 	u32 mss;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	struct sk_buff **tx_offload_skbuff;
 	dma_addr_t *tx_offload_skbuff_dma;
 	dma_addr_t buff_tx_phy;
@@ -576,7 +576,7 @@ struct tc956xmac_rx_queue {
 		unsigned int len;
 		unsigned int error;
 	} state;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	struct sk_buff **rx_offload_skbuff;
 	dma_addr_t *rx_offload_skbuff_dma;
 	dma_addr_t buff_rx_phy;
@@ -916,7 +916,7 @@ struct tc956xmac_priv {
 
 	/* Private data store for platform layer */
 	void *plat_priv;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	void *client_priv;
 	struct tc956xmac_cm3_tamap cm3_tamap[MAX_CM3_TAMAP_ENTRIES];
 #endif
@@ -925,9 +925,9 @@ struct tc956xmac_priv {
 	u32 pm_saved_emac_rst; /* Save and restore EMAC Resets during suspend-resume sequence */
 	u32 pm_saved_emac_clk; /* Save and restore EMAC Clocks during suspend-resume sequence */
 #ifdef TC956X_SRIOV_PF
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	bool wol_config_enabled; /* Flag to indicate SerDes configuration for SGMII, 1Gbps for WOL */
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 	u32 pm_saved_linkdown_rst; /* Save and restore Resets during link-down sequence */
 	u32 pm_saved_linkdown_clk; /* Save and restore Clocks during link-down sequence */
 	bool port_link_down; /* Flag to save per port link down state */
@@ -1033,7 +1033,7 @@ struct tc956x_regs_dma_ch {
 struct tx956x_tx_desc_buf_addrs {
 	dma_addr_t desc_phy_addr;
 	struct dma_desc *desc_va_addr;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	dma_addr_t buff_phy_addr;
 	void *buff_va_addr;
 #endif
@@ -1044,7 +1044,7 @@ struct tx956x_tx_desc_buf_addrs {
 struct tx956x_rx_desc_buf_addrs {
 	dma_addr_t desc_phy_addr;
 	struct dma_desc *desc_va_addr;
-#ifdef TC956X_DMA_OFFLOAD_ENABLE
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	dma_addr_t buff_phy_addr;
 	void *buff_va_addr;
 #endif
@@ -1251,7 +1251,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 void tc956xmac_disable_eee_mode(struct tc956xmac_priv *priv);
 bool tc956xmac_eee_init(struct tc956xmac_priv *priv);
 
-#ifdef CONFIG_TC956XMAC_SELFTESTS
+#ifdef CONFIG_TC956X_MAC_SELFTESTS
 void tc956xmac_selftest_run(struct net_device *dev,
 			 struct ethtool_test *etest, u64 *buf);
 void tc956xmac_selftest_get_strings(struct tc956xmac_priv *priv, u8 *data);

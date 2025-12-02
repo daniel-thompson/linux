@@ -391,7 +391,7 @@ static void dwxgmac2_dma_start_tx(struct tc956xmac_priv *priv,
 	 *  starting its channel for tranmission
 	 */
 #ifndef TC956X_SRIOV_VF
-#ifndef TC956X_DMA_OFFLOAD_ENABLE
+#ifndef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	value = readl(ioaddr + XGMAC_TX_CONFIG);
 	value |= XGMAC_CONFIG_TE;
 	writel(value, ioaddr + XGMAC_TX_CONFIG);
@@ -456,7 +456,7 @@ static void dwxgmac2_dma_stop_tx(struct tc956xmac_priv *priv,
 	DBGPR_FUNC(priv->device, "%s MTL TXQ status after flush: 0x%x, limit [%d]\n", __func__, readl(ioaddr + XGMAC_MTL_TXQ_Debug(chan)), limit);
 
 #ifndef TC956X_SRIOV_VF
-#ifndef TC956X_DMA_OFFLOAD_ENABLE
+#ifndef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	value = readl(ioaddr + XGMAC_TX_CONFIG);
 	value &= ~XGMAC_CONFIG_TE;
 	writel(value, ioaddr + XGMAC_TX_CONFIG);
@@ -477,7 +477,7 @@ static void dwxgmac2_dma_start_rx(struct tc956xmac_priv *priv,
 	 *  starting its channel for reception
 	 */
 #ifndef TC956X_SRIOV_VF
-#ifndef TC956X_DMA_OFFLOAD_ENABLE
+#ifndef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	value = readl(ioaddr + XGMAC_RX_CONFIG);
 	value |= XGMAC_CONFIG_RE;
 	writel(value, ioaddr + XGMAC_RX_CONFIG);
@@ -495,7 +495,7 @@ static void dwxgmac2_dma_stop_rx(struct tc956xmac_priv *priv,
 	writel(value, ioaddr + XGMAC_DMA_CH_RX_CONTROL(chan));
 
 #ifndef TC956X_SRIOV_VF
-#ifndef TC956X_DMA_OFFLOAD_ENABLE
+#ifndef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	value = readl(ioaddr + XGMAC_RX_CONFIG);
 	value &= ~XGMAC_CONFIG_RE;
 	writel(value, ioaddr + XGMAC_RX_CONFIG);

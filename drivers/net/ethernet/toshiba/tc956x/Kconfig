@@ -1,0 +1,47 @@
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# Toshiba TC956x configuration
+#
+
+config TC956X_NET
+	tristate "TC956x/QPS615 Ethernet driver"
+	depends on PCI
+	help
+	  This driver supports the TC965x/QPS615 ethernet audio-video bridging
+	  (AVB)/time-sensitive networking (TSN) bridge.
+
+
+if TC956X_NET
+
+config TC956X_PCIE_GEN3_SETTING
+	bool "PCIe gen3 setting"
+
+config TC956X_LOAD_FW_HEADER
+	depends on BROKEN  # No fw.h supplied
+	bool "Load firmware header (fw.h)"
+
+config TC956X_IOCTL_REG_RD_WR_ENABLE
+	bool "Enable ioctl register read/write"
+
+config TC956X_MAGIC_PACKET_WOL_GPIO
+	bool "Enable magic packet WoL GPIO"
+
+config TC956X_MAGIC_PACKET_WOL_CONF
+	bool "Enable magic packet WoL configuration"
+
+config TC956X_DMA_OFFLOAD_ENABLE
+	bool "Enable DMA offload"
+
+config TC965X_SPIOV_VF
+	depends on BROKEN  # Tries to build code that has not beeen ported to v6.6
+	bool "Enable SPIOV VF"
+
+# Skip PF/CPE/port-bridge/automotive for now
+
+# Skip DMA_OFFLOAD (which is different from TC956X_DMA_OFFLOAD_ENABLE
+# and looks like it controls whether or not dead code is compiled).
+
+config TC956X_MAC_SELFTESTS
+	bool "Enable MAC self tests"
+
+endif # TC956X_NET

@@ -70,7 +70,7 @@
 //#define TC956X
 //#define TC956X_IOCTL_REG_RD_WR_ENABLE
 
-//#define TC956X_PCIE_GEN3_SETTING
+//#define CONFIG_TC956X_PCIE_GEN3_SETTING
 //#define TC956X_PCIE_DISABLE_DSP1 /*Enable this macro to disable DSP1 port*/
 //#define TC956X_PCIE_DISABLE_DSP2 /*Enable this macro to disable DSP2 port*/
 /* Enable for PORT0 interrupt mode, if commented polling mode */

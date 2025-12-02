@@ -97,9 +97,9 @@ int tc956x_xpcs_init(struct tc956xmac_priv *priv, void __iomem *xpcsaddr)
 	if (reg_value & XGMAC_SOFT_RST)
 		return -1;
 
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	if (priv->wol_config_enabled != true) {
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 		/*Clause 37 autoneg related settings*/
 		if (priv->plat->interface == PHY_INTERFACE_MODE_SGMII) {
 			//DK2
@@ -163,7 +163,7 @@ int tc956x_xpcs_init(struct tc956xmac_priv *priv, void __iomem *xpcsaddr)
 			} while ((XGMAC_VR_RST & reg_value) == XGMAC_VR_RST);
 
 		}
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	} else { /* SerDES Configuration for WOL SGMII 1G when native interface other than SGMII. */
 		KPRINT_INFO("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 		reg_value = tc956x_xpcs_read(xpcsaddr, XGMAC_SR_XS_PCS_CTRL2);
@@ -176,7 +176,7 @@ int tc956x_xpcs_init(struct tc956xmac_priv *priv, void __iomem *xpcsaddr)
 			reg_value |= XGMAC_SGMII_MODE;/*SGMII PCS MODE*/
 			tc956x_xpcs_write(xpcsaddr, XGMAC_VR_MII_AN_CTRL, reg_value);
 	}
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 #ifdef EEE
 	reg_value = tc956x_xpcs_read(xpcsaddr, XGMAC_SR_XS_PCS_CTRL1);
 	reg_value |= XGMAC_LPI_ENABLE;/* LPM : power down */
@@ -257,9 +257,9 @@ void tc956x_xpcs_ctrl_ane(struct tc956xmac_priv *priv, bool ane)
 	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
 
 	reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_SR_MII_CTRL);
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	if (priv->wol_config_enabled != true) {
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 		if (ane) {
 			reg_value |= XGMAC_AN_37_ENABLE;
 			KPRINT_INFO("%s Enable AN", __func__);
@@ -267,14 +267,14 @@ void tc956x_xpcs_ctrl_ane(struct tc956xmac_priv *priv, bool ane)
 			reg_value &= (~XGMAC_AN_37_ENABLE);
 			KPRINT_INFO("%s Disable AN", __func__);
 			}
-#ifdef TC956X_MAGIC_PACKET_WOL_CONF
+#ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	} else {
 		/* Configure SGMII 1Gbps when WOL flag is enabled and native interface is other than SGMII. */
 		KPRINT_INFO("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 		reg_value |= XGMAC_AN_37_ENABLE;
 		KPRINT_INFO("%s Enable AN", __func__);
 	}
-#endif /* #ifdef TC956X_MAGIC_PACKET_WOL_CONF */
+#endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 	tc956x_xpcs_write(priv->xpcsaddr, XGMAC_SR_MII_CTRL, reg_value);
 }
 
