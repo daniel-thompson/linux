@@ -226,6 +226,9 @@
 #include <linux/of_mdio.h>
 #include <linux/version.h>
 #include <linux/ctype.h>
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,10,0)
+#include <linux/vmalloc.h>
+#endif
 #include "dwxgmac2.h"
 #include "hwif.h"
 #include "common.h"
@@ -350,8 +353,12 @@ static void tc956xmac_exit_fs(struct net_device *dev);
 #endif
 #endif /* TC956X_SRIOV_PF */
 #ifdef TC956X_5_G_2_5_G_EEE_SUPPORT
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+extern int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_keee *data);
+#else
 extern int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_eee *data);
 #endif
+#endif /* TC956X_5_G_2_5_G_EEE_SUPPORT */
 #ifdef TC956X_SRIOV_PF
 extern struct tx956x_shrd_mem tx956x_pci_shrd_mem[TC956X_TOT_CASCADE_DEV];
 
@@ -711,14 +718,23 @@ int tc956x_dump_regs(struct net_device *net_device, struct tc956x_regs *regs)
 	}
 
 	/* Driver & FW Information */
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0)
+	strscpy(regs->info.driver, TC956X_RESOURCE_NAME, sizeof(regs->info.driver));
+	strscpy(regs->info.version, DRV_MODULE_VERSION, sizeof(regs->info.version));
+#else
 	strlcpy(regs->info.driver, TC956X_RESOURCE_NAME, sizeof(regs->info.driver));
 	strlcpy(regs->info.version, DRV_MODULE_VERSION, sizeof(regs->info.version));
+#endif
 
 	reg = readl(priv->tc956x_SRAM_pci_base_addr + TC956X_M3_DBG_VER_START);
 	fw_version = (struct tc956x_version *)(&reg);
 	scnprintf(fw_version_str, sizeof(fw_version_str), "FW Version %s_%d.%d-%d", (fw_version->rel_dbg == 'D')?"DBG":"REL",
 					fw_version->major, fw_version->minor, fw_version->sub_minor);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 8, 0)
+	strscpy(regs->info.fw_version, fw_version_str, sizeof(regs->info.fw_version));
+#else
 	strlcpy(regs->info.fw_version, fw_version_str, sizeof(regs->info.fw_version));
+#endif
 
 	/* Updating statistics */
 	tc956xmac_mmc_read(priv, priv->mmcaddr, &priv->mmc);
@@ -2996,6 +3012,56 @@ static void tc956xmac_mac_flow_ctrl(struct tc956xmac_priv *priv, u32 duplex)
 			priv->pause, tx_cnt);
 }
 
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+static unsigned long tc956xmac_get_caps(struct phylink_config *config,
+	                    phy_interface_t interface)
+{
+	struct tc956xmac_priv *priv = netdev_priv(to_net_dev(config->dev));
+	unsigned long caps = config->mac_capabilities;
+
+	int tx_cnt = priv->plat->tx_queues_to_use;
+	int max_speed = priv->plat->max_speed;
+
+	/*USXGMII interface does not support speed of 1000/100/10*/
+	if (interface == PHY_INTERFACE_MODE_USXGMII)
+		caps &= ~(MAC_10 | MAC_100 | MAC_1000);
+
+	/*USXGMII 5G interface does not support speed of 10G*/
+	/* TODO: cannot determine this from interface */
+
+	/*USXGMII 2.5G interface does not support speed of 10G/5G*/
+	/* TODO: cannot determine this from interface */
+
+	/* Cut down 1G if asked to */
+	if (max_speed) {
+		if (max_speed < 10000)
+			caps &= ~MAC_10000FD;
+		if (max_speed < 5000)
+			caps &= ~MAC_5000FD;
+		if (max_speed < 2500)
+			caps &= ~MAC_2500FD;
+		if (max_speed < 1000)
+			caps &= ~MAC_1000;
+	}
+
+	/* Half-Duplex can only work with single queue */
+	if (tx_cnt > 1) {
+#ifdef TC956X
+		KPRINT_INFO("Half duplex not supported in Port0");
+#else
+		caps &= ~(MAC_10HD | MAC_100HD);
+#endif
+
+#ifdef TC956X
+		caps &= ~MAC_1000HD;
+#endif
+	}
+
+	return caps;
+}
+#endif /* LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0) */
+
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 7, 0)
 static void tc956xmac_validate(struct phylink_config *config,
 			    unsigned long *supported,
 			    struct phylink_link_state *state)
@@ -3098,6 +3164,7 @@ static void tc956xmac_validate(struct phylink_config *config,
 	bitmap_andnot(state->advertising, state->advertising, mask,
 			__ETHTOOL_LINK_MODE_MASK_NBITS);
 }
+#endif  /* LINUX_VERSION_CODE < KERNEL_VERSION(6, 7, 0) */
 #endif  /* TC956X_SRIOV_VF */
 
 #ifndef TC956X_SRIOV_VF
@@ -3903,10 +3970,16 @@ static void tc956xmac_mac_link_down(struct phylink_config *config,
 }
 
 #ifdef TC956X_5_G_2_5_G_EEE_SUPPORT
+
 static inline bool tc956x_phy_check_valid(int speed, int duplex,
 				   unsigned long *features)
 {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
+	WARN_ONCE(1, "Assuming all tc956x_phy_check_valid() checks are OK\n");
+	return true;
+#else
 	return !!phy_lookup_setting(speed, duplex, features, true);
+#endif
 }
 
 static void tc956x_mmd_eee_adv_to_linkmode_5G_2_5G(unsigned long *advertising, u16 eee_adv)
@@ -4455,7 +4528,12 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 }
 
 static const struct phylink_mac_ops tc956xmac_phylink_mac_ops = {
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+	.mac_get_caps = tc956xmac_get_caps,
+#else
 	.validate = tc956xmac_validate,
+#endif
+
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 5, 0)
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 6, 0)
 	.mac_pcs_get_state = tc956xmac_mac_pcs_get_state,
@@ -4591,7 +4669,11 @@ static int tc956xmac_init_phy(struct net_device *dev)
 	int ret;
 	struct phy_device *phydev = NULL;
 	int addr = priv->plat->phy_addr;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
+	struct ethtool_keee edata;
+#else
 	struct ethtool_eee edata;
+#endif
 
 	node = priv->plat->phylink_node;
 
@@ -4668,7 +4750,11 @@ static int tc956xmac_init_phy(struct net_device *dev)
 	}
 	/* Enable or disable EEE Advertisement based on eee_enabled settings which might be set using module param */
 	edata.eee_enabled = priv->eee_enabled;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,9,0)
+	linkmode_zero(edata.advertised);
+#else
 	edata.advertised = 0;
+#endif
 
 	if (priv->phylink) {
 		if ((priv->plat->interface != PHY_INTERFACE_MODE_RGMII) &&
@@ -4728,8 +4814,19 @@ static int tc956xmac_phy_setup(struct tc956xmac_priv *priv)
 		__set_bit(PHY_INTERFACE_MODE_2500BASEX,  priv->phylink_config.supported_interfaces);
 #endif
 
-	phylink = phylink_create(&priv->phylink_config, fwnode,
-				 mode, &tc956xmac_phylink_mac_ops);
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 7, 0)
+	/*
+	 * These capabilities are copied (and translated) from
+	 * tc956xmac_validate().
+	 */
+	priv->phylink_config.mac_capabilities =
+		MAC_SYM_PAUSE | MAC_ASYM_PAUSE |
+		MAC_10 | MAC_100 | MAC_1000 |
+		MAC_2500FD | MAC_5000FD | MAC_10000FD;
+#endif
+
+	phylink = phylink_create(&priv->phylink_config, fwnode, mode,
+				 &tc956xmac_phylink_mac_ops);
 	if (IS_ERR(phylink))
 		return PTR_ERR(phylink);
 
@@ -6234,7 +6331,7 @@ static void tc956xmac_dma_interrupt(struct tc956xmac_priv *priv)
 	u32 channels_to_check = tx_channel_count > rx_channel_count ?
 				tx_channel_count : rx_channel_count;
 	u32 chan;
-	int status[max_t(u32, MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES)];
+	int status[MTL_MAX_TX_QUEUES > MTL_MAX_RX_QUEUES ? MTL_MAX_TX_QUEUES : MTL_MAX_RX_QUEUES];
 
 	/* Make sure we never check beyond our status buffer. */
 	if (WARN_ON_ONCE(channels_to_check > ARRAY_SIZE(status)))
@@ -6621,7 +6718,10 @@ static void tc956xmac_init_coalesce(struct tc956xmac_priv *priv)
 		if (priv->plat->tx_dma_ch_owner[chan_no] != USE_IN_TC956X_SW)
 			continue;
 #endif
-#if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 15, 0)
+		hrtimer_setup(&tx_q->txtimer, tc956xmac_tx_timer,
+			      CLOCK_MONOTONIC, HRTIMER_MODE_REL);
+#elif LINUX_VERSION_CODE >= KERNEL_VERSION(5, 11, 0)
 		hrtimer_init(&tx_q->txtimer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 		tx_q->txtimer.function = tc956xmac_tx_timer;
 #else
@@ -10254,7 +10354,11 @@ static void tc956xmac_poll_controller(struct net_device *dev)
 int tc956xmac_rx_parser_configuration(struct tc956xmac_priv *priv)
 {
 	int ret = -EINVAL, re_init_eee = 0, dly_cnt = 0, ret_val;
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 9, 0)
+	struct ethtool_keee edata;
+#else
 	struct ethtool_eee edata;
+#endif
 
 #ifndef TC956X_SRIOV_VF
 	/* Disable EEE before configuring FRP */
@@ -11137,10 +11241,17 @@ static int tc956xmac_ioctl_set_phy_loopback(struct tc956xmac_priv *priv, void __
 	priv->phy_loopback_mode = ioctl_data.flags;
 
 #ifdef TC956X
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(6,15,0)
+	if (priv->phy_loopback_mode)
+		ret = phy_loopback(priv->dev->phydev, true, 0);
+	else
+		ret = phy_loopback(priv->dev->phydev, false, 0);
+#else
 	if (priv->phy_loopback_mode)
 		ret = phy_loopback(priv->dev->phydev, true);
 	else
 		ret = phy_loopback(priv->dev->phydev, false);
+#endif
 
 	if (ret)
 		return ret;
