@@ -133,7 +133,7 @@
 
 u32 tc956x_xpcs_read(void __iomem *xpcsaddr, u32 pcs_reg_num);
 u32 tc956x_xpcs_write(void __iomem *xpcsaddr, u32 pcs_reg_num, u32 value);
-void tc956x_xpcs_ctrl_ane(struct tc956xmac_priv *priv, bool ane);
-int tc956x_xpcs_init(struct tc956xmac_priv *priv, void __iomem *xpcsaddr);
-void tc956x_xpcs_ctrl0_lrx(struct tc956xmac_priv *priv, bool lrx);
+void tc956x_xpcs_ctrl_ane(struct stmmac_priv *priv, bool ane);
+int tc956x_xpcs_init(struct stmmac_priv *priv, void __iomem *xpcsaddr);
+void tc956x_xpcs_ctrl0_lrx(struct stmmac_priv *priv, bool lrx);
 #endif /* __TC956X_XPCS_H__ */

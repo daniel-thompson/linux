@@ -176,9 +176,9 @@ union tc956x_logstat_State_Log_Data {
  * Function Declaration
  * ===================================
  */
-int tc956x_pcie_ioctl_state_log_summary(const struct tc956xmac_priv *priv, void __user *data);
-int tc956x_pcie_ioctl_get_pcie_link_params(const struct tc956xmac_priv *priv, void __user *data);
-int tc956x_pcie_ioctl_state_log_enable(const struct tc956xmac_priv *priv, void __user *data);
+int tc956x_pcie_ioctl_state_log_summary(const struct stmmac_priv *priv, void __user *data);
+int tc956x_pcie_ioctl_get_pcie_link_params(const struct stmmac_priv *priv, void __user *data);
+int tc956x_pcie_ioctl_state_log_enable(const struct stmmac_priv *priv, void __user *data);
 int tc956x_logstat_state_log_summary(void __iomem *pbase_addr, enum ports nport);
 int tc956x_logstat_get_state_log_stop_status(void __iomem *pbase_addr, enum ports nport, uint8_t *pstop_status);
 int tc956x_logstat_set_state_log_fifo_ptr(void __iomem *pbase_addr, enum ports nport, uint8_t fifo_pointer);

@@ -81,7 +81,7 @@ static u8 mac_addr_default[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 
 static DEFINE_SPINLOCK(cm3_tamap_lock);
 
-extern int tc956xmac_rx_parser_configuration(struct tc956xmac_priv *priv);
+extern int tc956xmac_rx_parser_configuration(struct stmmac_priv *priv);
 
 /*!
  * \brief This API will return the version of IPA I/F maintained by Toshiba
@@ -126,7 +126,7 @@ EXPORT_SYMBOL_GPL(get_ipa_intf_version);
 
 int set_client_priv_data(struct net_device *ndev, void *client_priv)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 
 	if (!ndev) {
 		pr_err("%s: ERROR: Invalid netdevice pointer\n", __func__);
@@ -157,7 +157,7 @@ EXPORT_SYMBOL_GPL(set_client_priv_data);
 
 void* get_client_priv_data(struct net_device *ndev)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 
 	if (!ndev) {
 		pr_err("%s: ERROR: Invalid netdevice pointer\n", __func__);
@@ -176,7 +176,7 @@ EXPORT_SYMBOL_GPL(get_client_priv_data);
 
 static void free_ipa_tx_resources(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_tx_queue *tx_q = &priv->tx_queue[channel->channel_num];
 	u32 i;
 
@@ -211,7 +211,7 @@ static void free_ipa_tx_resources(struct net_device *ndev, struct channel_info *
 
 static void free_ipa_rx_resources(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_rx_queue *rx_q = &priv->rx_queue[channel->channel_num];
 	u32 i;
 
@@ -246,7 +246,7 @@ static void free_ipa_rx_resources(struct net_device *ndev, struct channel_info *
 
 static int find_free_tx_channel(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	u32 ch;
 	struct tc956xmac_tx_queue *tx_q;
 
@@ -273,7 +273,7 @@ static int find_free_tx_channel(struct net_device *ndev, struct channel_info *ch
 
 static int find_free_rx_channel(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	u32 ch;
 	struct tc956xmac_rx_queue *rx_q;
 
@@ -300,7 +300,7 @@ static int find_free_rx_channel(struct net_device *ndev, struct channel_info *ch
 
 static int alloc_ipa_tx_resources(struct net_device *ndev, struct channel_info *channel, gfp_t flags)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_tx_queue *tx_q;
 	struct sk_buff *skb;
 	u32 i;
@@ -384,7 +384,7 @@ err_mem:
 
 static int alloc_ipa_rx_resources(struct net_device *ndev, struct channel_info *channel, gfp_t flags)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_rx_queue *rx_q;
 	struct sk_buff *skb;
 	u32 i;
@@ -466,7 +466,7 @@ err_mem:
 	return -ENOMEM;
 }
 
-static void tc956xmac_init_ipa_tx_ch(struct tc956xmac_priv *priv, struct channel_info *channel)
+static void tc956xmac_init_ipa_tx_ch(struct stmmac_priv *priv, struct channel_info *channel)
 {
 	u32 i;
 	u32 chan = channel->channel_num;
@@ -501,7 +501,7 @@ static void tc956xmac_init_ipa_tx_ch(struct tc956xmac_priv *priv, struct channel
 
 }
 
-static void tc956xmac_init_ipa_rx_ch(struct tc956xmac_priv *priv, struct channel_info *channel)
+static void tc956xmac_init_ipa_rx_ch(struct stmmac_priv *priv, struct channel_info *channel)
 {
 	u32 i;
 	u32 chan = channel->channel_num;
@@ -539,7 +539,7 @@ static void tc956xmac_init_ipa_rx_ch(struct tc956xmac_priv *priv, struct channel
 
 static void dealloc_ipa_tx_resources(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_tx_queue *tx_q;
 	u32 ch = channel->channel_num;
 
@@ -556,7 +556,7 @@ static void dealloc_ipa_tx_resources(struct net_device *ndev, struct channel_inf
 
 static void dealloc_ipa_rx_resources(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_rx_queue *rx_q;
 	u32 ch = channel->channel_num;
 
@@ -590,7 +590,7 @@ static void dealloc_ipa_rx_resources(struct net_device *ndev, struct channel_inf
 struct channel_info* request_channel(struct request_channel_input *channel_input)
 {
 	struct channel_info *channel;
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	struct tc956xmac_tx_queue *tx_q;
 	struct tc956xmac_rx_queue *rx_q;
 
@@ -772,7 +772,7 @@ EXPORT_SYMBOL_GPL(request_channel);
  */
 int release_channel(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	struct mem_ops *mem_ops;
 	struct tc956xmac_tx_queue *tx_q;
 	struct tc956xmac_rx_queue *rx_q;
@@ -945,7 +945,7 @@ EXPORT_SYMBOL_GPL(release_channel);
  */
 int request_event(struct net_device *ndev, struct channel_info *channel, dma_addr_t addr)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	u8 table_entry = 1; /* Table entry 0 is for eMAC */
 	struct tc956xmac_cm3_tamap tamap;
 	u32 val, cm3_target_addr;
@@ -1088,7 +1088,7 @@ EXPORT_SYMBOL_GPL(request_event);
  */
 int release_event(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 
 	if (!ndev) {
 		pr_err("%s: ERROR: Invalid netdevice pointer\n", __func__);
@@ -1159,7 +1159,7 @@ EXPORT_SYMBOL_GPL(release_event);
  */
 int enable_event(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	u32 reg;
 
 	if (!ndev) {
@@ -1247,7 +1247,7 @@ EXPORT_SYMBOL_GPL(enable_event);
  */
 int disable_event(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	u32 reg;
 
 	if (!ndev) {
@@ -1334,7 +1334,7 @@ EXPORT_SYMBOL_GPL(disable_event);
  */
 int set_event_mod(struct net_device *ndev, struct channel_info *channel, unsigned int wdt)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 
 	if (!ndev) {
 		pr_err("%s: ERROR: Invalid netdevice pointer\n", __func__);
@@ -1391,7 +1391,7 @@ EXPORT_SYMBOL_GPL(set_event_mod);
  */
 int set_rx_filter(struct net_device *ndev, struct rx_filter_info *filter_params)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	struct tc956xmac_rx_parser_cfg *cfg;
 	u32 ret = -EINVAL;
 
@@ -1447,7 +1447,7 @@ EXPORT_SYMBOL_GPL(set_rx_filter);
  */
 int clear_rx_filter(struct net_device *ndev)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	struct tc956xmac_rx_parser_cfg *cfg;
 	struct rxp_filter_entry filter_entries;
 	u32 ret = -EINVAL;
@@ -1509,7 +1509,7 @@ EXPORT_SYMBOL_GPL(clear_rx_filter);
  */
 int start_channel(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	struct mac_addr_list mac_addr;
 
 	if (!ndev) {
@@ -1582,7 +1582,7 @@ EXPORT_SYMBOL_GPL(start_channel);
  */
 int stop_channel(struct net_device *ndev, struct channel_info *channel)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 
 	if (!ndev) {
 		pr_err("%s: ERROR: Invalid netdevice pointer\n", __func__);
@@ -1650,7 +1650,7 @@ EXPORT_SYMBOL_GPL(stop_channel);
  */
 int set_mac_addr(struct net_device *ndev, struct mac_addr_list *mac_addr, u8 index)
 {
-	struct tc956xmac_priv *priv;
+	struct stmmac_priv *priv;
 	u32 data;
 
 	if (!ndev) {

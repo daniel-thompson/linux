@@ -59,7 +59,7 @@
 #define MMC_GMAC3_X_OFFSET_BASE	(0x100)
 #define MMC_XGMAC_OFFSET_BASE		(0x800)
 
-struct tc956xmac_counters {
+struct stmmac_counters {
 	u64 mmc_tx_broadcastframe_g;
 	u64 mmc_tx_multicastframe_g;
 	u64 mmc_tx_64_octets_gb;

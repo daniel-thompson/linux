@@ -52,7 +52,7 @@
 #ifdef TC956X_SRIOV_PF
 static void tc_fill_all_pass_entry(struct tc956xmac_tc_entry *entry)
 #elif defined TC956X_SRIOV_VF
-static void tc_fill_all_pass_entry(struct tc956xmac_tc_entry *entry, struct tc956xmac_priv *priv)
+static void tc_fill_all_pass_entry(struct tc956xmac_tc_entry *entry, struct stmmac_priv *priv)
 #endif
 {
 	memset(entry, 0, sizeof(*entry));
@@ -71,7 +71,7 @@ static void tc_fill_all_pass_entry(struct tc956xmac_tc_entry *entry, struct tc95
 #endif
 }
 
-static struct tc956xmac_tc_entry *tc_find_entry(struct tc956xmac_priv *priv,
+static struct tc956xmac_tc_entry *tc_find_entry(struct stmmac_priv *priv,
 					     struct tc_cls_u32_offload *cls,
 					     bool free)
 {
@@ -134,7 +134,7 @@ static int tc_fill_actions(struct tc956xmac_tc_entry *entry,
 	return 0;
 }
 
-static int tc_fill_entry(struct tc956xmac_priv *priv,
+static int tc_fill_entry(struct stmmac_priv *priv,
 			 struct tc_cls_u32_offload *cls)
 {
 	struct tc956xmac_tc_entry *entry, *frag = NULL;
@@ -218,7 +218,7 @@ err_unuse:
 	return ret;
 }
 
-static void tc_unfill_entry(struct tc956xmac_priv *priv,
+static void tc_unfill_entry(struct stmmac_priv *priv,
 			    struct tc_cls_u32_offload *cls)
 {
 	struct tc956xmac_tc_entry *entry;
@@ -235,7 +235,7 @@ static void tc_unfill_entry(struct tc956xmac_priv *priv,
 	}
 }
 
-static int tc_config_knode(struct tc956xmac_priv *priv,
+static int tc_config_knode(struct stmmac_priv *priv,
 			   struct tc_cls_u32_offload *cls)
 {
 	int ret;
@@ -276,7 +276,7 @@ err_unfill:
 	return ret;
 }
 
-static int tc_delete_knode(struct tc956xmac_priv *priv,
+static int tc_delete_knode(struct stmmac_priv *priv,
 			   struct tc_cls_u32_offload *cls)
 {
 	int ret;
@@ -302,7 +302,7 @@ static int tc_delete_knode(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_setup_cls_u32(struct tc956xmac_priv *priv,
+static int tc_setup_cls_u32(struct stmmac_priv *priv,
 			    struct tc_cls_u32_offload *cls)
 {
 #ifdef TC956X_SRIOV_VF
@@ -324,7 +324,7 @@ static int tc_setup_cls_u32(struct tc956xmac_priv *priv,
 	}
 }
 
-static int tc_rfs_init(struct tc956xmac_priv *priv)
+static int tc_rfs_init(struct stmmac_priv *priv)
 {
 	int i;
 
@@ -348,7 +348,7 @@ static int tc_rfs_init(struct tc956xmac_priv *priv)
 	return 0;
 }
 
-static int tc_init(struct tc956xmac_priv *priv, void *data)
+static int tc_init(struct stmmac_priv *priv, void *data)
 {
 	struct dma_features *dma_cap = &priv->dma_cap;
 	unsigned int count;
@@ -412,7 +412,7 @@ static int tc_init(struct tc956xmac_priv *priv, void *data)
 	return 0;
 }
 
-static int tc_setup_cbs(struct tc956xmac_priv *priv,
+static int tc_setup_cbs(struct stmmac_priv *priv,
 			struct tc_cbs_qopt_offload *qopt)
 {
 	u32 tx_queues_count = priv->plat->tx_queues_to_use;
@@ -587,7 +587,7 @@ static int tc_setup_cbs(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_parse_flow_actions(struct tc956xmac_priv *priv,
+static int tc_parse_flow_actions(struct stmmac_priv *priv,
 				 struct flow_action *action,
 				 struct tc956xmac_flow_entry *entry)
 {
@@ -611,7 +611,7 @@ static int tc_parse_flow_actions(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_add_basic_flow(struct tc956xmac_priv *priv,
+static int tc_add_basic_flow(struct stmmac_priv *priv,
 			     struct flow_cls_offload *cls,
 			     struct tc956xmac_flow_entry *entry)
 {
@@ -628,7 +628,7 @@ static int tc_add_basic_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_add_ip4_flow(struct tc956xmac_priv *priv,
+static int tc_add_ip4_flow(struct stmmac_priv *priv,
 			   struct flow_cls_offload *cls,
 			   struct tc956xmac_flow_entry *entry)
 {
@@ -663,7 +663,7 @@ static int tc_add_ip4_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_add_ports_flow(struct tc956xmac_priv *priv,
+static int tc_add_ports_flow(struct stmmac_priv *priv,
 			     struct flow_cls_offload *cls,
 			     struct tc956xmac_flow_entry *entry)
 {
@@ -712,7 +712,7 @@ static int tc_add_ports_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static struct tc956xmac_flow_entry *tc_find_flow(struct tc956xmac_priv *priv,
+static struct tc956xmac_flow_entry *tc_find_flow(struct stmmac_priv *priv,
 					      struct flow_cls_offload *cls,
 					      bool get_free)
 {
@@ -731,7 +731,7 @@ static struct tc956xmac_flow_entry *tc_find_flow(struct tc956xmac_priv *priv,
 }
 
 static struct {
-	int (*fn)(struct tc956xmac_priv *priv, struct flow_cls_offload *cls,
+	int (*fn)(struct stmmac_priv *priv, struct flow_cls_offload *cls,
 		  struct tc956xmac_flow_entry *entry);
 } tc_flow_parsers[] = {
 	{ .fn = tc_add_basic_flow },
@@ -739,7 +739,7 @@ static struct {
 	{ .fn = tc_add_ports_flow },
 };
 
-static struct tc956xmac_rfs_entry *tc_find_rfs(struct tc956xmac_priv *priv,
+static struct tc956xmac_rfs_entry *tc_find_rfs(struct stmmac_priv *priv,
 					    struct flow_cls_offload *cls,
 					    bool get_free)
 {
@@ -759,7 +759,7 @@ static struct tc956xmac_rfs_entry *tc_find_rfs(struct tc956xmac_priv *priv,
 
 #define ETHER_TYPE_FULL_MASK	cpu_to_be16(~0)
 
-static int tc_add_ethtype_flow(struct tc956xmac_priv *priv,
+static int tc_add_ethtype_flow(struct stmmac_priv *priv,
 			       struct flow_cls_offload *cls)
 {
 	struct tc956xmac_rfs_entry *entry = tc_find_rfs(priv, cls, false);
@@ -832,7 +832,7 @@ static int tc_add_ethtype_flow(struct tc956xmac_priv *priv,
 
 #define VLAN_PRIO_FULL_MASK (0x07)
 
-static int tc_add_vlan_flow(struct tc956xmac_priv *priv,
+static int tc_add_vlan_flow(struct stmmac_priv *priv,
 			    struct flow_cls_offload *cls)
 {
 	struct tc956xmac_rfs_entry *entry = tc_find_rfs(priv, cls, false);
@@ -881,7 +881,7 @@ static int tc_add_vlan_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_add_flow(struct tc956xmac_priv *priv,
+static int tc_add_flow(struct stmmac_priv *priv,
 		       struct flow_cls_offload *cls)
 {
 	struct tc956xmac_flow_entry *entry = tc_find_flow(priv, cls, false);
@@ -913,7 +913,7 @@ static int tc_add_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_del_flow(struct tc956xmac_priv *priv,
+static int tc_del_flow(struct stmmac_priv *priv,
 		       struct flow_cls_offload *cls)
 {
 	struct tc956xmac_flow_entry *entry = tc_find_flow(priv, cls, false);
@@ -936,7 +936,7 @@ static int tc_del_flow(struct tc956xmac_priv *priv,
 	return ret;
 }
 
-static int tc_del_ethtype_flow(struct tc956xmac_priv *priv,
+static int tc_del_ethtype_flow(struct stmmac_priv *priv,
 			       struct flow_cls_offload *cls)
 {
 	struct tc956xmac_rfs_entry *entry = tc_find_rfs(priv, cls, false);
@@ -972,7 +972,7 @@ static int tc_del_ethtype_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_del_vlan_flow(struct tc956xmac_priv *priv,
+static int tc_del_vlan_flow(struct stmmac_priv *priv,
 			    struct flow_cls_offload *cls)
 {
 	struct tc956xmac_rfs_entry *entry = tc_find_rfs(priv, cls, false);
@@ -992,7 +992,7 @@ static int tc_del_vlan_flow(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-static int tc_add_flow_cls(struct tc956xmac_priv *priv,
+static int tc_add_flow_cls(struct stmmac_priv *priv,
 			   struct flow_cls_offload *cls)
 {
 	int ret;
@@ -1007,7 +1007,7 @@ static int tc_add_flow_cls(struct tc956xmac_priv *priv,
 	return tc_add_vlan_flow(priv, cls);
 }
 
-static int tc_del_flow_cls(struct tc956xmac_priv *priv,
+static int tc_del_flow_cls(struct stmmac_priv *priv,
 			   struct flow_cls_offload *cls)
 {
 	int ret;
@@ -1023,7 +1023,7 @@ static int tc_del_flow_cls(struct tc956xmac_priv *priv,
 	return tc_del_vlan_flow(priv, cls);
 }
 
-static int tc_setup_cls(struct tc956xmac_priv *priv,
+static int tc_setup_cls(struct stmmac_priv *priv,
 			struct flow_cls_offload *cls)
 {
 	int ret = 0;
@@ -1070,7 +1070,7 @@ struct timespec64 tc956x_calc_basetime(ktime_t old_base_time,
 	return time;
 }
 
-static int tc_setup_taprio(struct tc956xmac_priv *priv,
+static int tc_setup_taprio(struct stmmac_priv *priv,
 			   struct tc_taprio_qopt_offload *qopt)
 {
 	u32 size, wid = priv->dma_cap.estwid, dep = priv->dma_cap.estdep;
@@ -1262,7 +1262,7 @@ disable:
 }
 
 #if LINUX_VERSION_CODE > KERNEL_VERSION(6, 2, 16)
-static int tc_query_caps(struct tc956xmac_priv *priv,
+static int tc_query_caps(struct stmmac_priv *priv,
 			 struct tc_query_caps_base *base)
 {
 	switch (base->type) {
@@ -1287,7 +1287,7 @@ static int tc_query_caps(struct tc956xmac_priv *priv,
 #endif
 #endif
 
-static int tc_setup_etf(struct tc956xmac_priv *priv,
+static int tc_setup_etf(struct stmmac_priv *priv,
 			struct tc_etf_qopt_offload *qopt)
 {
 #ifndef TC956X_SRIOV_VF
@@ -1338,7 +1338,7 @@ static int tc_setup_etf(struct tc956xmac_priv *priv,
 	return 0;
 }
 
-const struct tc956xmac_tc_ops dwmac510_tc_ops = {
+const struct stmmac_tc_ops dwmac510_tc_ops = {
 	.init = tc_init,
 	.setup_cls_u32 = tc_setup_cls_u32,
 	.setup_cbs = tc_setup_cbs,

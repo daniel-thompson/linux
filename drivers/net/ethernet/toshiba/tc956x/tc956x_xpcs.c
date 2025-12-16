@@ -87,7 +87,7 @@ u32 tc956x_xpcs_write(void __iomem *xpcsaddr, u32 pcs_reg_num, u32 value)
 }
 
 
-int tc956x_xpcs_init(struct tc956xmac_priv *priv, void __iomem *xpcsaddr)
+int tc956x_xpcs_init(struct stmmac_priv *priv, void __iomem *xpcsaddr)
 {
 	u32 reg_value;
 
@@ -250,7 +250,7 @@ int tc956x_xpcs_init(struct tc956xmac_priv *priv, void __iomem *xpcsaddr)
 	return 0;
 }
 
-void tc956x_xpcs_ctrl_ane(struct tc956xmac_priv *priv, bool ane)
+void tc956x_xpcs_ctrl_ane(struct stmmac_priv *priv, bool ane)
 {
 	u32 reg_value;
 
@@ -284,7 +284,7 @@ void tc956x_xpcs_ctrl_ane(struct tc956xmac_priv *priv, bool ane)
  *  @lrx : true to enable, false to disable
  *  @remarks : -
  */
-void tc956x_xpcs_ctrl0_lrx(struct tc956xmac_priv *priv, bool lrx)
+void tc956x_xpcs_ctrl0_lrx(struct stmmac_priv *priv, bool lrx)
 {
 	u32 reg_value;
 

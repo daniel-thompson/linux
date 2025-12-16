@@ -98,7 +98,7 @@ struct tc956xmac_packet_attrs {
 
 static u8 tc956xmac_test_next_id;
 
-static struct sk_buff *tc956xmac_test_get_udp_skb(struct tc956xmac_priv *priv,
+static struct sk_buff *tc956xmac_test_get_udp_skb(struct stmmac_priv *priv,
 					       struct tc956xmac_packet_attrs *attr)
 {
 	struct sk_buff *skb = NULL;
@@ -345,7 +345,7 @@ out:
 	return 0;
 }
 
-static int __tc956xmac_test_loopback(struct tc956xmac_priv *priv,
+static int __tc956xmac_test_loopback(struct stmmac_priv *priv,
 				  struct tc956xmac_packet_attrs *attr)
 {
 	struct tc956xmac_test_priv *tpriv;
@@ -395,7 +395,7 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_mac_loopback(struct tc956xmac_priv *priv)
+static int tc956xmac_test_mac_loopback(struct stmmac_priv *priv)
 {
 	struct tc956xmac_packet_attrs attr = { };
 
@@ -403,7 +403,7 @@ static int tc956xmac_test_mac_loopback(struct tc956xmac_priv *priv)
 	return __tc956xmac_test_loopback(priv, &attr);
 }
 
-static int tc956xmac_test_phy_loopback(struct tc956xmac_priv *priv)
+static int tc956xmac_test_phy_loopback(struct stmmac_priv *priv)
 {
 	struct tc956xmac_packet_attrs attr = { };
 	int ret;
@@ -424,9 +424,9 @@ static int tc956xmac_test_phy_loopback(struct tc956xmac_priv *priv)
 	return ret;
 }
 
-static int tc956xmac_test_mmc(struct tc956xmac_priv *priv)
+static int tc956xmac_test_mmc(struct stmmac_priv *priv)
 {
-	struct tc956xmac_counters final;
+	struct stmmac_counters final;
 	int ret;
 
 	memset(&final, 0, sizeof(final));
@@ -456,9 +456,9 @@ static int tc956xmac_test_mmc(struct tc956xmac_priv *priv)
 }
 
 #ifdef SELFTEST_NOT_SUPPORTED
-static int tc956xmac_test_eee(struct tc956xmac_priv *priv)
+static int tc956xmac_test_eee(struct stmmac_priv *priv)
 {
-	struct tc956xmac_extra_stats *initial, *final;
+	struct stmmac_extra_stats *initial, *final;
 	int retries = 10;
 	int ret;
 
@@ -516,7 +516,7 @@ out_free_initial:
 }
 #endif
 
-static int tc956xmac_filter_check(struct tc956xmac_priv *priv)
+static int tc956xmac_filter_check(struct stmmac_priv *priv)
 {
 	if (!(priv->dev->flags & IFF_PROMISC))
 		return 0;
@@ -525,7 +525,7 @@ static int tc956xmac_filter_check(struct tc956xmac_priv *priv)
 	return -EOPNOTSUPP;
 }
 
-static bool tc956xmac_hash_check(struct tc956xmac_priv *priv, unsigned char *addr)
+static bool tc956xmac_hash_check(struct stmmac_priv *priv, unsigned char *addr)
 {
 	int mc_offset = 32 - priv->hw->mcast_bits_log2;
 	struct netdev_hw_addr *ha;
@@ -548,7 +548,7 @@ static bool tc956xmac_hash_check(struct tc956xmac_priv *priv, unsigned char *add
 	return true;
 }
 
-static bool tc956xmac_perfect_check(struct tc956xmac_priv *priv, unsigned char *addr)
+static bool tc956xmac_perfect_check(struct stmmac_priv *priv, unsigned char *addr)
 {
 	struct netdev_hw_addr *ha;
 
@@ -562,7 +562,7 @@ static bool tc956xmac_perfect_check(struct tc956xmac_priv *priv, unsigned char *
 	return true;
 }
 
-static int tc956xmac_test_hfilt(struct tc956xmac_priv *priv)
+static int tc956xmac_test_hfilt(struct stmmac_priv *priv)
 {
 	unsigned char gd_addr[ETH_ALEN] = {0xf1, 0xee, 0xdd, 0xcc, 0xbb, 0xaa};
 	unsigned char bd_addr[ETH_ALEN] = {0xf1, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -608,7 +608,7 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_pfilt(struct tc956xmac_priv *priv)
+static int tc956xmac_test_pfilt(struct stmmac_priv *priv)
 {
 	unsigned char gd_addr[ETH_ALEN] = {0xf0, 0x01, 0x44, 0x55, 0x66, 0x77};
 	unsigned char bd_addr[ETH_ALEN] = {0xf0, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -652,7 +652,7 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_mcfilt(struct tc956xmac_priv *priv)
+static int tc956xmac_test_mcfilt(struct stmmac_priv *priv)
 {
 	unsigned char uc_addr[ETH_ALEN] = {0xf0, 0xff, 0xff, 0xff, 0xff, 0xff};
 	unsigned char mc_addr[ETH_ALEN] = {0xf1, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -698,7 +698,7 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_ucfilt(struct tc956xmac_priv *priv)
+static int tc956xmac_test_ucfilt(struct stmmac_priv *priv)
 {
 	unsigned char uc_addr[ETH_ALEN] = {0xf0, 0xff, 0xff, 0xff, 0xff, 0xff};
 	unsigned char mc_addr[ETH_ALEN] = {0xf1, 0xff, 0xff, 0xff, 0xff, 0xff};
@@ -766,7 +766,7 @@ out:
 	return 0;
 }
 
-static int tc956xmac_test_flowctrl(struct tc956xmac_priv *priv)
+static int tc956xmac_test_flowctrl(struct stmmac_priv *priv)
 {
 	unsigned char paddr[ETH_ALEN] = {0x01, 0x80, 0xC2, 0x00, 0x00, 0x01};
 	struct phy_device *phydev = priv->dev->phydev;
@@ -920,7 +920,7 @@ out:
 	return 0;
 }
 
-static int __tc956xmac_test_vlanfilt(struct tc956xmac_priv *priv)
+static int __tc956xmac_test_vlanfilt(struct stmmac_priv *priv)
 {
 	struct tc956xmac_packet_attrs attr = { };
 	struct tc956xmac_test_priv *tpriv;
@@ -996,7 +996,7 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_vlanfilt(struct tc956xmac_priv *priv)
+static int tc956xmac_test_vlanfilt(struct stmmac_priv *priv)
 {
 	if (!priv->dma_cap.vlhash)
 		return -EOPNOTSUPP;
@@ -1004,7 +1004,7 @@ static int tc956xmac_test_vlanfilt(struct tc956xmac_priv *priv)
 	return __tc956xmac_test_vlanfilt(priv);
 }
 
-static int tc956xmac_test_vlanfilt_perfect(struct tc956xmac_priv *priv)
+static int tc956xmac_test_vlanfilt_perfect(struct stmmac_priv *priv)
 {
 	int ret, prev_cap = priv->dma_cap.vlhash;
 
@@ -1018,7 +1018,7 @@ static int tc956xmac_test_vlanfilt_perfect(struct tc956xmac_priv *priv)
 	return ret;
 }
 #ifdef SELFTEST_NOT_SUPPORTED
-static int __tc956xmac_test_dvlanfilt(struct tc956xmac_priv *priv)
+static int __tc956xmac_test_dvlanfilt(struct stmmac_priv *priv)
 {
 	struct tc956xmac_packet_attrs attr = { };
 	struct tc956xmac_test_priv *tpriv;
@@ -1090,7 +1090,7 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_dvlanfilt(struct tc956xmac_priv *priv)
+static int tc956xmac_test_dvlanfilt(struct stmmac_priv *priv)
 {
 	if (!priv->dma_cap.vlhash)
 		return -EOPNOTSUPP;
@@ -1098,7 +1098,7 @@ static int tc956xmac_test_dvlanfilt(struct tc956xmac_priv *priv)
 	return __tc956xmac_test_dvlanfilt(priv);
 }
 
-static int tc956xmac_test_dvlanfilt_perfect(struct tc956xmac_priv *priv)
+static int tc956xmac_test_dvlanfilt_perfect(struct stmmac_priv *priv)
 {
 	int ret, prev_cap = priv->dma_cap.vlhash;
 
@@ -1113,7 +1113,7 @@ static int tc956xmac_test_dvlanfilt_perfect(struct tc956xmac_priv *priv)
 }
 #endif
 #ifdef TC956X_FRP_ENABLE
-static int tc956xmac_test_rxp(struct tc956xmac_priv *priv)
+static int tc956xmac_test_rxp(struct stmmac_priv *priv)
 {
 	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
 	struct tc_cls_u32_offload cls_u32 = { };
@@ -1197,7 +1197,7 @@ cleanup_sel:
 }
 #endif
 
-static int tc956xmac_test_reg_sai(struct tc956xmac_priv *priv)
+static int tc956xmac_test_reg_sai(struct stmmac_priv *priv)
 {
 	unsigned char src[ETH_ALEN] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	struct tc956xmac_packet_attrs attr = { };
@@ -1232,7 +1232,7 @@ static int tc956xmac_test_reg_sai(struct tc956xmac_priv *priv)
 	return ret;
 }
 
-static int tc956xmac_test_reg_sar(struct tc956xmac_priv *priv)
+static int tc956xmac_test_reg_sar(struct stmmac_priv *priv)
 {
 	unsigned char src[ETH_ALEN] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 	struct tc956xmac_packet_attrs attr = { };
@@ -1266,7 +1266,7 @@ static int tc956xmac_test_reg_sar(struct tc956xmac_priv *priv)
 }
 
 
-static int tc956xmac_test_vlanoff_common(struct tc956xmac_priv *priv, bool svlan)
+static int tc956xmac_test_vlanoff_common(struct stmmac_priv *priv, bool svlan)
 {
 	struct tc956xmac_packet_attrs attr = { };
 	struct tc956xmac_test_priv *tpriv;
@@ -1330,13 +1330,13 @@ cleanup:
 	return ret;
 }
 
-static int tc956xmac_test_vlanoff(struct tc956xmac_priv *priv)
+static int tc956xmac_test_vlanoff(struct stmmac_priv *priv)
 {
 	return tc956xmac_test_vlanoff_common(priv, false);
 }
 
 
-static int __tc956xmac_test_jumbo(struct tc956xmac_priv *priv, u16 queue)
+static int __tc956xmac_test_jumbo(struct stmmac_priv *priv, u16 queue)
 {
 	struct tc956xmac_packet_attrs attr = { };
 	int size = priv->dma_buf_sz;
@@ -1348,14 +1348,14 @@ static int __tc956xmac_test_jumbo(struct tc956xmac_priv *priv, u16 queue)
 	return __tc956xmac_test_loopback(priv, &attr);
 }
 
-static int tc956xmac_test_jumbo(struct tc956xmac_priv *priv)
+static int tc956xmac_test_jumbo(struct stmmac_priv *priv)
 {
 	return __tc956xmac_test_jumbo(priv, 0);
 }
 
 #ifdef SELFTEST_NOT_SUPPORTED
 
-static int tc956xmac_test_tbs(struct tc956xmac_priv *priv)
+static int tc956xmac_test_tbs(struct stmmac_priv *priv)
 {
 #define TC956XMAC_TBS_LT_OFFSET		(500 * 1000 * 1000) /* 500 ms*/
 	struct tc956xmac_packet_attrs attr = { };
@@ -1439,7 +1439,7 @@ out:
 	return 0;
 }
 
-static int tc956xmac_test_ptp_offload(struct tc956xmac_priv *priv)
+static int tc956xmac_test_ptp_offload(struct stmmac_priv *priv)
 {
 #define TC956XMAC_PTP_CNT			10
 	struct tc956xmac_test_priv *tpriv;
@@ -1494,7 +1494,7 @@ cleanup:
 static const struct tc956xmac_test {
 	char name[ETH_GSTRING_LEN];
 	int lb;
-	int (*fn)(struct tc956xmac_priv *priv);
+	int (*fn)(struct stmmac_priv *priv);
 } tc956xmac_selftests[] = {
 	{
 		.name = "MAC Loopback               ",
@@ -1600,7 +1600,7 @@ static const struct tc956xmac_test {
 void tc956xmac_selftest_run(struct net_device *dev,
 			 struct ethtool_test *etest, u64 *buf)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	int count = tc956xmac_selftest_get_count(priv);
 	int i, ret, phy_loopback_enabled = 0;
 
@@ -1678,7 +1678,7 @@ void tc956xmac_selftest_run(struct net_device *dev,
 	}
 }
 
-void tc956xmac_selftest_get_strings(struct tc956xmac_priv *priv, u8 *data)
+void tc956xmac_selftest_get_strings(struct stmmac_priv *priv, u8 *data)
 {
 	u8 *p = data;
 	int i;
@@ -1690,7 +1690,7 @@ void tc956xmac_selftest_get_strings(struct tc956xmac_priv *priv, u8 *data)
 	}
 }
 
-int tc956xmac_selftest_get_count(struct tc956xmac_priv *priv)
+int tc956xmac_selftest_get_count(struct stmmac_priv *priv)
 {
 	return ARRAY_SIZE(tc956xmac_selftests);
 }

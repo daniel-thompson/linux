@@ -165,7 +165,7 @@ static uint8_t DlActive = LOGSTAT_DUMMY_VALUE, LinkSpeed = LOGSTAT_DUMMY_VALUE, 
  *
  * \return -EFAULT in case of copy failure, otherwise 0
  */
-int tc956x_pcie_ioctl_state_log_summary(const struct tc956xmac_priv *priv, void __user *data)
+int tc956x_pcie_ioctl_state_log_summary(const struct stmmac_priv *priv, void __user *data)
 {
 	int ret = 0;
 	struct tc956x_ioctl_state_log_summary ioctl_data;
@@ -513,7 +513,7 @@ int tc956x_logstat_state_log_analyze(uint32_t cur_state)
  *
  * \return -EFAULT in case of copy failure, otherwise 0
  */
-int tc956x_pcie_ioctl_get_pcie_link_params(const struct tc956xmac_priv *priv, void __user *data)
+int tc956x_pcie_ioctl_get_pcie_link_params(const struct stmmac_priv *priv, void __user *data)
 {
 	int ret = 0;
 	struct tc956x_ioctl_pcie_link_params ioctl_data;
@@ -696,7 +696,7 @@ int tc956x_logstat_get_pcie_cur_width(void __iomem *pbase_addr, enum ports nport
  *
  * \return -EFAULT in case of bad address, otherwise 0.
  */
-int tc956x_pcie_ioctl_state_log_enable(const struct tc956xmac_priv *priv, void __user *data)
+int tc956x_pcie_ioctl_state_log_enable(const struct stmmac_priv *priv, void __user *data)
 {
 	int ret = 0;
 	struct tc956x_ioctl_state_log_enable ioctl_data;

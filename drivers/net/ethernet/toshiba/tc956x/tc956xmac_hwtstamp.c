@@ -47,16 +47,16 @@
 #endif
 
 #ifdef TC956X_SRIOV_PF
-static u32 tc956xmac_get_ptp_subperiod(struct tc956xmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock);
-static u32 tc956xmac_get_ptp_period(struct tc956xmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock);
+static u32 tc956xmac_get_ptp_subperiod(struct stmmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock);
+static u32 tc956xmac_get_ptp_period(struct stmmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock);
 
-static void config_hw_tstamping(struct tc956xmac_priv *priv, void __iomem *ioaddr,
+static void config_hw_tstamping(struct stmmac_priv *priv, void __iomem *ioaddr,
 					u32 data)
 {
 	writel(data, ioaddr + PTP_TCR);
 }
 
-static void config_sub_second_increment(struct tc956xmac_priv *priv,
+static void config_sub_second_increment(struct stmmac_priv *priv,
 					void __iomem *ioaddr, u32 ptp_clock,
 					int ip, u32 *ssinc)
 {
@@ -110,7 +110,7 @@ static void config_sub_second_increment(struct tc956xmac_priv *priv,
 
 }
 
-static int init_systime(struct tc956xmac_priv *priv, void __iomem *ioaddr,
+static int init_systime(struct stmmac_priv *priv, void __iomem *ioaddr,
 			u32 sec, u32 nsec)
 {
 	int limit;
@@ -136,7 +136,7 @@ static int init_systime(struct tc956xmac_priv *priv, void __iomem *ioaddr,
 	return 0;
 }
 
-static int config_addend(struct tc956xmac_priv *priv, void __iomem *ioaddr, u32 addend)
+static int config_addend(struct stmmac_priv *priv, void __iomem *ioaddr, u32 addend)
 {
 	u32 value;
 	int limit;
@@ -160,7 +160,7 @@ static int config_addend(struct tc956xmac_priv *priv, void __iomem *ioaddr, u32 
 	return 0;
 }
 
-static int adjust_systime(struct tc956xmac_priv *priv, void __iomem *ioaddr,
+static int adjust_systime(struct stmmac_priv *priv, void __iomem *ioaddr,
 				u32 sec, u32 nsec, int add_sub, int gmac4)
 {
 	u32 value;
@@ -203,7 +203,7 @@ static int adjust_systime(struct tc956xmac_priv *priv, void __iomem *ioaddr,
 	return 0;
 }
 #endif
-static void get_systime(struct tc956xmac_priv *priv, void __iomem *ioaddr, u64 *systime)
+static void get_systime(struct stmmac_priv *priv, void __iomem *ioaddr, u64 *systime)
 {
 
 	u64 ns;
@@ -231,7 +231,7 @@ static void get_systime(struct tc956xmac_priv *priv, void __iomem *ioaddr, u64 *
 
 }
 #ifdef TC956X_SRIOV_PF
-static u32 tc956xmac_get_ptp_period(struct tc956xmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock)
+static u32 tc956xmac_get_ptp_period(struct stmmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock)
 {
 	u32 value = readl(ioaddr + PTP_TCR);
 	u64 data;
@@ -261,7 +261,7 @@ static u32 tc956xmac_get_ptp_period(struct tc956xmac_priv *priv, void __iomem *i
 	return (u32)data;
 }
 
-static u32 tc956xmac_get_ptp_subperiod(struct tc956xmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock)
+static u32 tc956xmac_get_ptp_subperiod(struct stmmac_priv *priv, void __iomem *ioaddr, u32 ptp_clock)
 {
 	u32 value = readl(ioaddr + PTP_TCR);
 	u64 data;
@@ -302,7 +302,7 @@ static void get_ptptime(void __iomem *ptpaddr, u64 *ptp_time)
 	*ptp_time = ns;
 }
 
-static void timestamp_interrupt(struct tc956xmac_priv *priv, void __iomem *ioaddr)
+static void timestamp_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr)
 {
 	u32 num_snapshot, ts_status, tsync_int;
 	struct ptp_clock_event event;
@@ -339,7 +339,7 @@ static void timestamp_interrupt(struct tc956xmac_priv *priv, void __iomem *ioadd
 }
 #endif
 
-const struct tc956xmac_hwtimestamp tc956xmac_ptp = {
+const struct stmmac_hwtimestamp tc956xmac_ptp = {
 	.config_hw_tstamping = config_hw_tstamping,
 	.init_systime = init_systime,
 	.config_sub_second_increment = config_sub_second_increment,
@@ -353,7 +353,7 @@ const struct tc956xmac_hwtimestamp tc956xmac_ptp = {
 	.get_systime = get_systime,
 };
 #else
-const struct tc956xmac_hwtimestamp tc956xmac_ptp = {
+const struct stmmac_hwtimestamp tc956xmac_ptp = {
 	.config_hw_tstamping = NULL,
 	.init_systime = NULL,
 	.config_sub_second_increment = NULL,

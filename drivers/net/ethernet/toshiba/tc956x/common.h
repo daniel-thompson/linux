@@ -2221,7 +2221,7 @@ entry delay = n * 256 ns */
 
 #define TOTAL_VF 3
 /* Extra statistic and debug information exposed by ethtool */
-struct tc956xmac_extra_stats {
+struct stmmac_extra_stats {
 	/* Transmit errors */
 	u64 tx_underflow ____cacheline_aligned;
 	u64 tx_carrier;
@@ -2429,7 +2429,7 @@ struct tc956xmac_extra_stats {
 };
 
 /* Safety Feature statistics exposed by ethtool */
-struct tc956xmac_safety_stats {
+struct stmmac_safety_stats {
 	unsigned long mac_errors[32];
 	unsigned long mtl_errors[32];
 	unsigned long dma_errors[32];
@@ -2521,7 +2521,7 @@ struct tc956x_vlan_id {
 };
 /* Number of fields in Safety Stats */
 #define TC956XMAC_SAFETY_FEAT_SIZE	\
-	(sizeof(struct tc956xmac_safety_stats) / sizeof(unsigned long))
+	(sizeof(struct stmmac_safety_stats) / sizeof(unsigned long))
 
 /* CSR Frequency Access Defines*/
 #define CSR_F_35M	35000000
@@ -2878,13 +2878,13 @@ struct dma_features {
 
 #define PTP_MAX_PKT_SIZE  512
 
-extern const struct tc956xmac_desc_ops enh_desc_ops;
-extern const struct tc956xmac_desc_ops ndesc_ops;
+extern const struct stmmac_desc_ops enh_desc_ops;
+extern const struct stmmac_desc_ops ndesc_ops;
 
 struct mac_device_info;
 
-extern const struct tc956xmac_hwtimestamp tc956xmac_ptp;
-extern const struct tc956xmac_mode_ops dwmac4_ring_mode_ops;
+extern const struct stmmac_hwtimestamp tc956xmac_ptp;
+extern const struct stmmac_mode_ops dwmac4_ring_mode_ops;
 
 struct mac_link {
 	u32 speed_mask;
@@ -2912,12 +2912,12 @@ struct mii_regs {
 };
 
 struct mac_device_info {
-	const struct tc956xmac_ops *mac;
-	const struct tc956xmac_desc_ops *desc;
-	const struct tc956xmac_dma_ops *dma;
-	const struct tc956xmac_mode_ops *mode;
-	const struct tc956xmac_hwtimestamp *ptp;
-	const struct tc956xmac_tc_ops *tc;
+	const struct stmmac_ops *mac;
+	const struct stmmac_desc_ops *desc;
+	const struct stmmac_dma_ops *dma;
+	const struct stmmac_mode_ops *mode;
+	const struct stmmac_hwtimestamp *ptp;
+	const struct stmmac_tc_ops *tc;
 	const struct tc956x_msi_ops *msi;
 #ifdef TC956X_SRIOV_PF
 	const struct mac_rsc_mng_ops *rsc;
@@ -2929,7 +2929,7 @@ struct mac_device_info {
 	const struct mac_mbx_ops *mbx;
 	const struct tc956xmac_mbx_wrapper_ops *mbx_wrapper;
 #endif
-	const struct tc956xmac_mmc_ops *mmc;
+	const struct stmmac_mmc_ops *mmc;
 	const struct tc956xmac_pma_ops *pma;
 	struct mii_regs mii;	/* MII register Addresses */
 	struct mac_link link;
@@ -2946,43 +2946,43 @@ struct mac_device_info {
 	unsigned int ps;
 };
 
-struct tc956xmac_rx_routing {
+struct stmmac_rx_routing {
 	u32 reg_mask;
 	u32 reg_shift;
 };
 
-int dwmac100_setup(struct tc956xmac_priv *priv);
-int dwmac1000_setup(struct tc956xmac_priv *priv);
-int dwmac4_setup(struct tc956xmac_priv *priv);
-int dwxgmac2_setup(struct tc956xmac_priv *priv);
+int dwmac100_setup(struct stmmac_priv *priv);
+int dwmac1000_setup(struct stmmac_priv *priv);
+int dwmac4_setup(struct stmmac_priv *priv);
+int dwxgmac2_setup(struct stmmac_priv *priv);
 
 #ifdef TC956X_SRIOV_PF
 void tc956xmac_set_mac_addr(void __iomem *ioaddr, u8 addr[6],
 			 unsigned int high, unsigned int low);
 void tc956xmac_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
 			 unsigned int high, unsigned int low);
-void tc956xmac_set_mac(struct tc956xmac_priv *priv, void __iomem *ioaddr, bool enable);
+void tc956xmac_set_mac(struct stmmac_priv *priv, void __iomem *ioaddr, bool enable);
 int tc956x_add_mac_addr(struct net_device *dev, const unsigned char *mac);
 #elif defined TC956X_SRIOV_VF
 void tc956xmac_vf_set_mac_addr(void __iomem *ioaddr, u8 addr[6],
 			 unsigned int high, unsigned int low);
 void tc956xmac_vf_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
 			 unsigned int high, unsigned int low);
-void tc956xmac_set_mac(struct tc956xmac_priv *priv, void __iomem *ioaddr, bool enable);
+void tc956xmac_set_mac(struct stmmac_priv *priv, void __iomem *ioaddr, bool enable);
 #endif
 void tc956xmac_dwmac4_set_mac_addr(void __iomem *ioaddr, u8 addr[6],
 				unsigned int high, unsigned int low);
 void tc956xmac_dwmac4_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
 				unsigned int high, unsigned int low);
-void tc956xmac_dwmac4_set_mac(struct tc956xmac_priv *priv, void __iomem *ioaddr, bool enable);
+void tc956xmac_dwmac4_set_mac(struct stmmac_priv *priv, void __iomem *ioaddr, bool enable);
 
 void dwmac_dma_flush_tx_fifo(void __iomem *ioaddr);
 
-extern const struct tc956xmac_mode_ops ring_mode_ops;
-extern const struct tc956xmac_mode_ops chain_mode_ops;
-extern const struct tc956xmac_desc_ops dwmac4_desc_ops;
+extern const struct stmmac_mode_ops ring_mode_ops;
+extern const struct stmmac_mode_ops chain_mode_ops;
+extern const struct stmmac_desc_ops dwmac4_desc_ops;
 
 #ifdef TC956X_SRIOV_VF
-void tc956xmac_mailbox_service_event_schedule(struct tc956xmac_priv *priv);
+void tc956xmac_mailbox_service_event_schedule(struct stmmac_priv *priv);
 #endif
 #endif /* __COMMON_H__ */

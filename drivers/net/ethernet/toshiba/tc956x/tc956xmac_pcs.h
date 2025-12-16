@@ -81,7 +81,7 @@
  */
 static inline void dwmac_pcs_isr(void __iomem *ioaddr, u32 reg,
 				 unsigned int intr_status,
-				 struct tc956xmac_extra_stats *x)
+				 struct stmmac_extra_stats *x)
 {
 	u32 val = readl(ioaddr + GMAC_AN_STATUS(reg));
 

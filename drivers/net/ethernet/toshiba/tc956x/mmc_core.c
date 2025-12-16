@@ -221,7 +221,7 @@
 #define MMC_XGMAC_RX_IPC_INTR_MASK	0x25c
 
 #ifdef TC956X_UNSUPPORTED_UNTESTED_FEATURE
-static void dwmac_mmc_ctrl(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
+static void dwmac_mmc_ctrl(struct stmmac_priv *priv, void __iomem *mmcaddr,
 				unsigned int mode)
 {
 	u32 value = readl(mmcaddr + MMC_CNTRL);
@@ -235,7 +235,7 @@ static void dwmac_mmc_ctrl(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
 }
 
 /* To mask all interrupts.*/
-static void dwmac_mmc_intr_all_mask(struct tc956xmac_priv *priv,
+static void dwmac_mmc_intr_all_mask(struct stmmac_priv *priv,
 					void __iomem *mmcaddr)
 {
 	writel(MMC_DEFAULT_MASK, mmcaddr + MMC_RX_INTR_MASK);
@@ -250,8 +250,8 @@ static void dwmac_mmc_intr_all_mask(struct tc956xmac_priv *priv,
  * counter after a read. So all the field of the mmc struct
  * have to be incremented.
  */
-static void dwmac_mmc_read(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
-				struct tc956xmac_counters *mmc)
+static void dwmac_mmc_read(struct stmmac_priv *priv, void __iomem *mmcaddr,
+				struct stmmac_counters *mmc)
 {
 	mmc->mmc_tx_octetcount_gb += readl(mmcaddr + MMC_TX_OCTETCOUNT_GB);
 	mmc->mmc_tx_framecount_gb += readl(mmcaddr + MMC_TX_FRAMECOUNT_GB);
@@ -375,7 +375,7 @@ static void dwmac_mmc_read(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
 }
 #endif /* TC956X_UNSUPPORTED_UNTESTED_FEATURE */
 
-const struct tc956xmac_mmc_ops dwmac_mmc_ops = {
+const struct stmmac_mmc_ops dwmac_mmc_ops = {
 #ifdef TC956X_UNSUPPORTED_UNTESTED_FEATURE
 	.ctrl = dwmac_mmc_ctrl,
 	.intr_all_mask = dwmac_mmc_intr_all_mask,
@@ -383,7 +383,7 @@ const struct tc956xmac_mmc_ops dwmac_mmc_ops = {
 #endif /* TC956X_UNSUPPORTED_UNTESTED_FEATURE */
 };
 
-static void dwxgmac_mmc_ctrl(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
+static void dwxgmac_mmc_ctrl(struct stmmac_priv *priv, void __iomem *mmcaddr,
 				unsigned int mode)
 {
 	u32 value = readl(mmcaddr + MMC_CNTRL);
@@ -393,7 +393,7 @@ static void dwxgmac_mmc_ctrl(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
 	writel(value, mmcaddr + MMC_CNTRL);
 }
 
-static void dwxgmac_mmc_intr_all_mask(struct tc956xmac_priv *priv,
+static void dwxgmac_mmc_intr_all_mask(struct stmmac_priv *priv,
 					void __iomem *mmcaddr)
 {
 	writel(0x0, mmcaddr + MMC_RX_INTR_MASK);
@@ -417,8 +417,8 @@ static void dwxgmac_read_mmc_reg(void __iomem *addr, u32 reg, u64 *dest)
  * counter after a read. So all the field of the mmc struct
  * have to be incremented.
  */
-static void dwxgmac_mmc_read(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
-				struct tc956xmac_counters *mmc)
+static void dwxgmac_mmc_read(struct stmmac_priv *priv, void __iomem *mmcaddr,
+				struct stmmac_counters *mmc)
 {
 	dwxgmac_read_mmc_reg(mmcaddr, MMC_XGMAC_TX_OCTET_GB,
 			     &mmc->mmc_tx_octetcount_gb);
@@ -537,7 +537,7 @@ static void dwxgmac_mmc_read(struct tc956xmac_priv *priv, void __iomem *mmcaddr,
 #endif
 }
 
-const struct tc956xmac_mmc_ops dwxgmac_mmc_ops = {
+const struct stmmac_mmc_ops dwxgmac_mmc_ops = {
 	.ctrl = dwxgmac_mmc_ctrl,
 	.intr_all_mask = dwxgmac_mmc_intr_all_mask,
 	.read = dwxgmac_mmc_read,

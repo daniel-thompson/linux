@@ -33,7 +33,7 @@
 #include "tc956xmac.h"
 #include "tc956x_pma.h"
 #ifdef TC956X
-static int tc956x_pma_init(struct tc956xmac_priv *priv, void __iomem *pmaaddr)
+static int tc956x_pma_init(struct stmmac_priv *priv, void __iomem *pmaaddr)
 {
 
 	u32 reg_value;

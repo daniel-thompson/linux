@@ -112,7 +112,7 @@
 #define TC956X_MII_DEVADDR_C45_SHIFT		16
 #define TC956X_MII_REGADDR_C45_MASK			GENMASK(15, 0)
 
-static int tc956xmac_xgmac2_c45_format(struct tc956xmac_priv *priv, int phyaddr,
+static int tc956xmac_xgmac2_c45_format(struct stmmac_priv *priv, int phyaddr,
 				    int phyreg, u32 *hw_addr)
 {
 	u32 tmp;
@@ -127,7 +127,7 @@ static int tc956xmac_xgmac2_c45_format(struct tc956xmac_priv *priv, int phyaddr,
 	return 0;
 }
 
-static int tc956xmac_xgmac2_c22_format(struct tc956xmac_priv *priv, int phyaddr,
+static int tc956xmac_xgmac2_c22_format(struct stmmac_priv *priv, int phyaddr,
 				    int phyreg, u32 *hw_addr)
 {
 	u32 tmp;
@@ -144,7 +144,7 @@ static int tc956xmac_xgmac2_c22_format(struct tc956xmac_priv *priv, int phyaddr,
 static int __tc956xmac_xgmac2_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
 {
 	struct net_device *ndev = bus->priv;
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	unsigned int mii_address = priv->hw->mii.addr;
 	unsigned int mii_data = priv->hw->mii.data;
 	u32 tmp, addr, value = MII_XGMAC_BUSY;
@@ -261,7 +261,7 @@ static int __tc956xmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
 				    int phyreg, u16 phydata)
 {
 	struct net_device *ndev = bus->priv;
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	unsigned int mii_address = priv->hw->mii.addr;
 	unsigned int mii_data = priv->hw->mii.data;
 	u32 addr, tmp, value = MII_XGMAC_BUSY;
@@ -417,7 +417,7 @@ static int tc956xmac_xgmac2_mdio_write_c45(struct mii_bus *bus, int phyaddr,
 static int tc956xmac_mdio_read(struct mii_bus *bus, int phyaddr, int phyreg)
 {
 	struct net_device *ndev = bus->priv;
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	unsigned int mii_address = priv->hw->mii.addr;
 	unsigned int mii_data = priv->hw->mii.data;
 	u32 value = MII_BUSY;
@@ -507,7 +507,7 @@ static int tc956xmac_mdio_write(struct mii_bus *bus, int phyaddr, int phyreg,
 			     u16 phydata)
 {
 	struct net_device *ndev = bus->priv;
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	unsigned int mii_address = priv->hw->mii.addr;
 	unsigned int mii_data = priv->hw->mii.data;
 	u32 value = MII_BUSY;
@@ -578,7 +578,7 @@ int tc956xmac_mdio_reset(struct mii_bus *bus)
 {
 #if IS_ENABLED(CONFIG_TC956XMAC_PLATFORM)
 	struct net_device *ndev = bus->priv;
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	unsigned int mii_address = priv->hw->mii.addr;
 
 #ifdef CONFIG_OF
@@ -629,7 +629,7 @@ int tc956xmac_mdio_register(struct net_device *ndev)
 {
 	int err = 0;
 	struct mii_bus *new_bus;
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	struct tc956xmac_mdio_bus_data *mdio_bus_data = priv->plat->mdio_bus_data;
 	struct device_node *mdio_node = priv->plat->mdio_node;
 	struct device *dev = ndev->dev.parent;
@@ -867,7 +867,7 @@ bus_register_fail:
  */
 int tc956xmac_mdio_unregister(struct net_device *ndev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 
 	if (!priv->mii)
 		return 0;

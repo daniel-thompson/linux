@@ -58,8 +58,8 @@ static int tc956xmac_adjust_freq(struct ptp_clock_info *ptp, long scaled_ppm)
 #endif
 {
 #ifdef TC956X_SRIOV_PF
-	struct tc956xmac_priv *priv =
-	    container_of(ptp, struct tc956xmac_priv, ptp_clock_ops);
+	struct stmmac_priv *priv =
+	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
 	unsigned long flags;
 	u32 addend;
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 2, 0)
@@ -101,8 +101,8 @@ static int tc956xmac_adjust_freq(struct ptp_clock_info *ptp, long scaled_ppm)
 static int tc956xmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
 {
 #ifdef TC956X_SRIOV_PF
-	struct tc956xmac_priv *priv =
-	    container_of(ptp, struct tc956xmac_priv, ptp_clock_ops);
+	struct stmmac_priv *priv =
+	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
 	unsigned long flags;
 	u32 sec, nsec;
 	u32 quotient, reminder;
@@ -141,8 +141,8 @@ static int tc956xmac_adjust_time(struct ptp_clock_info *ptp, s64 delta)
  */
 static int tc956xmac_get_time(struct ptp_clock_info *ptp, struct timespec64 *ts)
 {
-	struct tc956xmac_priv *priv =
-	    container_of(ptp, struct tc956xmac_priv, ptp_clock_ops);
+	struct stmmac_priv *priv =
+	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
 	unsigned long flags;
 	u64 ns = 0;
 
@@ -168,8 +168,8 @@ static int tc956xmac_set_time(struct ptp_clock_info *ptp,
 			   const struct timespec64 *ts)
 {
 #ifdef TC956X_SRIOV_PF
-	struct tc956xmac_priv *priv =
-	    container_of(ptp, struct tc956xmac_priv, ptp_clock_ops);
+	struct stmmac_priv *priv =
+	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
 	unsigned long flags;
 
 	spin_lock_irqsave(&priv->ptp_lock, flags);
@@ -189,8 +189,8 @@ static int tc956xmac_enable(struct ptp_clock_info *ptp,
 	int ret = -EOPNOTSUPP;
 
 #ifdef TC956X_SRIOV_PF
-	struct tc956xmac_priv *priv =
-	    container_of(ptp, struct tc956xmac_priv, ptp_clock_ops);
+	struct stmmac_priv *priv =
+	    container_of(ptp, struct stmmac_priv, ptp_clock_ops);
 	struct tc956xmac_pps_cfg *cfg;
 	unsigned long flags;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 13, 0)
@@ -304,7 +304,7 @@ static struct ptp_clock_info tc956xmac_ptp_clock_ops = {
  * Description: this function will register the ptp clock driver
  * to kernel. It also does some house keeping work.
  */
-void tc956xmac_ptp_register(struct tc956xmac_priv *priv)
+void tc956xmac_ptp_register(struct stmmac_priv *priv)
 {
 	int i;
 
@@ -340,7 +340,7 @@ void tc956xmac_ptp_register(struct tc956xmac_priv *priv)
  * Description: this function will remove/unregister the ptp clock driver
  * from the kernel.
  */
-void tc956xmac_ptp_unregister(struct tc956xmac_priv *priv)
+void tc956xmac_ptp_unregister(struct stmmac_priv *priv)
 {
 	if (priv->ptp_clock) {
 		ptp_clock_unregister(priv->ptp_clock);

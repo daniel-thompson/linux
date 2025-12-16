@@ -44,7 +44,7 @@
 #endif
 #endif
 
-static u32 tc956xmac_get_id(struct tc956xmac_priv *priv, u32 id_reg)
+static u32 tc956xmac_get_id(struct stmmac_priv *priv, u32 id_reg)
 {
 	u32 reg = readl(priv->ioaddr + id_reg);
 
@@ -60,7 +60,7 @@ static u32 tc956xmac_get_id(struct tc956xmac_priv *priv, u32 id_reg)
 }
 
 #ifndef TC956X
-static void tc956xmac_dwmac_mode_quirk(struct tc956xmac_priv *priv)
+static void tc956xmac_dwmac_mode_quirk(struct stmmac_priv *priv)
 {
 	struct mac_device_info *mac = priv->hw;
 
@@ -75,7 +75,7 @@ static void tc956xmac_dwmac_mode_quirk(struct tc956xmac_priv *priv)
 	}
 }
 
-static int tc956xmac_dwmac1_quirks(struct tc956xmac_priv *priv)
+static int tc956xmac_dwmac1_quirks(struct stmmac_priv *priv)
 {
 	struct mac_device_info *mac = priv->hw;
 
@@ -100,19 +100,19 @@ static int tc956xmac_dwmac1_quirks(struct tc956xmac_priv *priv)
 	return 0;
 }
 
-static int tc956xmac_dwmac4_quirks(struct tc956xmac_priv *priv)
+static int tc956xmac_dwmac4_quirks(struct stmmac_priv *priv)
 {
 	tc956xmac_dwmac_mode_quirk(priv);
 	return 0;
 }
 #endif
 
-static const struct tc956xmac_hwif_entry {
+static const struct stmmac_hwif_entry {
 	bool gmac;
 	bool gmac4;
 	bool xgmac;
 	u32 min_id;
-	const struct tc956xmac_regs_off regs;
+	const struct stmmac_regs_off regs;
 	const void *desc;
 	const void *dma;
 	const void *mac;
@@ -127,8 +127,8 @@ static const struct tc956xmac_hwif_entry {
 	const void *mbx;
 	const void *mbx_wrapper;
 #endif
-	int (*setup)(struct tc956xmac_priv *priv);
-	int (*quirks)(struct tc956xmac_priv *priv);
+	int (*setup)(struct stmmac_priv *priv);
+	int (*quirks)(struct stmmac_priv *priv);
 } tc956xmac_hw[] = {
 	/* NOTE: New HW versions shall go to the end of this table */
 #ifndef TC956X
@@ -283,12 +283,12 @@ static const struct tc956xmac_hwif_entry {
 	},
 };
 
-int tc956xmac_hwif_init(struct tc956xmac_priv *priv)
+int tc956xmac_hwif_init(struct stmmac_priv *priv)
 {
 	bool needs_xgmac = priv->plat->has_xgmac;
 	bool needs_gmac4 = priv->plat->has_gmac4;
 	bool needs_gmac = priv->plat->has_gmac;
-	const struct tc956xmac_hwif_entry *entry;
+	const struct stmmac_hwif_entry *entry;
 	struct mac_device_info *mac;
 	bool needs_setup = true;
 	int i, ret;

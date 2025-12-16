@@ -28,17 +28,17 @@ struct tc956x_qcom_priv {
 #define to_priv(priv) \
 	((struct tc956x_qcom_priv *)priv->plat_priv)
 
-static int tc956x_assert_phy_reset(struct tc956xmac_priv *priv)
+static int tc956x_assert_phy_reset(struct stmmac_priv *priv)
 {
 	return tc956x_GPIO_OutputConfigPin(priv, to_priv(priv)->phy_rst_gpio, 0);
 }
 
-static int tc956x_deassert_phy_reset(struct tc956xmac_priv *priv)
+static int tc956x_deassert_phy_reset(struct stmmac_priv *priv)
 {
 	return tc956x_GPIO_OutputConfigPin(priv, to_priv(priv)->phy_rst_gpio, 1);
 }
 
-static int tc956x_phy_power_on(struct tc956xmac_priv *priv)
+static int tc956x_phy_power_on(struct stmmac_priv *priv)
 {
 	int ret = 0;
 	struct tc956x_qcom_priv *qpriv = to_priv(priv);
@@ -65,7 +65,7 @@ static int tc956x_phy_power_on(struct tc956xmac_priv *priv)
 	return ret;
 }
 
-static int tc956x_phy_power_off(struct tc956xmac_priv *priv)
+static int tc956x_phy_power_off(struct stmmac_priv *priv)
 {
 	int ret = 0;
 	struct tc956x_qcom_priv *qpriv = to_priv(priv);
@@ -150,7 +150,7 @@ err_pinctrl_get:
 	return -EINVAL;
 }
 
-int tc956x_platform_probe(struct tc956xmac_priv *priv,
+int tc956x_platform_probe(struct stmmac_priv *priv,
 			  struct tc956xmac_resources *res)
 {
 	int ret = 0;
@@ -218,7 +218,7 @@ err_parse_properties:
 	return -EINVAL;
 }
 
-int tc956x_platform_remove(struct tc956xmac_priv *priv)
+int tc956x_platform_remove(struct stmmac_priv *priv)
 {
 	int ret = 0;
 	struct tc956x_qcom_priv *qpriv = to_priv(priv);
@@ -239,7 +239,7 @@ int tc956x_platform_remove(struct tc956xmac_priv *priv)
 	return ret;
 }
 
-int tc956x_platform_suspend(struct tc956xmac_priv *priv)
+int tc956x_platform_suspend(struct stmmac_priv *priv)
 {
 	int ret = 0;
 
@@ -257,7 +257,7 @@ int tc956x_platform_suspend(struct tc956xmac_priv *priv)
 	return ret;
 }
 
-int tc956x_platform_resume(struct tc956xmac_priv *priv)
+int tc956x_platform_resume(struct stmmac_priv *priv)
 {
 	int ret = 0;
 

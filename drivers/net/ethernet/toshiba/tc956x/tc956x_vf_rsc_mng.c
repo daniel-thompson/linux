@@ -45,7 +45,7 @@
  * \return None
  */
 
-static int tc956x_vf_rsc_mng_init(struct tc956xmac_priv *priv, struct net_device *ndev)
+static int tc956x_vf_rsc_mng_init(struct stmmac_priv *priv, struct net_device *ndev)
 {
 	return 0;
 }
@@ -64,7 +64,7 @@ static int tc956x_vf_rsc_mng_init(struct tc956xmac_priv *priv, struct net_device
  * \return success or error
  */
 
-int tc956x_vf_rsc_mng_get_fn_id(struct tc956xmac_priv *priv, void __iomem *reg_pci_bridge_config_addr,
+int tc956x_vf_rsc_mng_get_fn_id(struct stmmac_priv *priv, void __iomem *reg_pci_bridge_config_addr,
 				       struct fn_id *fn_id_info)
 {
 	void __iomem *ioaddr = reg_pci_bridge_config_addr;
@@ -105,7 +105,7 @@ int tc956x_vf_rsc_mng_get_fn_id(struct tc956xmac_priv *priv, void __iomem *reg_p
  * \return None
  */
 
-static void tc956x_vf_rsc_mng_get_rscs(struct tc956xmac_priv *priv, struct net_device *dev, u8 *rscs)
+static void tc956x_vf_rsc_mng_get_rscs(struct stmmac_priv *priv, struct net_device *dev, u8 *rscs)
 {
 	void __iomem *ioaddr = (void __iomem *)priv->tc956x_BRIDGE_CFG_pci_base_addr;
 	*rscs = ((readl(ioaddr + RSCMNG_RSC_ST_REG)) & RSC_MNG_RSC_STATUS_MASK);

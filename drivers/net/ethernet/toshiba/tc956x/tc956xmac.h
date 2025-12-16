@@ -531,7 +531,7 @@ struct tc956xmac_tx_queue {
 	struct timer_list txtimer;
 #endif
 	u32 queue_index;
-	struct tc956xmac_priv *priv_data;
+	struct stmmac_priv *priv_data;
 	struct dma_extended_desc *dma_etx ____cacheline_aligned_in_smp;
 	struct dma_edesc *dma_entx;
 	struct dma_desc *dma_tx;
@@ -562,7 +562,7 @@ struct tc956xmac_rx_queue {
 	u32 queue_index;
 	struct page_pool *page_pool;
 	struct tc956xmac_rx_buffer *buf_pool;
-	struct tc956xmac_priv *priv_data;
+	struct stmmac_priv *priv_data;
 	struct dma_extended_desc *dma_erx;
 	struct dma_desc *dma_rx ____cacheline_aligned_in_smp;
 	unsigned int cur_rx;
@@ -587,7 +587,7 @@ struct tc956xmac_rx_queue {
 struct tc956xmac_channel {
 	struct napi_struct rx_napi ____cacheline_aligned_in_smp;
 	struct napi_struct tx_napi ____cacheline_aligned_in_smp;
-	struct tc956xmac_priv *priv_data;
+	struct stmmac_priv *priv_data;
 	spinlock_t lock;
 	u32 index;
 };
@@ -703,7 +703,7 @@ enum tc956x_rfs_type {
 	TC956X_RFS_T_MAX,
 };
 
-struct tc956xmac_priv {
+struct stmmac_priv {
 	/* Frequently used values are kept adjacent for cache effect */
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5,13,0)
 	u32 tx_coal_frames[MTL_MAX_TX_QUEUES];
@@ -748,7 +748,7 @@ struct tc956xmac_priv {
 	struct net_device *dev;
 	struct device *device;
 	struct mac_device_info *hw;
-	int (*hwif_quirks)(struct tc956xmac_priv *priv);
+	int (*hwif_quirks)(struct stmmac_priv *priv);
 	struct mutex lock;
 
 	/* RX Queue */
@@ -785,11 +785,11 @@ struct tc956xmac_priv {
 	struct phylink_config phylink_config;
 	struct phylink *phylink;
 #endif
-	struct tc956xmac_extra_stats xstats ____cacheline_aligned_in_smp;
-	struct tc956xmac_safety_stats sstats;
+	struct stmmac_extra_stats xstats ____cacheline_aligned_in_smp;
+	struct stmmac_safety_stats sstats;
 	struct plat_tc956xmacenet_data *plat;
 	struct dma_features dma_cap;
-	struct tc956xmac_counters mmc;
+	struct stmmac_counters mmc;
 #ifdef TC956X_SRIOV_VF
 	struct tc956x_sw_counters sw_stats;
 #endif
@@ -1231,8 +1231,8 @@ int tc956xmac_mdio_register(struct net_device *ndev);
 int tc956xmac_mdio_reset(struct mii_bus *mii);
 void tc956xmac_set_ethtool_ops(struct net_device *netdev);
 
-void tc956xmac_ptp_register(struct tc956xmac_priv *priv);
-void tc956xmac_ptp_unregister(struct tc956xmac_priv *priv);
+void tc956xmac_ptp_register(struct stmmac_priv *priv);
+void tc956xmac_ptp_unregister(struct stmmac_priv *priv);
 #ifdef TC956X_SRIOV_PF
 int tc956xmac_resume(struct device *dev);
 int tc956xmac_suspend(struct device *dev);
@@ -1248,26 +1248,26 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 		     struct plat_tc956xmacenet_data *plat_dat,
 		     struct tc956xmac_resources *res);
 #endif
-void tc956xmac_disable_eee_mode(struct tc956xmac_priv *priv);
-bool tc956xmac_eee_init(struct tc956xmac_priv *priv);
+void tc956xmac_disable_eee_mode(struct stmmac_priv *priv);
+bool tc956xmac_eee_init(struct stmmac_priv *priv);
 
 #ifdef CONFIG_TC956X_MAC_SELFTESTS
 void tc956xmac_selftest_run(struct net_device *dev,
 			 struct ethtool_test *etest, u64 *buf);
-void tc956xmac_selftest_get_strings(struct tc956xmac_priv *priv, u8 *data);
-int tc956xmac_selftest_get_count(struct tc956xmac_priv *priv);
+void tc956xmac_selftest_get_strings(struct stmmac_priv *priv, u8 *data);
+int tc956xmac_selftest_get_count(struct stmmac_priv *priv);
 #else
 static inline void tc956xmac_selftest_run(struct net_device *dev,
 				       struct ethtool_test *etest, u64 *buf)
 {
 	/* Not enabled */
 }
-static inline void tc956xmac_selftest_get_strings(struct tc956xmac_priv *priv,
+static inline void tc956xmac_selftest_get_strings(struct stmmac_priv *priv,
 					       u8 *data)
 {
 	/* Not enabled */
 }
-static inline int tc956xmac_selftest_get_count(struct tc956xmac_priv *priv)
+static inline int tc956xmac_selftest_get_count(struct stmmac_priv *priv)
 {
 	return -EOPNOTSUPP;
 }
@@ -1281,35 +1281,35 @@ s32 tc956x_load_firmware(struct device *dev, struct tc956xmac_resources *res);
 extern int tc956xmac_pm_usage_counter;
 extern int tc956x_dsp_count;
 #if defined(TC956X_SRIOV_PF) && !defined(TC956X_AUTOMOTIVE_CONFIG) && !defined(TC956X_ENABLE_MAC2MAC_BRIDGE) && !defined(TC956X_CPE_CONFIG)
-int tc956x_pf_get_fn_idx_from_int_sts(struct tc956xmac_priv *priv,
+int tc956x_pf_get_fn_idx_from_int_sts(struct stmmac_priv *priv,
 					     struct fn_id *fn_id_info);
-void tc956x_pf_parse_mbx(struct tc956xmac_priv *priv,
+void tc956x_pf_parse_mbx(struct stmmac_priv *priv,
 				enum mbx_msg_fns msg_src);
 #endif
 
 #ifdef CONFIG_TC956X_PLATFORM_SUPPORT
-int tc956x_platform_probe(struct tc956xmac_priv *priv, struct tc956xmac_resources *res);
-int tc956x_platform_remove(struct tc956xmac_priv *priv);
-int tc956x_platform_suspend(struct tc956xmac_priv *priv);
-int tc956x_platform_resume(struct tc956xmac_priv *priv);
+int tc956x_platform_probe(struct stmmac_priv *priv, struct tc956xmac_resources *res);
+int tc956x_platform_remove(struct stmmac_priv *priv);
+int tc956x_platform_suspend(struct stmmac_priv *priv);
+int tc956x_platform_resume(struct stmmac_priv *priv);
 int tc956x_platform_port_interface_overlay(struct device *dev, struct tc956xmac_resources *res);
 #else
-int tc956x_platform_probe(struct tc956xmac_priv *priv, struct tc956xmac_resources *res);
-static inline int tc956x_platform_remove(struct tc956xmac_priv *priv) { return 0; }
-static inline int tc956x_platform_suspend(struct tc956xmac_priv *priv) { return 0; }
-int tc956x_platform_resume(struct tc956xmac_priv *priv);
+int tc956x_platform_probe(struct stmmac_priv *priv, struct tc956xmac_resources *res);
+static inline int tc956x_platform_remove(struct stmmac_priv *priv) { return 0; }
+static inline int tc956x_platform_suspend(struct stmmac_priv *priv) { return 0; }
+int tc956x_platform_resume(struct stmmac_priv *priv);
 static inline int tc956x_platform_port_interface_overlay(struct device *dev, struct tc956xmac_resources *res) { return 0; }
 #endif
 
-int tc956x_GPIO_OutputConfigPin(struct tc956xmac_priv *priv, u32 gpio_pin, u8 out_value);
-int tc956x_gpio_restore_configuration(struct tc956xmac_priv *priv);
+int tc956x_GPIO_OutputConfigPin(struct stmmac_priv *priv, u32 gpio_pin, u8 out_value);
+int tc956x_gpio_restore_configuration(struct stmmac_priv *priv);
 
 #ifdef TC956X_SRIOV_VF
-int tc956x_vf_get_fn_idx_from_int_sts(struct tc956xmac_priv *priv,
+int tc956x_vf_get_fn_idx_from_int_sts(struct stmmac_priv *priv,
 					     struct fn_id *fn_id_info);
-void tc956x_vf_parse_mbx(struct tc956xmac_priv *priv,
+void tc956x_vf_parse_mbx(struct stmmac_priv *priv,
 				enum mbx_msg_fns msg_src);
-int tc956x_vf_rsc_mng_get_fn_id(struct tc956xmac_priv *priv, void __iomem *reg_pci_bridge_config_addr,
+int tc956x_vf_rsc_mng_get_fn_id(struct stmmac_priv *priv, void __iomem *reg_pci_bridge_config_addr,
 				       struct fn_id *fn_id_info);
 
 #endif
@@ -1321,7 +1321,7 @@ void tc956x_config_CM3_tamap(struct device *dev,
 #endif
 int tc956x_set_pci_speed(struct pci_dev *pdev, u32 speed);
 uint8_t get_tc956x_index(struct pci_dev *pdev);
-void tc956xmac_link_change_set_power(struct tc956xmac_priv *priv, enum TC956X_PORT_LINK_CHANGE_STATE state);
+void tc956xmac_link_change_set_power(struct stmmac_priv *priv, enum TC956X_PORT_LINK_CHANGE_STATE state);
 uint16_t tc956x_get_shared_mem_offset(struct pci_dev *pdev, uint16_t pci_bd);
 
 #ifdef TC956X_SRIOV_PF

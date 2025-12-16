@@ -642,7 +642,7 @@ static struct tc956xmac_rx_parser_entry snps_rxp_entries_filter_phy_pause_frames
  *
  * \return None
  */
-static void tc956xmac_pm_set_power(struct tc956xmac_priv *priv, enum TC956X_PORT_PM_STATE state)
+static void tc956xmac_pm_set_power(struct stmmac_priv *priv, enum TC956X_PORT_PM_STATE state)
 {
 	void *nrst_reg = NULL, *nclk_reg = NULL, *commonclk_reg = NULL;
 	u32 nrst_val = 0, nclk_val = 0, commonclk_val = 0;
@@ -1178,7 +1178,7 @@ static const struct tc956xmac_pci_info snps_gmac5_pci_info = {
 
 static int xgmac3_phy_read(void *priv, int phyaddr, int phyreg)
 {
-	struct tc956xmac_priv *spriv = priv;
+	struct stmmac_priv *spriv = priv;
 	u32 off, ret;
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 3, 0)
 	if (!(phyreg & MII_ADDR_C45))
@@ -1200,7 +1200,7 @@ static int xgmac3_phy_read(void *priv, int phyaddr, int phyreg)
 
 static int xgmac3_phy_write(void *priv, int phyaddr, int phyreg, u16 phydata)
 {
-	struct tc956xmac_priv *spriv = priv;
+	struct stmmac_priv *spriv = priv;
 	u32 off;
 
 #if LINUX_VERSION_CODE < KERNEL_VERSION(6, 3, 0)
@@ -3799,7 +3799,7 @@ err_out_enb_failed:
 static void tc956xmac_pci_remove(struct pci_dev *pdev)
 {
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 #ifdef TC956X_SRIOV_PF
 	void *nrst_reg, *nclk_reg;
 	u32 nrst_val, nclk_val;
@@ -3913,7 +3913,7 @@ static void tc956xmac_pci_remove(struct pci_dev *pdev)
 static int tc956x_pcie_pm_disable_pci(struct pci_dev *pdev)
 {
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	int ret = 0;
 
 	DBGPR_FUNC(&(pdev->dev), "---->%s : Port %d %s - PCI Save State, Disable Device, Prepare to sleep", __func__, priv->port_num, ndev->name);
@@ -3937,7 +3937,7 @@ static int tc956x_pcie_pm_disable_pci(struct pci_dev *pdev)
 static int tc956x_pcie_pm_enable_pci(struct pci_dev *pdev)
 {
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	int ret = 0;
 
 	DBGPR_FUNC(&(pdev->dev), "---->%s : Port %d %s - PCI Set Power, Enable Device, Restore State & Set Master", __func__, priv->port_num, ndev->name);
@@ -3972,7 +3972,7 @@ static int tc956x_pcie_pm_pci(struct pci_dev *pdev, enum TC956X_PORT_PM_STATE st
 	struct pci_bus *bus = NULL;
 	int ret = 0, i = 0, p = 0;
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 
 	if (tx956x_pci_shrd_mem[priv->pci_bd].pci_dev_active_cnt == TC956X_ALL_MAC_PORT_SUSPENDED) {
 		tc956x_dsp_ep = pci_upstream_bridge(pdev);
@@ -4017,7 +4017,7 @@ static int tc956x_pcie_suspend(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	int ret = 0;
 #ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	u8 i;
@@ -4125,7 +4125,7 @@ err:
 static int tc956x_pcie_resume_config(struct pci_dev *pdev)
 {
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	/* use signal from MSPHY */
 	uint8_t SgmSigPol = 0;
 	int ret = 0;
@@ -4325,7 +4325,7 @@ static int tc956x_pcie_resume(struct device *dev)
 	struct pci_dev *pdev = to_pci_dev(dev);
 #ifndef TC956X_SRIOV_VF
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 #ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
 	u8 i;
 #endif
@@ -4604,7 +4604,7 @@ static void tc956x_pcie_reset_prepare(struct pci_dev *pdev)
 {
 	struct net_device *ndev = dev_get_drvdata(&pdev->dev);
 #ifdef TC956X_SRIOV_PF
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 #endif
 
 	/* Invoke device driver close */

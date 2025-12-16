@@ -135,7 +135,7 @@ static u8 *vf_get_mbx_mem_idx(enum mbx_msg_fns msg_src,
  *
  * \return function type or error
  */
-int tc956x_vf_get_fn_idx_from_int_sts(struct tc956xmac_priv *priv,
+int tc956x_vf_get_fn_idx_from_int_sts(struct stmmac_priv *priv,
 					     struct fn_id *fn_id_info)
 {
 	void __iomem *ioaddr = priv->tc956x_BRIDGE_CFG_pci_base_addr;
@@ -204,7 +204,7 @@ static int unlock_semaphore(void __iomem *ioaddr, u8 idx)
  *
  * \return None
  */
-void tc956x_vf_parse_mbx(struct tc956xmac_priv *priv,
+void tc956x_vf_parse_mbx(struct stmmac_priv *priv,
 				enum mbx_msg_fns msg_src)
 {
 	u8 msg_buff[MBX_TOT_SIZE];
@@ -234,7 +234,7 @@ void tc956x_vf_parse_mbx(struct tc956xmac_priv *priv,
  *
  * \return ACK/NACK or error
  */
-static int tc956x_vf_check_for_ack(struct tc956xmac_priv *priv,
+static int tc956x_vf_check_for_ack(struct stmmac_priv *priv,
 				   enum mbx_msg_fns msg_dst,
 				   struct fn_id *fn_id_info)
 {
@@ -273,7 +273,7 @@ static int tc956x_vf_check_for_ack(struct tc956xmac_priv *priv,
  * \return None
  */
 
-static void tc956x_vf_mbx_init(struct tc956xmac_priv *priv, void *data)
+static void tc956x_vf_mbx_init(struct stmmac_priv *priv, void *data)
 {
 	priv->tc956x_SRAM_mailbox_base_addr = priv->tc956x_SRAM_pci_base_addr + VF_MBX_SRAM_ADDR;
 }
@@ -292,7 +292,7 @@ static void tc956x_vf_mbx_init(struct tc956xmac_priv *priv, void *data)
  *
  * \return None
  */
-static int tc956x_vf_mbx_poll_for_ack(struct tc956xmac_priv *priv,
+static int tc956x_vf_mbx_poll_for_ack(struct stmmac_priv *priv,
 				      enum mbx_msg_fns msg_dst)
 {
 
@@ -328,7 +328,7 @@ static int tc956x_vf_mbx_poll_for_ack(struct tc956xmac_priv *priv,
  *
  * \return None
  */
-static void tc956x_vf_mbx_send_ack(struct tc956xmac_priv *priv, u8 *msg_buff,
+static void tc956x_vf_mbx_send_ack(struct stmmac_priv *priv, u8 *msg_buff,
 				  enum mbx_msg_fns msg_dst,
 				  struct fn_id *fn_id_info)
 {
@@ -361,7 +361,7 @@ static void tc956x_vf_mbx_send_ack(struct tc956xmac_priv *priv, u8 *msg_buff,
  *
  * \return None
  */
-static void tc956x_vf_trigger_interrupt(struct tc956xmac_priv *priv,
+static void tc956x_vf_trigger_interrupt(struct stmmac_priv *priv,
 					enum mbx_msg_fns msg_dst)
 {
 	void __iomem *ioaddr = priv->tc956x_BRIDGE_CFG_pci_base_addr;
@@ -390,7 +390,7 @@ static void tc956x_vf_trigger_interrupt(struct tc956xmac_priv *priv,
  *
  * \return success or error code
  */
-static int tc956x_vf_mbx_write(struct tc956xmac_priv *priv, u8 *msg_buff,
+static int tc956x_vf_mbx_write(struct stmmac_priv *priv, u8 *msg_buff,
 			       enum mbx_msg_fns msg_dst,
 			       struct fn_id *fn_id_info)
 {
@@ -459,7 +459,7 @@ static int tc956x_vf_mbx_write(struct tc956xmac_priv *priv, u8 *msg_buff,
  *
  * \return success or error code
  */
-static int tc956x_vf_mbx_read(struct tc956xmac_priv *priv, u8 *msg_buff,
+static int tc956x_vf_mbx_read(struct stmmac_priv *priv, u8 *msg_buff,
 			      enum mbx_msg_fns msg_src,
 			      struct fn_id *fn_id_info)
 {

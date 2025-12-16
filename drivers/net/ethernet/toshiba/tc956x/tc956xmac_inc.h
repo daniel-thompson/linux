@@ -198,7 +198,7 @@ struct tc956xmac_mdio_bus_data {
 	bool needs_reset;
 };
 
-struct tc956xmac_dma_cfg {
+struct stmmac_dma_cfg {
 	int pbl;
 	int txpbl;
 	int rxpbl;
@@ -210,7 +210,7 @@ struct tc956xmac_dma_cfg {
 };
 
 #define AXI_BLEN	7
-struct tc956xmac_axi {
+struct stmmac_axi {
 	bool axi_lpi_en;
 	bool axi_xit_frm;
 	u32 axi_wr_osr_lmt;
@@ -290,7 +290,7 @@ struct plat_tc956xmacenet_data {
 	struct device_node *phylink_node;
 #endif
 	struct device_node *mdio_node;
-	struct tc956xmac_dma_cfg *dma_cfg;
+	struct stmmac_dma_cfg *dma_cfg;
 	struct tc956xmac_est *est;
 	int clk_csr;
 	int clk_crs;
@@ -351,7 +351,7 @@ struct plat_tc956xmacenet_data {
 	unsigned int clk_ref_rate;
 	s32 ptp_max_adj;
 	struct reset_control *tc956xmac_rst;
-	struct tc956xmac_axi *axi;
+	struct stmmac_axi *axi;
 	int has_gmac4;
 	bool has_sun8i;
 	bool tso_en;

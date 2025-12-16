@@ -36,14 +36,14 @@
 #include "tc956xmac.h"
 #include "common.h"
 
-extern int tc956xmac_ioctl_get_cbs(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_set_cbs(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_set_rxp(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_get_rxp(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_set_est(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_get_est(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_set_fpe(struct tc956xmac_priv *priv, void *data);
-extern int tc956xmac_ioctl_get_fpe(struct tc956xmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_get_cbs(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_set_cbs(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_set_rxp(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_get_rxp(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_set_est(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_get_est(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_set_fpe(struct stmmac_priv *priv, void *data);
+extern int tc956xmac_ioctl_get_fpe(struct stmmac_priv *priv, void *data);
 extern int tc956xmac_ethtool_op_get_eee(struct net_device *dev,
 										struct ethtool_eee *edata);
 
@@ -57,9 +57,9 @@ extern void tc956x_pf_set_vlan_filter(struct net_device *dev, u16 vf, u16 vid);
 
 extern void tc956x_pf_del_vlan_filter(struct net_device *dev, u16 vf, u16 vid);
 
-extern void tc956x_pf_del_umac_addr(struct tc956xmac_priv *priv, int index, int vf);
+extern void tc956x_pf_del_umac_addr(struct stmmac_priv *priv, int index, int vf);
 
-extern void tc956xmac_service_mbx_event_schedule(struct tc956xmac_priv *priv);
+extern void tc956xmac_service_mbx_event_schedule(struct stmmac_priv *priv);
 
 #ifdef TC956X_SRIOV_PF
 /**
@@ -74,7 +74,7 @@ extern void tc956xmac_service_mbx_event_schedule(struct tc956xmac_priv *priv);
  *
  * \return None
  */
-static void tc956x_mbx_phy_link(struct tc956xmac_priv *priv)
+static void tc956x_mbx_phy_link(struct stmmac_priv *priv)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -135,7 +135,7 @@ static void tc956x_mbx_phy_link(struct tc956xmac_priv *priv)
  *
  * \return 0 or error
  */
-static int tc956x_mbx_rx_dma_ch_tlptr(struct tc956xmac_priv *priv, u32 ch, u8 vf)
+static int tc956x_mbx_rx_dma_ch_tlptr(struct stmmac_priv *priv, u32 ch, u8 vf)
 {
 
 	/* Prepare mailbox message and call mailbox API for posting
@@ -190,7 +190,7 @@ static int tc956x_mbx_rx_dma_ch_tlptr(struct tc956xmac_priv *priv, u32 ch, u8 vf
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_set_dma_tx_mode(struct tc956xmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
+static int tc956x_mbx_set_dma_tx_mode(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
 {
 	u32 txmode = 0;
 	u32 chan = 0;
@@ -239,7 +239,7 @@ static int tc956x_mbx_set_dma_tx_mode(struct tc956xmac_priv *priv, u8 *mbx_buff,
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_set_mtl_tx_queue_weight(struct tc956xmac_priv *priv, u8 *mbx_buff,
+static int tc956x_mbx_set_mtl_tx_queue_weight(struct stmmac_priv *priv, u8 *mbx_buff,
 												u8 *ack_buff)
 {
 	u32 weight, traffic_class;
@@ -283,7 +283,7 @@ static int tc956x_mbx_set_mtl_tx_queue_weight(struct tc956xmac_priv *priv, u8 *m
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_config_cbs(struct tc956xmac_priv *priv,
+static int tc956x_mbx_config_cbs(struct stmmac_priv *priv,
 				u8 *mbx_buff, u8 *ack_buff)
 {
 	u32 send_slope, idle_slope, high_credit;
@@ -366,7 +366,7 @@ static int tc956x_mbx_config_cbs(struct tc956xmac_priv *priv,
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_setup_cbs(struct tc956xmac_priv *priv,
+static int tc956x_mbx_setup_cbs(struct stmmac_priv *priv,
 				u8 *mbx_buff, u8 *ack_buff)
 {
 	struct tc_cbs_qopt_offload qopt;
@@ -412,7 +412,7 @@ static int tc956x_mbx_setup_cbs(struct tc956xmac_priv *priv,
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_tx_queue_prio(struct tc956xmac_priv *priv,
+static int tc956x_mbx_tx_queue_prio(struct stmmac_priv *priv,
 				u8 *mbx_buff, u8 *ack_buff)
 {
 	u32 queue;
@@ -459,7 +459,7 @@ static int tc956x_mbx_tx_queue_prio(struct tc956xmac_priv *priv,
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_vf_get_link_status(struct tc956xmac_priv *priv,
+static int tc956x_mbx_vf_get_link_status(struct stmmac_priv *priv,
 					u8 *mbx_buff, u8 *ack_buff)
 {
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
@@ -497,7 +497,7 @@ static int tc956x_mbx_vf_get_link_status(struct tc956xmac_priv *priv,
  *
  * \return ACK/NACK
  */
-static int tc956xmac_pf_ioctl_interface(struct tc956xmac_priv *priv,
+static int tc956xmac_pf_ioctl_interface(struct stmmac_priv *priv,
 							u8 *mbx, u8 *ack_buff, u8 vf_no)
 {
 	u32 val;
@@ -993,7 +993,7 @@ static int tc956xmac_pf_ioctl_interface(struct tc956xmac_priv *priv,
  *
  * \return ACK/NACK
  */
-static int tc956xmac_pf_ethtool_interface(struct tc956xmac_priv *priv, struct net_device *netdev,
+static int tc956xmac_pf_ethtool_interface(struct stmmac_priv *priv, struct net_device *netdev,
 								u8 *mbx, u8 *ack_buff)
 {
 	struct ethtool_eee edata;
@@ -1051,7 +1051,7 @@ static int tc956xmac_pf_ethtool_interface(struct tc956xmac_priv *priv, struct ne
  *
  * \return ACK/NACK
  */
-static int tc956xmac_pf_set_mac_filter(struct tc956xmac_priv *priv, struct net_device *dev,
+static int tc956xmac_pf_set_mac_filter(struct stmmac_priv *priv, struct net_device *dev,
 				u8 *mbx_buff, u8 *ack_buff, u8 vf)
 {
 	u8 mac[SIZE_MBX_VF_MAC];
@@ -1109,7 +1109,7 @@ static int tc956xmac_pf_set_mac_filter(struct tc956xmac_priv *priv, struct net_d
  *
  * \return ACK/NACK
  */
-static int tc956xmac_pf_del_mac_filter(struct tc956xmac_priv *priv, struct net_device *dev,
+static int tc956xmac_pf_del_mac_filter(struct stmmac_priv *priv, struct net_device *dev,
 					u8 *mbx_buff, u8 *ack_buff, u8 vf)
 {
 
@@ -1164,7 +1164,7 @@ static int tc956xmac_pf_del_mac_filter(struct tc956xmac_priv *priv, struct net_d
  *
  * \return ACK/NACK
  */
-static int tc956xmac_pf_set_vlan_filter(struct tc956xmac_priv *priv, struct net_device *dev,
+static int tc956xmac_pf_set_vlan_filter(struct stmmac_priv *priv, struct net_device *dev,
 				u8 *mbx_buff, u8 *ack_buff, u8 vf)
 {
 	u16 vid;
@@ -1219,7 +1219,7 @@ static int tc956xmac_pf_set_vlan_filter(struct tc956xmac_priv *priv, struct net_
  *
  * \return ACK/NACK
  */
-static int tc956xmac_pf_del_vlan_filter(struct tc956xmac_priv *priv, struct net_device *dev,
+static int tc956xmac_pf_del_vlan_filter(struct stmmac_priv *priv, struct net_device *dev,
 						u8 *mbx_buff, u8 *ack_buff, u8 vf)
 {
 	u16 vid;
@@ -1268,7 +1268,7 @@ static int tc956xmac_pf_del_vlan_filter(struct tc956xmac_priv *priv, struct net_
  *
  * \return None
  */
-static void tc956x_mbx_rx_crc(struct tc956xmac_priv *priv)
+static void tc956x_mbx_rx_crc(struct stmmac_priv *priv)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1325,7 +1325,7 @@ static void tc956x_mbx_rx_crc(struct tc956xmac_priv *priv)
  *
  * \return None
  */
-static void tc956x_mbx_rx_csum(struct tc956xmac_priv *priv)
+static void tc956x_mbx_rx_csum(struct stmmac_priv *priv)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1381,7 +1381,7 @@ static void tc956x_mbx_rx_csum(struct tc956xmac_priv *priv)
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_get_drv_cap(struct tc956xmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
+static int tc956x_mbx_get_drv_cap(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
 {
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
 		KPRINT_DEBUG1("NULL pointer error\n");
@@ -1419,7 +1419,7 @@ static int tc956x_mbx_get_drv_cap(struct tc956xmac_priv *priv, u8 *mbx_buff, u8 
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_get_umac_addr(struct tc956xmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
+static int tc956x_mbx_get_umac_addr(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
 {
 	unsigned char addr[SIZE_MBX_VF_MAC];
 	unsigned int reg_n;
@@ -1472,7 +1472,7 @@ static int tc956x_mbx_get_umac_addr(struct tc956xmac_priv *priv, u8 *mbx_buff, u
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_set_umac_addr(struct tc956xmac_priv *priv, u8 *mbx_buff, u8 *ack_buff, u8 vf)
+static int tc956x_mbx_set_umac_addr(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_buff, u8 vf)
 {
 	unsigned char addr[SIZE_MBX_VF_MAC];
 	unsigned int reg_n;
@@ -1524,7 +1524,7 @@ static int tc956x_mbx_set_umac_addr(struct tc956xmac_priv *priv, u8 *mbx_buff, u
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_reset_eee_mode(struct tc956xmac_priv *priv, u8 *mbx_buff, u8 *ack_msg)
+static int tc956x_mbx_reset_eee_mode(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_msg)
 {
 	if (priv == NULL || mbx_buff == NULL || ack_msg == NULL) {
 		KPRINT_DEBUG1("NULL pointer error\n");
@@ -1559,7 +1559,7 @@ static int tc956x_mbx_reset_eee_mode(struct tc956xmac_priv *priv, u8 *mbx_buff, 
  *
  * \return 0 or error
  */
-static int tc956xmac_mbx_vf_reset(struct tc956xmac_priv *priv, u8 *mbx_buff,
+static int tc956xmac_mbx_vf_reset(struct stmmac_priv *priv, u8 *mbx_buff,
 					u8 *ack_msg, u8 vf)
 {
 	struct tc956x_mac_addr *mac_table = &priv->mac_table[0];
@@ -1644,7 +1644,7 @@ static int tc956xmac_mbx_vf_reset(struct tc956xmac_priv *priv, u8 *mbx_buff,
  *
  * \return 0 or error
  */
-static int tc956x_mbx_setup_etf(struct tc956xmac_priv *priv, u32 ch, u8 vf)
+static int tc956x_mbx_setup_etf(struct stmmac_priv *priv, u32 ch, u8 vf)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1696,7 +1696,7 @@ static int tc956x_mbx_setup_etf(struct tc956xmac_priv *priv, u32 ch, u8 vf)
  *
  * \return none
  */
-static void tc956x_mbx_flr(struct tc956xmac_priv *priv)
+static void tc956x_mbx_flr(struct stmmac_priv *priv)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1749,7 +1749,7 @@ static void tc956x_mbx_flr(struct tc956xmac_priv *priv)
  *
  * \return 0 or error
  */
-static int tc956x_mbx_rx_dma_err(struct tc956xmac_priv *priv, u8 vf)
+static int tc956x_mbx_rx_dma_err(struct stmmac_priv *priv, u8 vf)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK

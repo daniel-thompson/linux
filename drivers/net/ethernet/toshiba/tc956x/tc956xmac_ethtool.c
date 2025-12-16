@@ -90,7 +90,7 @@
 #endif
 #define ETHTOOL_DMA_OFFSET	55
 #ifdef TC956X_SRIOV_DEBUG
-extern void tc956x_filter_debug(struct tc956xmac_priv *priv);
+extern void tc956x_filter_debug(struct stmmac_priv *priv);
 #endif
 #ifndef TC956X_SRIOV_VF
 void tc956xmac_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause);
@@ -104,17 +104,17 @@ int tc956xmac_ethtool_op_get_eee(struct net_device *dev, struct ethtool_eee *eda
 #define TC956X_ADVERTISED_2500baseT_Full ETHTOOL_LINK_MODE_2500baseT_Full_BIT
 #define TC956X_ADVERTISED_5000baseT_Full ETHTOOL_LINK_MODE_5000baseT_Full_BIT
 #endif
-struct tc956xmac_stats {
+struct stmmac_stats {
 	char stat_string[ETH_GSTRING_LEN];
 	int sizeof_stat;
 	int stat_offset;
 };
 
 #define TC956XMAC_STAT(m)	\
-	{ #m, sizeof_field(struct tc956xmac_extra_stats, m),	\
-	offsetof(struct tc956xmac_priv, xstats.m)}
+	{ #m, sizeof_field(struct stmmac_extra_stats, m),	\
+	offsetof(struct stmmac_priv, xstats.m)}
 
-static const struct tc956xmac_stats tc956xmac_gstrings_stats[] = {
+static const struct stmmac_stats tc956xmac_gstrings_stats[] = {
 	/* Transmit errors */
 	TC956XMAC_STAT(tx_underflow),
 	TC956XMAC_STAT(tx_carrier),
@@ -755,10 +755,10 @@ static const struct tc956xmac_stats tc956xmac_gstrings_stats[] = {
 
 /* HW MAC Management counters (if supported) */
 #define TC956XMAC_MMC_STAT(m)	\
-	{ #m, sizeof_field(struct tc956xmac_counters, m),	\
-	offsetof(struct tc956xmac_priv, mmc.m)}
+	{ #m, sizeof_field(struct stmmac_counters, m),	\
+	offsetof(struct stmmac_priv, mmc.m)}
 
-static const struct tc956xmac_stats tc956xmac_mmc[] = {
+static const struct stmmac_stats tc956xmac_mmc[] = {
 	TC956XMAC_MMC_STAT(mmc_tx_octetcount_gb),
 	TC956XMAC_MMC_STAT(mmc_tx_framecount_gb),
 	TC956XMAC_MMC_STAT(mmc_tx_broadcastframe_g),
@@ -853,9 +853,9 @@ static const struct tc956xmac_stats tc956xmac_mmc[] = {
 /* SW counters */
 #define TC956X_SW_STAT(m)	\
 	{ #m, sizeof_field(struct tc956x_sw_counters, m),	\
-	offsetof(struct tc956xmac_priv, sw_stats.m)}
+	offsetof(struct stmmac_priv, sw_stats.m)}
 
-static const struct tc956xmac_stats tc956x_sw[] = {
+static const struct stmmac_stats tc956x_sw[] = {
 	TC956X_SW_STAT(tx_frame_count_good_bad),
 	TC956X_SW_STAT(rx_frame_count_good_bad),
 	TC956X_SW_STAT(rx_frame_count_good),
@@ -930,7 +930,7 @@ static const char tc956x_priv_flags_strings[][ETH_GSTRING_LEN] = {
 static void tc956xmac_ethtool_getdrvinfo(struct net_device *dev,
 				      struct ethtool_drvinfo *info)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	struct pci_dev *pdev = to_pci_dev(priv->device);
 	struct tc956x_version *fw_version;
 	int reg = 0;
@@ -980,7 +980,7 @@ static void tc956xmac_ethtool_getdrvinfo(struct net_device *dev,
 static int tc956xmac_ethtool_get_link_ksettings(struct net_device *dev,
 					     struct ethtool_link_ksettings *cmd)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	if (priv->hw->pcs & TC956XMAC_PCS_RGMII ||
 	    priv->hw->pcs & TC956XMAC_PCS_SGMII ||
@@ -1073,7 +1073,7 @@ static int
 tc956xmac_ethtool_set_link_ksettings(struct net_device *dev,
 				  const struct ethtool_link_ksettings *cmd)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	if (priv->hw->pcs & TC956XMAC_PCS_RGMII ||
 	    priv->hw->pcs & TC956XMAC_PCS_SGMII ||
@@ -1116,14 +1116,14 @@ tc956xmac_ethtool_set_link_ksettings(struct net_device *dev,
 #endif  /* TC956X_SRIOV_VF */
 static u32 tc956xmac_ethtool_getmsglevel(struct net_device *dev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	return priv->msg_enable;
 }
 
 static void tc956xmac_ethtool_setmsglevel(struct net_device *dev, u32 level)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	priv->msg_enable = level;
 
@@ -1138,7 +1138,7 @@ static int tc956xmac_check_if_running(struct net_device *dev)
 
 static int tc956xmac_ethtool_get_regs_len(struct net_device *dev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	if (priv->plat->has_xgmac)
 		return XGMAC_REGSIZE * 4;
@@ -1147,7 +1147,7 @@ static int tc956xmac_ethtool_get_regs_len(struct net_device *dev)
 
 #ifdef TC956X_SRIOV_PF
 #ifdef TC956X_SRIOV_DEBUG
-static u32 rxp_read_frp_stat(struct tc956xmac_priv *priv, void __iomem *ioaddr,
+static u32 rxp_read_frp_stat(struct stmmac_priv *priv, void __iomem *ioaddr,
 					    int pos)
 {
 	int ret;
@@ -1180,7 +1180,7 @@ static u32 rxp_read_frp_stat(struct tc956xmac_priv *priv, void __iomem *ioaddr,
 
 }
 
-static void tc956x_read_frp_stats(struct tc956xmac_priv *priv)
+static void tc956x_read_frp_stats(struct stmmac_priv *priv)
 {
 	u32 ch;
 
@@ -1200,7 +1200,7 @@ static void tc956x_read_frp_stats(struct tc956xmac_priv *priv)
 static void tc956xmac_ethtool_gregs(struct net_device *dev,
 			  struct ethtool_regs *regs, void *space)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	u32 *reg_space = (u32 *) space;
 
 	tc956xmac_dump_mac_regs(priv, priv->hw, reg_space);
@@ -1225,7 +1225,7 @@ static void tc956xmac_ethtool_gregs(struct net_device *dev,
 #ifndef TC956X_SRIOV_VF
 static int tc956xmac_nway_reset(struct net_device *dev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	return phylink_ethtool_nway_reset(priv->phylink);
 }
@@ -1237,7 +1237,7 @@ static void
 tc956xmac_get_pauseparam(struct net_device *netdev,
 		      struct ethtool_pauseparam *pause)
 {
-	struct tc956xmac_priv *priv = netdev_priv(netdev);
+	struct stmmac_priv *priv = netdev_priv(netdev);
 
 	tc956xmac_ethtool_get_pauseparam(priv, pause);
 }
@@ -1247,7 +1247,7 @@ void
 tc956xmac_get_pauseparam(struct net_device *netdev,
 		      struct ethtool_pauseparam *pause)
 {
-	struct tc956xmac_priv *priv = netdev_priv(netdev);
+	struct stmmac_priv *priv = netdev_priv(netdev);
 	struct rgmii_adv adv_lp;
 
 	if (priv->hw->pcs &&
@@ -1267,7 +1267,7 @@ static int
 tc956xmac_set_pauseparam(struct net_device *netdev,
 		      struct ethtool_pauseparam *pause)
 {
-	struct tc956xmac_priv *priv = netdev_priv(netdev);
+	struct stmmac_priv *priv = netdev_priv(netdev);
 	int new_pause = FLOW_OFF;
 	struct rgmii_adv adv_lp;
 	u32 tx_cnt = priv->plat->tx_queues_to_use;
@@ -1304,7 +1304,7 @@ tc956xmac_set_pauseparam(struct net_device *netdev,
 }
 
 #ifndef TC956X_SRIOV_VF
-static void tc956xmac_m3fw_stats_read(struct tc956xmac_priv *priv)
+static void tc956xmac_m3fw_stats_read(struct stmmac_priv *priv)
 {
 	u32 rx_queues_count = priv->plat->rx_queues_to_use;
 	u32 tx_queues_count = priv->plat->tx_queues_to_use;
@@ -1395,7 +1395,7 @@ static void tc956xmac_m3fw_stats_read(struct tc956xmac_priv *priv)
 static void tc956xmac_get_ethtool_stats(struct net_device *dev,
 				 struct ethtool_stats *dummy, u64 *data)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	u32 rx_queues_count = priv->plat->rx_queues_to_use;
 	u32 tx_queues_count = priv->plat->tx_queues_to_use;
@@ -1491,7 +1491,7 @@ static void tc956xmac_get_ethtool_stats(struct net_device *dev,
 
 static int tc956xmac_get_sset_count(struct net_device *netdev, int sset)
 {
-	struct tc956xmac_priv *priv = netdev_priv(netdev);
+	struct stmmac_priv *priv = netdev_priv(netdev);
 #ifdef TC956X_SRIOV_VF
 	int len;
 #else
@@ -1532,7 +1532,7 @@ static void tc956xmac_get_strings(struct net_device *dev, u32 stringset, u8 *dat
 {
 	int i;
 	u8 *p = data;
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	switch (stringset) {
 	case ETH_SS_STATS:
@@ -1586,7 +1586,7 @@ static void tc956xmac_get_strings(struct net_device *dev, u32 stringset, u8 *dat
 
 static void tc956xmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	if (!priv->phylink)
 		return;
@@ -1596,7 +1596,7 @@ static void tc956xmac_get_wol(struct net_device *dev, struct ethtool_wolinfo *wo
 
 static int tc956xmac_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	u32 support = (WAKE_MAGIC | WAKE_PHY);
 	int ret;
 
@@ -2079,7 +2079,7 @@ int tc956xmac_ethtool_op_get_eee(struct net_device *dev,
 				     struct ethtool_eee *edata)
 #endif
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	int ret;
 
 	if (!priv->dma_cap.eee)
@@ -2121,7 +2121,7 @@ static int tc956xmac_ethtool_op_get_eee(struct net_device *dev,
 				     struct ethtool_eee *edata)
 #endif
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	tc956xmac_ethtool_get_eee(priv, edata);
 
@@ -2136,7 +2136,7 @@ static int tc956xmac_ethtool_op_set_eee(struct net_device *dev,
 				     struct ethtool_eee *edata)
 #endif
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 #ifndef TC956X_SRIOV_VF
 	int ret;
 #endif
@@ -2185,7 +2185,7 @@ static int tc956xmac_ethtool_op_set_eee(struct net_device *dev,
 	return 0;
 }
 
-static u32 tc956xmac_usec2riwt(u32 usec, struct tc956xmac_priv *priv)
+static u32 tc956xmac_usec2riwt(u32 usec, struct stmmac_priv *priv)
 {
 	unsigned long clk = clk_get_rate(priv->plat->tc956xmac_clk);
 	u32 value, mult = 256;
@@ -2205,7 +2205,7 @@ static u32 tc956xmac_usec2riwt(u32 usec, struct tc956xmac_priv *priv)
 	return value;
 }
 
-static u32 tc956xmac_riwt2usec(u32 riwt, struct tc956xmac_priv *priv)
+static u32 tc956xmac_riwt2usec(u32 riwt, struct stmmac_priv *priv)
 {
 	unsigned long clk = clk_get_rate(priv->plat->tc956xmac_clk);
 	u32 mult = 256;
@@ -2232,7 +2232,7 @@ static int __tc956xmac_get_coalesce(struct net_device *dev,
 				 struct ethtool_coalesce *ec,
 				 int queue)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	u32 max_cnt;
 	u32 rx_cnt;
 	u32 tx_cnt;
@@ -2278,7 +2278,7 @@ static int __tc956xmac_set_coalesce(struct net_device *dev,
 				 struct ethtool_coalesce *ec,
 				 int queue)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	bool all_queues = false;
 	unsigned int rx_riwt;
 	u32 max_cnt;
@@ -2357,7 +2357,7 @@ static int tc956xmac_set_coalesce(struct net_device *dev,
 static int tc956xmac_get_coalesce(struct net_device *dev,
 			       struct ethtool_coalesce *ec)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	ec->tx_coalesce_usecs = priv->tx_coal_timer;
 	ec->tx_max_coalesced_frames = priv->tx_coal_frames;
@@ -2373,7 +2373,7 @@ static int tc956xmac_get_coalesce(struct net_device *dev,
 static int tc956xmac_set_coalesce(struct net_device *dev,
 			       struct ethtool_coalesce *ec)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	u32 rx_cnt = priv->plat->rx_queues_to_use;
 	unsigned int rx_riwt;
 
@@ -2429,7 +2429,7 @@ static int tc956xmac_set_coalesce(struct net_device *dev,
 static int tc956xmac_get_rxnfc(struct net_device *dev,
 			    struct ethtool_rxnfc *rxnfc, u32 *rule_locs)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	switch (rxnfc->cmd) {
 	case ETHTOOL_GRXRINGS:
@@ -2444,14 +2444,14 @@ static int tc956xmac_get_rxnfc(struct net_device *dev,
 
 static u32 tc956xmac_get_rxfh_key_size(struct net_device *dev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	return sizeof(priv->rss.key);
 }
 
 static u32 tc956xmac_get_rxfh_indir_size(struct net_device *dev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	return ARRAY_SIZE(priv->rss.table);
 }
@@ -2459,7 +2459,7 @@ static u32 tc956xmac_get_rxfh_indir_size(struct net_device *dev)
 static int tc956xmac_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
 			   u8 *hfunc)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	int i;
 
 	if (indir) {
@@ -2478,7 +2478,7 @@ static int tc956xmac_get_rxfh(struct net_device *dev, u32 *indir, u8 *key,
 static int tc956xmac_set_rxfh(struct net_device *dev, const u32 *indir,
 			   const u8 *key, const u8 hfunc)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	int i;
 
 	if ((hfunc != ETH_RSS_HASH_NO_CHANGE) && (hfunc != ETH_RSS_HASH_TOP))
@@ -2505,7 +2505,7 @@ static int tc956xmac_get_ts_info(struct net_device *dev,
 			      struct ethtool_ts_info *info)
 #endif
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	if ((priv->dma_cap.time_stamp || priv->dma_cap.atime_stamp)) {
 #ifdef TC956X_SRIOV_PF
@@ -2556,7 +2556,7 @@ static int tc956xmac_get_ts_info(struct net_device *dev,
 static int tc956xmac_get_tunable(struct net_device *dev,
 			      const struct ethtool_tunable *tuna, void *data)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	int ret = 0;
 
 	switch (tuna->id) {
@@ -2575,7 +2575,7 @@ static int tc956xmac_set_tunable(struct net_device *dev,
 			      const struct ethtool_tunable *tuna,
 			      const void *data)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	int ret = 0;
 
 	switch (tuna->id) {
@@ -2594,7 +2594,7 @@ static int tc956xmac_set_tunable(struct net_device *dev,
 #ifdef TC956X
 static int tc956x_set_priv_flag(struct net_device *dev, u32 priv_flag)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 
 	if (priv_flag & TC956XMAC_TX_FCS)
 		priv->tx_crc_pad_state = TC956X_TX_CRC_PAD_INSERT;
@@ -2607,7 +2607,7 @@ static int tc956x_set_priv_flag(struct net_device *dev, u32 priv_flag)
 
 static u32 tc956x_get_priv_flag(struct net_device *dev)
 {
-	struct tc956xmac_priv *priv = netdev_priv(dev);
+	struct stmmac_priv *priv = netdev_priv(dev);
 	u32 ret;
 
 	if (priv->tx_crc_pad_state == TC956X_TX_CRC_PAD_INSERT)
@@ -2621,7 +2621,7 @@ static u32 tc956x_get_priv_flag(struct net_device *dev)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(6, 3, 0)
 static int tc956x_get_mm(struct net_device *ndev, struct ethtool_mm_state *state)
 {
-	struct tc956xmac_priv *priv = netdev_priv(ndev);
+	struct stmmac_priv *priv = netdev_priv(ndev);
 	u32 reg;
 
 	reg = readl(priv->ioaddr + NCID_OFFSET);

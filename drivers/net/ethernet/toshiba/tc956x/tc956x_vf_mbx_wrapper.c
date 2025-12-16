@@ -53,7 +53,7 @@
  *
  * \return None
  */
-static void tc956xmac_mbx_dma_tx_mode(struct tc956xmac_priv *priv, int mode,
+static void tc956xmac_mbx_dma_tx_mode(struct stmmac_priv *priv, int mode,
 				 u32 channel, int fifosz, u8 qmode)
 {
 
@@ -104,7 +104,7 @@ static void tc956xmac_mbx_dma_tx_mode(struct tc956xmac_priv *priv, int mode,
  *
  * \return None
  */
-static void tc956xmac_mbx_set_mtl_tx_queue_weight(struct tc956xmac_priv *priv,
+static void tc956xmac_mbx_set_mtl_tx_queue_weight(struct stmmac_priv *priv,
 				 u32 weight, u32 traffic_class)
 {
 	/* Prepare mailbox message and call mailbox API for posting
@@ -155,7 +155,7 @@ static void tc956xmac_mbx_set_mtl_tx_queue_weight(struct tc956xmac_priv *priv,
  *
  * \return None
  */
-static void tc956xmac_mbx_config_cbs(struct tc956xmac_priv *priv,
+static void tc956xmac_mbx_config_cbs(struct stmmac_priv *priv,
 				u32 send_slope, u32 idle_slope,
 				u32 high_credit, u32 low_credit, u32 queue)
 {
@@ -206,7 +206,7 @@ static void tc956xmac_mbx_config_cbs(struct tc956xmac_priv *priv,
  *
  * \return None
  */
-static void tc956xmac_mbx_tx_queue_prio(struct tc956xmac_priv *priv,
+static void tc956xmac_mbx_tx_queue_prio(struct stmmac_priv *priv,
 				    u32 prio, u32 queue)
 {
 	/* Prepare mailbox message and call mailbox API for posting
@@ -255,7 +255,7 @@ static void tc956xmac_mbx_tx_queue_prio(struct tc956xmac_priv *priv,
  *
  * \return None
  */
-static void tc956xmac_mbx_get_link_status(struct tc956xmac_priv *priv,
+static void tc956xmac_mbx_get_link_status(struct stmmac_priv *priv,
 						u32 *link_status, u32 *speed, u32 *duplex)
 {
 	/* Prepare mailbox message and call mailbox API for posting
@@ -310,7 +310,7 @@ static void tc956xmac_mbx_get_link_status(struct tc956xmac_priv *priv,
  *
  * \return None
  */
-static void tc956xmac_mbx_get_umac_addr(struct tc956xmac_priv *priv,
+static void tc956xmac_mbx_get_umac_addr(struct stmmac_priv *priv,
 				unsigned char *addr, unsigned int reg_n)
 {
 	u8 mbx[MBX_TOT_SIZE];
@@ -353,7 +353,7 @@ static void tc956xmac_mbx_get_umac_addr(struct tc956xmac_priv *priv,
  *
  * \return error/success
  */
-static int tc956xmac_mbx_set_umac_addr(struct tc956xmac_priv *priv, unsigned char *addr, unsigned int reg_n)
+static int tc956xmac_mbx_set_umac_addr(struct stmmac_priv *priv, unsigned char *addr, unsigned int reg_n)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	int ret = 0;
@@ -393,7 +393,7 @@ static int tc956xmac_mbx_set_umac_addr(struct tc956xmac_priv *priv, unsigned cha
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_reg_wr(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ioctl_reg_wr(struct stmmac_priv *priv,
 							void __user *data)
 {
 	struct tc956xmac_ioctl_reg_rd_wr ioctl_data;
@@ -447,7 +447,7 @@ static int tc956xmac_vf_ioctl_reg_wr(struct tc956xmac_priv *priv,
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_get_connected_speed(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ioctl_get_connected_speed(struct stmmac_priv *priv,
 									void __user *data)
 {
 	struct tc956xmac_ioctl_speed ioctl_data;
@@ -508,7 +508,7 @@ static int tc956xmac_vf_ioctl_get_connected_speed(struct tc956xmac_priv *priv,
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_set_cbs(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ioctl_set_cbs(struct stmmac_priv *priv,
 						void __user *data)
 {
 	u8 mbx[MBX_TOT_SIZE];
@@ -618,7 +618,7 @@ static int tc956xmac_vf_ioctl_set_cbs(struct tc956xmac_priv *priv,
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_get_cbs(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ioctl_get_cbs(struct stmmac_priv *priv,
 								void __user *data)
 {
 	/* Prepare mailbox message and call mailbox API for posting
@@ -733,7 +733,7 @@ static int tc956xmac_vf_ioctl_get_cbs(struct tc956xmac_priv *priv,
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_set_est(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ioctl_set_est(struct stmmac_priv *priv,
 						void __user *data)
 {
 	u8 mbx[MBX_TOT_SIZE];
@@ -841,7 +841,7 @@ out_free:
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_get_est(struct tc956xmac_priv *priv,	void __user *data)
+static int tc956xmac_vf_ioctl_get_est(struct stmmac_priv *priv,	void __user *data)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	u8 mbx_loc[MBX_MSG_SIZE * 10];
@@ -927,7 +927,7 @@ out_free:
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_set_fpe(struct tc956xmac_priv *priv, void __user *data)
+static int tc956xmac_vf_ioctl_set_fpe(struct stmmac_priv *priv, void __user *data)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	int ret;
@@ -980,7 +980,7 @@ static int tc956xmac_vf_ioctl_set_fpe(struct tc956xmac_priv *priv, void __user *
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_get_fpe(struct tc956xmac_priv *priv, void __user *data)
+static int tc956xmac_vf_ioctl_get_fpe(struct stmmac_priv *priv, void __user *data)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1039,7 +1039,7 @@ static int tc956xmac_vf_ioctl_get_fpe(struct tc956xmac_priv *priv, void __user *
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_set_rxp(struct tc956xmac_priv *priv, void __user *data)
+static int tc956xmac_vf_ioctl_set_rxp(struct stmmac_priv *priv, void __user *data)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	u8 *mbx_loc;   //sizeof(struct tc956xmac_ioctl_rxp_cfg)
@@ -1143,7 +1143,7 @@ out_free:
  *
  * \return success/error
  */
-static int tc956xmac_vf_ioctl_get_rxp(struct tc956xmac_priv *priv,	void __user *data)
+static int tc956xmac_vf_ioctl_get_rxp(struct stmmac_priv *priv,	void __user *data)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	u8 *mbx_loc;
@@ -1227,7 +1227,7 @@ out_free:
  *
  * \return success/error
  */
-static int tc956xmac_vf_ethtool_get_pauseparam(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ethtool_get_pauseparam(struct stmmac_priv *priv,
 					struct ethtool_pauseparam *pause)
 {
 	u8 mbx[MBX_TOT_SIZE];
@@ -1287,7 +1287,7 @@ static int tc956xmac_vf_ethtool_get_pauseparam(struct tc956xmac_priv *priv,
  *
  * \return success/error
  */
-static int tc956xmac_vf_ethtool_get_eee(struct tc956xmac_priv *priv,
+static int tc956xmac_vf_ethtool_get_eee(struct stmmac_priv *priv,
 				     struct ethtool_eee *edata)
 {
 	u8 mbx[MBX_TOT_SIZE];
@@ -1335,7 +1335,7 @@ static int tc956xmac_vf_ethtool_get_eee(struct tc956xmac_priv *priv,
  *
  * \return success/error
  */
-static int tc956xmac_vf_add_mac(struct tc956xmac_priv *priv, const u8 *mac)
+static int tc956xmac_vf_add_mac(struct stmmac_priv *priv, const u8 *mac)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1380,7 +1380,7 @@ static int tc956xmac_vf_add_mac(struct tc956xmac_priv *priv, const u8 *mac)
  *
  * \return None
  */
-static void tc956xmac_vf_delete_mac(struct tc956xmac_priv *priv, const u8 *mac)
+static void tc956xmac_vf_delete_mac(struct stmmac_priv *priv, const u8 *mac)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1421,7 +1421,7 @@ static void tc956xmac_vf_delete_mac(struct tc956xmac_priv *priv, const u8 *mac)
  *
  * \return None
  */
-static void tc956xmac_vf_add_vlan(struct tc956xmac_priv *priv, u16 vid)
+static void tc956xmac_vf_add_vlan(struct stmmac_priv *priv, u16 vid)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1462,7 +1462,7 @@ static void tc956xmac_vf_add_vlan(struct tc956xmac_priv *priv, u16 vid)
  *
  * \return None
  */
-static void tc956xmac_vf_delete_vlan(struct tc956xmac_priv *priv, u16 vid)
+static void tc956xmac_vf_delete_vlan(struct stmmac_priv *priv, u16 vid)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1502,7 +1502,7 @@ static void tc956xmac_vf_delete_vlan(struct tc956xmac_priv *priv, u16 vid)
  *
  * \return None
  */
-static void tc956x_mbx_get_drv_cap(struct tc956xmac_priv *priv, struct tc956xmac_priv *priv1)
+static void tc956x_mbx_get_drv_cap(struct stmmac_priv *priv, struct tc956xmac_priv *priv1)
 {
 	/* Prepare mailbox message and call mailbox API for posting
 	 * and getting the ACK
@@ -1555,7 +1555,7 @@ static void tc956x_mbx_get_drv_cap(struct tc956xmac_priv *priv, struct tc956xmac
  *
  * \return None
  */
-static void tc956xmac_vf_mbx_reset_eee_mode(struct tc956xmac_priv *priv, struct mac_device_info *hw)
+static void tc956xmac_vf_mbx_reset_eee_mode(struct stmmac_priv *priv, struct mac_device_info *hw)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	int ret;
@@ -1591,7 +1591,7 @@ static void tc956xmac_vf_mbx_reset_eee_mode(struct tc956xmac_priv *priv, struct 
  *
  * \return None
  */
-static void tc956xmac_vf_mbx_reset(struct tc956xmac_priv *priv, u8 vf_status)
+static void tc956xmac_vf_mbx_reset(struct stmmac_priv *priv, u8 vf_status)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	int ret;
@@ -1628,7 +1628,7 @@ static void tc956xmac_vf_mbx_reset(struct tc956xmac_priv *priv, u8 vf_status)
  *
  * \return success/error
  */
-static int tc956x_mbx_setup_cbs(struct tc956xmac_priv *priv, struct tc_cbs_qopt_offload *qopt)
+static int tc956x_mbx_setup_cbs(struct stmmac_priv *priv, struct tc_cbs_qopt_offload *qopt)
 {
 	u8 mbx[MBX_TOT_SIZE];
 	int ret;
@@ -1679,7 +1679,7 @@ static int tc956x_mbx_setup_cbs(struct tc956xmac_priv *priv, struct tc_cbs_qopt_
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_phy_link(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_phy_link(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	u32 datal = 0, datah = 0;
 	u8 vf_mac_addr[6];
@@ -1750,7 +1750,7 @@ static int tc956x_mbx_phy_link(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_rx_crc(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_rx_crc(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	unsigned long flags;
 
@@ -1795,7 +1795,7 @@ static int tc956x_mbx_rx_crc(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_m
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_rx_csum(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_rx_csum(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	unsigned long flags;
 
@@ -1840,7 +1840,7 @@ static int tc956x_mbx_rx_csum(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_rx_dma_ch_tlptr(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_rx_dma_ch_tlptr(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	u32 ch;
 	struct tc956xmac_rx_queue *rx_q;
@@ -1884,7 +1884,7 @@ static int tc956x_mbx_rx_dma_ch_tlptr(struct tc956xmac_priv *priv, u8 *msg_buf, 
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_setup_etf(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_setup_etf(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	u32 ch;
 	u8 tbs_status;
@@ -1932,7 +1932,7 @@ static int tc956x_mbx_setup_etf(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ac
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_pf_flr(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_pf_flr(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	unsigned long flags;
 
@@ -1972,7 +1972,7 @@ static int tc956x_mbx_pf_flr(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_m
  *
  * \return ACK/NACK
  */
-static int tc956x_mbx_rx_dma_err(struct tc956xmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
+static int tc956x_mbx_rx_dma_err(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 {
 	unsigned long flags;
 
