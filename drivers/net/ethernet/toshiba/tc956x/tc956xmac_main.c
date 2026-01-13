@@ -195,6 +195,7 @@
 #include <linux/interrupt.h>
 #include <linux/iopoll.h>
 #include <linux/ip.h>
+#include <linux/of_net.h>
 #include <linux/tcp.h>
 #include <linux/skbuff.h>
 #include <linux/ethtool.h>
@@ -455,7 +456,6 @@ static u8 phy_sa_addr[2][6] = {
 	{0x00, 0x01, 0x02, 0x03, 0x04, 0x05}, /*For Port-0*/
 	{0x00, 0x01, 0x02, 0x03, 0x04, 0x05}, /*For Port-1*/
 };
-
 #ifndef TC956X_SRIOV_VF
 
 static int dwxgmac2_rx_parser_read_entry(struct tc956xmac_priv *priv,
@@ -4719,13 +4719,13 @@ static int tc956xmac_phy_setup(struct tc956xmac_priv *priv)
 
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 16, 0)
 	/* Set the platform/firmware specified interface mode */
-	/*If SGMII interface, add 2500BASEX also in supported interface as in some PHY,
-	 * 2500Base-X and SGMII are used interchangeably
-	 */
-	if (mode == PHY_INTERFACE_MODE_SGMII)
-		__set_bit(PHY_INTERFACE_MODE_2500BASEX, priv->phylink_config.supported_interfaces);
-
 	__set_bit(mode, priv->phylink_config.supported_interfaces);
+
+	/*If SGMII interface, add 2500BASEX also in supported interface as in some PHY,
+	* 2500Base-X and SGMII are used interchangeably
+	*/
+	if (mode == PHY_INTERFACE_MODE_SGMII)
+		__set_bit(PHY_INTERFACE_MODE_2500BASEX,  priv->phylink_config.supported_interfaces);
 #endif
 
 	phylink = phylink_create(&priv->phylink_config, fwnode,
@@ -15288,7 +15288,7 @@ static bool lookfor_macid(char *file_buf, uint8_t port_id, uint8_t dev_id)
  * \return None
  *
  */
-static void parse_config_file(uint8_t port_id, uint8_t dev_id)
+static void parse_config_file(uint8_t port_id, uint8_t dev_id, struct net_device *dev)
 {
 	void *data = NULL;
 	char *cdata;
@@ -15299,11 +15299,13 @@ static void parse_config_file(uint8_t port_id, uint8_t dev_id)
 #else
 	loff_t size;
 
-	ret = kernel_read_file_from_path("config.ini", &data, &size, 3000, READING_POLICY);
+	ret = kernel_read_file_from_path("config.ini", &data, &size, 1000, READING_POLICY);
 #endif
 	if (ret < 0) {
 		KPRINT_ERR("Mac configuration file not found\n");
-		KPRINT_INFO("Using Default MAC Address\n");
+		eth_random_addr(&dev_addr[tc956xmac_pm_usage_counter][0]);
+		dev->addr_assign_type = NET_ADDR_RANDOM;
+		KPRINT_INFO("tc956xmac_pm_usage_counter=%d\n",tc956xmac_pm_usage_counter);
 		return;
 	} else {
 
@@ -15349,45 +15351,7 @@ static int validate_rsc_mgr_alloc(struct tc956xmac_priv *priv, struct net_device
 	return ret;
 }
 #endif
-/**
- * tc956x_platform_probe
- * @priv: driver private structure
- * @res: tc956xmac resource pointer
- * Description: this is the platform specific function
- * returns 0 on success
- */
-int tc956x_platform_probe(struct tc956xmac_priv *priv, struct tc956xmac_resources *res)
-{
-#ifdef RBTC9563_3MA
-#ifdef RBTC9563_3DB
-	tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 0);
-#else
-	tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 1);
-	tc956x_GPIO_OutputConfigPin(priv, GPIO_13, 0);
-#endif
-#endif
-	return 0;
-}
-/**
- * tc956x_platform_probe
- * @priv: driver private structure
- * @res: tc956xmac resource pointer
- * Description: this is the platform specific function
- * returns 0 on success
- */
-int tc956x_platform_resume(struct tc956xmac_priv *priv)
-{
-#ifdef RBTC9563_3MA
-#ifdef RBTC9563_3DB
-		tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 0);
-#else
-		tc956x_GPIO_OutputConfigPin(priv, GPIO_12, 1);
-		tc956x_GPIO_OutputConfigPin(priv, GPIO_13, 0);
-#endif
-#endif
 
-	return 0;
-}
 /**
  * tc956xmac_dvr_probe
  * @device: device pointer
@@ -15730,10 +15694,16 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #else
 #ifdef TC956X_SRIOV_VF
 	/* To be enabled for config.ini parsing */
-	parse_config_file(priv->port_num, priv->plat->vf_id);
+	parse_config_file(priv->port_num, priv->plat->vf_id, priv->dev);
 #else
-	/* To be enabled for config.ini parsing */
-	parse_config_file(priv->port_num, 0);
+	ret = of_get_mac_address_nvmem(priv->device->of_node, dev_addr[priv->probe_seq_no]);
+	if (ret == -EPROBE_DEFER) {
+		dev_info(priv->device, "Deferring probe for MAC address from NVMEM\n");
+		return ret;
+	} else if (ret) {
+		/* To be enabled for config.ini parsing */
+		parse_config_file(priv->port_num, 0, priv->dev);
+	}
 #endif
 
 #endif /* EEPROM_MAC_ADDR */

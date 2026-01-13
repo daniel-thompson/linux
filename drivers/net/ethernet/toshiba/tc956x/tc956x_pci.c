@@ -2591,7 +2591,7 @@ static void tc956x_pcie_disable_dsp2_port(struct device *dev,
 	DBGPR_FUNC(dev, "-->%s\n", __func__);
 
 	/* Read mode setting register
-	 * Mode settings values 0:Setting A: x4x1x1, 1:Setting B: x2x2x1
+	 * Mode settings values 0:Setting A: x4x1x1, 1 :Setting B: x2x2x1
 	 */
 	reg_data = readl(reg_sfr_base_addr + NMODESTS_OFFSET);
 	pcie_mode = (reg_data & NMODESTS_MODE2) >> NMODESTS_MODE2_SHIFT;
@@ -4997,7 +4997,7 @@ module_param_array(macX_eee_enable, uint, NULL, 0444);
 MODULE_PARM_DESC(macX_eee_enable,
 		"Array of Enable/Disable EEE arranged in order according to the BDFs provided in module parameter 'tc956x_eth_ports_bdf'\
 		 Enable/Disable EEE for BDfs provided - default is 0,\
-		 [0: DISABLE, 1: ENABLE]");
+		 [0 : DISABLE, 1 : ENABLE]");
 
 module_param_array(macX_lpi_timer, uint, NULL, 0444);
 MODULE_PARM_DESC(macX_lpi_timer,
@@ -5010,32 +5010,32 @@ MODULE_PARM_DESC(macX_filter_phy_pause,
 		"Array of Filter PHY pause frames arranged in order according to the BDFs provided in module parameter 'tc956x_eth_ports_bdf'\
 		 Filter PHY pause frames alone and pass Link partner pause frames\
 		 to application for BDfs provided - default is 0,\
-		 [0: DISABLE, 1: ENABLE]");
+		 [0 : DISABLE, 1 : ENABLE]");
 
 module_param_array(macX_en_lp_pause_frame_cnt, uint, NULL, 0444);
 MODULE_PARM_DESC(macX_en_lp_pause_frame_cnt,
 		"Array of Enable counter to count Link Partner pause frames arranged in order according to the BDFs provided in module parameter 'tc956x_eth_ports_bdf'\
 		 Enable counter to count Link Partner pause frames for BDfs provided - default is 0,\
-		 [0: DISABLE, 1: ENABLE]");
+		 [0 : DISABLE, 1 : ENABLE]");
 
 module_param_array(macX_force_speed_mode, uint, NULL, 0444);
 MODULE_PARM_DESC(mac0_force_speed_mode,
 		"Array of Enable force speed mode arranged in order according to the BDFs provided in module parameter 'tc956x_eth_ports_bdf'\
 		 Enable force speed mode for BDfs provided - default is 0,\
-		 [0: DISABLE, 1: ENABLE]");
+		 [0 : DISABLE, 1 : ENABLE]");
 
 module_param_array(macX_force_config_speed, uint, NULL, 0444);
 MODULE_PARM_DESC(macX_force_config_speed,
 		"Array of Configure force speed arranged in order according to the BDFs provided in module parameter 'tc956x_eth_ports_bdf'\
 		 Configure force speed for BDfs provided - default is 3,\
-		 [0: 10G, 1: 5G, 2: 2.5G, 3: 1G, 4: 100M, 5: 10M]");
+		 [0 : 10G, 1 : 5G, 2 : 2.5G, 3 : 1G, 4 : 100M, 5 : 10M]");
 
 module_param_array(macX_power_save_at_link_down, uint, NULL, 0444);
 MODULE_PARM_DESC(macX_power_save_at_link_down,
 		"Array of Enable Power saving during Link down arranged in order according to the BDFs provided in module parameter 'tc956x_eth_ports_bdf'\
 		 Same value to be assigned for Port-0 and Port-1 of a TC956x device - default is 0\
 		 Note: If Port-0 and Port-1 have different values, power saving is not gauranteed\
-		 [0: DISABLE, 1: ENABLE]");
+		 [0 : DISABLE, 1 : ENABLE]");
 
 #ifdef TC956X_PCIE_LINK_STATE_LATENCY_CTRL
 

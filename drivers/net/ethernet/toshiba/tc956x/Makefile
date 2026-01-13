@@ -10,6 +10,7 @@ CCFLAGS += -m32
 endif
 
 EXTRA_CFLAGS+=-DTC956X
+EXTRA_CFLAGS+=-DCONFIG_TC956X_PLATFORM_SUPPORT
 
 ifeq ($(TC956X_PCIE_GEN3_SETTING),1)
 EXTRA_CFLAGS+=-DTC956X_PCIE_GEN3_SETTING
@@ -46,7 +47,7 @@ tc956x_vf_pcie_eth-y := tc956xmac_main.o tc956xmac_ethtool.o \
 	      dwxgmac2_descs.o dwxgmac2_dma.o tc956x_pci.o \
 	      tc956x_vf_mbx_wrapper.o tc956x_msigen.o \
 	      tc956x_vf_rsc_mng.o tc956x_vf_mbx.o \
-	      tc956x_pcie_logstat.o
+	      tc956x_pcie_logstat.o tc956x_qcom.o
 
 else
 
@@ -59,6 +60,7 @@ tc956x_pcie_eth-y := tc956xmac_main.o tc956xmac_ethtool.o tc956xmac_mdio.o \
 	      dwxgmac2_descs.o dwxgmac2_dma.o tc956x_pci.o \
 	      tc956x_msigen.o \
 	      tc956x_pcie_logstat.o tc956x_pf_rsc_mng.o \
+	      tc956x_qcom.o
 
 ifeq ($(pf), 1)
 	tc956x_pcie_eth-y += tc956x_pf_mbx_wrapper.o tc956x_pf_rsc_mng.o tc956x_pf_mbx.o
@@ -77,12 +79,16 @@ endif
 ifeq ($(TC956XMAC_SELFTESTS), 1)
 	tc956x_pcie_eth-y += tc956xmac_selftests.o
 endif
-
-endif
+#TC956X_Host_Driver-industrial_limited_tested_20241022_V_04-00-01-QPSSW-210.patch
 ccflags-y := -Wmissing-prototypes
 
-#all:
-#	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
+endif
+
+#modules:
+#	$(MAKE) -C $(KERNEL_SRC) M=$(PWD) modules
+#
+#modules_install:
+#	make -C $(KERNEL_SRC) M=$(PWD) modules_install
 #
 #clean:
-#	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
+#	make -C $(KERNEL_SRC) M=$(PWD) clean
