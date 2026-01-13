@@ -82,10 +82,7 @@ static u8 mac_addr_default[6] = {0x0, 0x0, 0x0, 0x0, 0x0, 0x0};
 static DEFINE_SPINLOCK(cm3_tamap_lock);
 
 extern int tc956xmac_rx_parser_configuration(struct tc956xmac_priv *priv);
-extern void tc956x_config_CM3_tamap(struct device *dev,
-				void __iomem *reg_pci_base_addr,
-				struct tc956xmac_cm3_tamap *tamap,
-				u8 table_entry);
+
 /*!
  * \brief This API will return the version of IPA I/F maintained by Toshiba
  *	  The API will check for NULL pointers
@@ -1696,4 +1693,3 @@ int set_mac_addr(struct net_device *ndev, struct mac_addr_list *mac_addr, u8 ind
 	return 0;
 }
 EXPORT_SYMBOL_GPL(set_mac_addr);
-

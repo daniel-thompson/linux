@@ -291,7 +291,6 @@ int tc956x_platform_port_interface_overlay(struct device *dev, struct tc956xmac_
 	u32 mdc_clk;
 	u32 c45_state;
 	u32 link_down_macrst;
-	u32 plat_interface;
 
 	if (of_property_read_u32(dev->of_node, "qcom,phy-port-interface", &interface)) {
 		dev_err(dev, "Failed to get phy port interface\n");

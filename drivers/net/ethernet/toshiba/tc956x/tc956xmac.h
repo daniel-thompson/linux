@@ -1313,6 +1313,12 @@ int tc956x_vf_rsc_mng_get_fn_id(struct tc956xmac_priv *priv, void __iomem *reg_p
 				       struct fn_id *fn_id_info);
 
 #endif
+#ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
+void tc956x_config_CM3_tamap(struct device *dev,
+				void __iomem *reg_pci_base_addr,
+				struct tc956xmac_cm3_tamap *tamap,
+				u8 table_entry);
+#endif
 int tc956x_set_pci_speed(struct pci_dev *pdev, u32 speed);
 uint8_t get_tc956x_index(struct pci_dev *pdev);
 void tc956xmac_link_change_set_power(struct tc956xmac_priv *priv, enum TC956X_PORT_LINK_CHANGE_STATE state);
