@@ -319,6 +319,41 @@
 		regulator-always-on;
 	};
 
+	/*
+	 * TODO: Name needs review... it's copied from a v6.6 .dtsi file and
+	 * has not been checked (many other regulators were renamed during
+	 * upstreaming).
+	 */
+	qep_vreg: qep_vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "qep_vreg";
+		gpio = <&pm7325_gpios 8 0>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		enable-active-high;
+
+		/* TODO: we'd like the QPS615 to manage this properly */
+		regulator-always-on;
+	};
+
+	/*
+	 * TODO: Name needs review... it's copied from a v6.6 .dtsi file and
+	 * has not been checked (many other regulators were renamed during
+	 * upstreaming).
+	 */
+	aqr_vreg: aqr_vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "aqr_vreg";
+		gpio = <&pm7250b_gpios 4 0>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		enable-active-high;
+
+		/* TODO: we'd like the QPS615 to manage this properly */
+		regulator-always-on;
+
+	};
+
 	wcn6750-pmu {
 		compatible = "qcom,wcn6750-pmu";
 		pinctrl-0 = <&bt_en>;
@@ -919,7 +954,31 @@
 				#size-cells = <2>;
 				device_type = "pci";
 				ranges;
+
+				pinctrl-names = "default";
+				pinctrl-0 = <&aqr_intn_wol_sig>;
+				qcom,phy-rst-gpio-id = <0>;
+				interrupts-extended = <&tlmm 141 IRQ_TYPE_EDGE_FALLING>;
+				interrupt-names = "wol_irq";
+				//phy-supply = <&aqr_vreg>;
+				qcom,phy-rst-delay-us = <221000>;
+				//#address-cells = <1>;
+				//#size-cells = <1>;
 			};
+
+#if 0
+			/*
+		         * TODO: This comes from v6.6 DTS
+			 */
+			/* BDF 5.0.0 */
+			pcie1_bus5_dev0_fn0: pcie1_qps_eth0 {
+				reg = <0x0 0x0 0x0 0x0 0x0>;
+				qcom,iommu-group = <&eth0_pci_iommu_group>;
+				eth0_pci_iommu_group: eth0_pci_iommu_group {
+					qcom,iommu-dma = "atomic";
+				};
+			};
+#endif
 
 			pci@0,1 {
 				reg = <0x50100 0x0 0x0 0x0 0x0>;
@@ -927,7 +986,31 @@
 				#size-cells = <2>;
 				device_type = "pci";
 				ranges;
+
+				pinctrl-names = "default";
+				pinctrl-0 = <&napa_intn_wol_sig>;
+				qcom,phy-rst-gpio-id = <1>;
+				interrupts-extended = <&tlmm 101 IRQ_TYPE_EDGE_FALLING>;
+				interrupt-names = "wol_irq";
+				//phy-supply = <&qep_vreg>;
+				qcom,phy-rst-delay-us = <20000>;
+				//#address-cells = <1>;
+				//#size-cells = <1>;
 			};
+
+#if 0
+			/*
+		         * TODO: This comes from v6.6 DTS
+			 */
+			/* BDF 5.0.1 */
+			pcie1_bus5_dev0_fn1: pcie1_qps_eth1 {
+				reg = <0x100 0x0 0x0 0x0 0x0>;
+				qcom,iommu-group = <&eth1_pci_iommu_group>;
+				eth1_pci_iommu_group: eth1_pci_iommu_group {
+					qcom,iommu-dma = "atomic";
+				};
+			};
+#endif
 		};
 	};
 };
@@ -1463,6 +1546,38 @@
 		pins = "gpio91";
 		function = "gpio";
 		bias-pull-up;
+	};
+
+	/*
+	 * TODO: This was copied from v6.6 and doesn't match how other
+	 * pins are configured (changed bindings?).
+	 */
+	qps615_intn_wol {
+		aqr_intn_wol_sig: aqr_intn_wol_sig {
+			mux {
+				pins = "gpio141";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio141";
+				input-enable;
+				bias-disable;
+			};
+		};
+
+		napa_intn_wol_sig: napa_intn_wol_sig {
+			mux {
+				pins = "gpio101";
+				function = "gpio";
+			};
+
+			config {
+				pins = "gpio101";
+				input-enable;
+				bias-disable;
+			};
+		};
 	};
 };
 
