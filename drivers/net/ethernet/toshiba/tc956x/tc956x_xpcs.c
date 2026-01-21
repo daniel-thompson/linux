@@ -57,13 +57,13 @@ u32 tc956x_xpcs_read(void __iomem *xpcsaddr, u32 pcs_reg_num)
 	base_address = pcs_reg_num >> XPCS_REG_BASE_ADDR;
 	offset = pcs_reg_num & XPCS_REG_OFFSET;
 
-	KPRINT_INFO("XPCS Indirect Access Base Register : %x, offset : %x", base_address, offset);
+	KPRINT_DEBUG1("XPCS Indirect Access Base Register : %x, offset : %x", base_address, offset);
 	/*write base address to (PCS address + 0x3FC) register*/
 	writel(base_address, (xpcsaddr + XPCS_IND_ACCESS));
 
 	/*Access to offset address (PCS address + offset)*/
 	reg_value = readl(xpcsaddr + offset);
-	KPRINT_INFO("XPCS register %x indirect read access value : %x", pcs_reg_num, reg_value);
+	KPRINT_DEBUG1("XPCS register %x indirect read access value : %x", pcs_reg_num, reg_value);
 
 	return reg_value;
 }
@@ -75,13 +75,13 @@ u32 tc956x_xpcs_write(void __iomem *xpcsaddr, u32 pcs_reg_num, u32 value)
 	base_address = pcs_reg_num >> XPCS_REG_BASE_ADDR;
 	offset = pcs_reg_num & XPCS_REG_OFFSET;
 
-	KPRINT_INFO("XPCS Indirect Access Base Register : %x, offset : %x", base_address, offset);
+	KPRINT_DEBUG1("XPCS Indirect Access Base Register : %x, offset : %x", base_address, offset);
 	/*write base address to (PCS address + 0x3FC) register*/
 	writel(base_address, (xpcsaddr + XPCS_IND_ACCESS));
 
 	/*Access to offset address (PCS address + offset)*/
 	writel(value, xpcsaddr + offset);
-	KPRINT_INFO("XPCS register %x indirect write access value : %x", pcs_reg_num, value);
+	KPRINT_DEBUG1("XPCS register %x indirect write access value : %x", pcs_reg_num, value);
 
 	return 0;
 }
@@ -91,7 +91,7 @@ int tc956x_xpcs_init(struct stmmac_priv *priv, void __iomem *xpcsaddr)
 {
 	u32 reg_value;
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	reg_value = tc956x_xpcs_read(xpcsaddr, XGMAC_SR_MII_CTRL);
 	if (reg_value & XGMAC_SOFT_RST)
@@ -165,7 +165,7 @@ int tc956x_xpcs_init(struct stmmac_priv *priv, void __iomem *xpcsaddr)
 		}
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	} else { /* SerDES Configuration for WOL SGMII 1G when native interface other than SGMII. */
-		KPRINT_INFO("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
+		KPRINT_DEBUG1("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 		reg_value = tc956x_xpcs_read(xpcsaddr, XGMAC_SR_XS_PCS_CTRL2);
 			reg_value &= XGMAC_PCS_TYPE_SEL;
 			reg_value |= 0x1;
@@ -254,7 +254,7 @@ void tc956x_xpcs_ctrl_ane(struct stmmac_priv *priv, bool ane)
 {
 	u32 reg_value;
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_SR_MII_CTRL);
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
@@ -262,17 +262,17 @@ void tc956x_xpcs_ctrl_ane(struct stmmac_priv *priv, bool ane)
 #endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 		if (ane) {
 			reg_value |= XGMAC_AN_37_ENABLE;
-			KPRINT_INFO("%s Enable AN", __func__);
+			KPRINT_DEBUG1("%s Enable AN", __func__);
 		} else {
 			reg_value &= (~XGMAC_AN_37_ENABLE);
-			KPRINT_INFO("%s Disable AN", __func__);
+			KPRINT_DEBUG1("%s Disable AN", __func__);
 			}
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 	} else {
 		/* Configure SGMII 1Gbps when WOL flag is enabled and native interface is other than SGMII. */
-		KPRINT_INFO("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
+		KPRINT_DEBUG1("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 		reg_value |= XGMAC_AN_37_ENABLE;
-		KPRINT_INFO("%s Enable AN", __func__);
+		KPRINT_DEBUG1("%s Enable AN", __func__);
 	}
 #endif /* #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF */
 	tc956x_xpcs_write(priv->xpcsaddr, XGMAC_SR_MII_CTRL, reg_value);
@@ -288,15 +288,15 @@ void tc956x_xpcs_ctrl0_lrx(struct stmmac_priv *priv, bool lrx)
 {
 	u32 reg_value;
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_XS_PCS_EEE_MCTRL0);
 	if (lrx) {
 		reg_value |= XGMAC_EEE_LRX_EN;
-		KPRINT_INFO("%s Enable XPCS LPI Rx\n", __func__);
+		KPRINT_DEBUG1("%s Enable XPCS LPI Rx\n", __func__);
 	} else {
 		reg_value &= (~XGMAC_EEE_LRX_EN);
-		KPRINT_INFO("%s Disable XPCS LPI Rx\n", __func__);
+		KPRINT_DEBUG1("%s Disable XPCS LPI Rx\n", __func__);
 	}
 
 	tc956x_xpcs_write(priv->xpcsaddr, XGMAC_VR_XS_PCS_EEE_MCTRL0, reg_value);

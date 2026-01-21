@@ -149,7 +149,7 @@ static void tc956x_interrupt_en(struct stmmac_priv *priv, struct net_device *dev
 	} else
 		writel(TC956X_MSI_OUT_EN_CLR, priv->ioaddr + TC956X_MSI_OUT_EN_OFFSET(priv->fn_id_info.pf_no, priv->fn_id_info.vf_no));
 
-	netdev_dbg(priv->dev, "%s mask_val : %x\n", __func__, mask_val);
+	NDBGPR_L2(priv->device, "%s mask_val : %x\n", __func__, mask_val);
 }
 
 /**
@@ -169,7 +169,7 @@ static void tc956x_interrupt_clr(struct stmmac_priv *priv, struct net_device *de
 {
 	writel((1<<vector), priv->ioaddr + TC956X_MSI_MASK_CLR_OFFSET(priv->fn_id_info.pf_no, priv->fn_id_info.vf_no));
 
-	netdev_dbg(priv->dev, "%s %d\n", __func__, vector);
+	NDBGPR_L2(priv->device, "%s %d\n", __func__, vector);
 }
 #elif defined TC956X_SRIOV_VF
 /**

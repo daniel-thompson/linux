@@ -13,6 +13,14 @@ config TC956X_NET
 
 if TC956X_NET
 
+config TC956X_DEBUG
+	bool "Debug logging"
+	help
+	  This driver contains extensive dev_dbg() logging. Force logs issued
+	  but this driver to be unconditionally compiled.
+
+          If unsure, say N and enable DYNAMIC_DEBUG instead!
+
 config TC956X_PCIE_GEN3_SETTING
 	bool "PCIe gen3 setting"
 

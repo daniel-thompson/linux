@@ -255,7 +255,7 @@ static inline void dwxgmac2_get_timestamp(struct stmmac_priv *priv,
 
 	*ts = ns;
 
-	netdev_dbg(priv->dev, "%s: timestamp in ns = 0x%llx", __func__, ns);
+	NDBGPR_L2(priv->device, "%s: timestamp in ns = 0x%llx", __func__, ns);
 }
 
 static int dwxgmac2_rx_check_timestamp(struct stmmac_priv *priv, void *desc)
@@ -273,10 +273,10 @@ static int dwxgmac2_rx_check_timestamp(struct stmmac_priv *priv, void *desc)
 		if ((le32_to_cpu(p->des0) == 0xffffffff) && (le32_to_cpu(p->des1) == 0xffffffff))
 			return -EINVAL;
 
-		netdev_dbg(priv->dev, "%s: Rx timestamp Low = 0x%x", __func__,
+		NDBGPR_L2(priv->device, "%s: Rx timestamp Low = 0x%x", __func__,
 				le32_to_cpu(p->des0));
 
-		netdev_dbg(priv->dev, "%s: Rx timestamp High = 0x%x", __func__,
+		NDBGPR_L2(priv->device, "%s: Rx timestamp High = 0x%x", __func__,
 				le32_to_cpu(p->des1));
 		return 0;
 	}

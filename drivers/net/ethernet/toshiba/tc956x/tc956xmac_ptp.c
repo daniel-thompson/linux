@@ -331,7 +331,7 @@ void tc956xmac_ptp_register(struct stmmac_priv *priv)
 		netdev_err(priv->dev, "ptp_clock_register failed\n");
 		priv->ptp_clock = NULL;
 	} else if (priv->ptp_clock)
-		netdev_info(priv->dev, "registered PTP clock\n");
+		netdev_dbg(priv->dev, "registered PTP clock\n");
 }
 
 /**

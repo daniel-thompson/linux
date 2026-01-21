@@ -220,7 +220,7 @@ int tc956x_logstat_state_log_summary(void __iomem *pbase_addr, enum ports nport)
 	}
 
 	if (ret == 0) {
-		KPRINT_INFO("State Transition Log Summary : %s\n", pcie_port[nport]);
+		KPRINT_DEBUG1("State Transition Log Summary : %s\n", pcie_port[nport]);
 		/* Get PCIe LTSSM, DLL, Speed, Width, State Log Status & Disable Stop State Logging */
 		if ((tc956x_logstat_get_pcie_cur_ltssm(pbase_addr, nport, &state) < 0)
 		|| (tc956x_logstat_get_pcie_cur_dll(pbase_addr, nport, &dll) < 0)
@@ -267,13 +267,13 @@ int tc956x_logstat_state_log_summary(void __iomem *pbase_addr, enum ports nport)
 		}
 
 		if (count == 0) {
-			KPRINT_INFO("==> LTSSM is not changed\n");
-			KPRINT_INFO("Speed:Gen%d, Width:x%d, LTSSM:%s, DLL:%d\n", speed, width, cur_ltssm, dll);
+			KPRINT_DEBUG1("==> LTSSM is not changed\n");
+			KPRINT_DEBUG1("Speed:Gen%d, Width:x%d, LTSSM:%s, DLL:%d\n", speed, width, cur_ltssm, dll);
 			ret = 0;
 		}
 
 		if (status == STATE_LOG_STOP)
-			KPRINT_INFO("STATE LOGGING is stopped\n");
+			KPRINT_DEBUG1("STATE LOGGING is stopped\n");
 	}
 end:
 	return ret;
@@ -302,7 +302,7 @@ int tc956x_logstat_get_state_log_stop_status(void __iomem *pbase_addr, enum port
 
 	if ((pbase_addr == NULL) || (pstop_status == NULL)) {
 		ret = -EFAULT;
-		KPRINT_INFO("%s : Invalid Arguments\n", __func__);
+		KPRINT_DEBUG1("%s : Invalid Arguments\n", __func__);
 	}
 
 	if (ret == 0) {
@@ -310,7 +310,7 @@ int tc956x_logstat_get_state_log_stop_status(void __iomem *pbase_addr, enum port
 		/* Get State Logging Stop Status */
 		regval = readl(pbase_addr + TC956X_CONF_REG_NPCIEUSPLOGST + port_offset);
 		*pstop_status = (regval & STOP_STATUS_MASK) >> STOP_STATUS_SHIFT;
-		/* KPRINT_INFO("RD: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGST + port_offset, regval); */
+		/* KPRINT_DEBUG1("RD: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGST + port_offset, regval); */
 	}
 	return ret;
 }
@@ -348,7 +348,7 @@ int tc956x_logstat_set_state_log_fifo_ptr(void __iomem *pbase_addr, enum ports n
 		regval &= ~FIFO_READ_POINTER_MASK;
 		regval |= (((uint32_t)(fifo_pointer) & FIFO_READ_POINTER_MASK) >> FIFO_READ_POINTER_SHIFT);
 		writel(regval, pbase_addr + TC956X_CONF_REG_NPCIEUSPLOGRDCTRL + port_offset);
-		/* KPRINT_INFO("WR: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGRDCTRL + port_offset, regval); */
+		/* KPRINT_DEBUG1("WR: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGRDCTRL + port_offset, regval); */
 	}
 	return ret;
 }
@@ -380,7 +380,7 @@ int tc956x_logstat_get_state_log_data(void __iomem *pbase_addr, enum ports nport
 		port_offset = nport * STATE_LOG_REG_OFFSET;
 		/* Read LTSSM Log Data Register */
 		*pstate_log_data = readl(pbase_addr + TC956X_CONF_REG_NPCIEUSPLOGD + port_offset);
-		/* KPRINT_INFO("RD: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGD + port_offset, *pstate_log_data); */
+		/* KPRINT_DEBUG1("RD: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGD + port_offset, *pstate_log_data); */
 	}
 	return ret;
 }
@@ -459,42 +459,42 @@ int tc956x_logstat_state_log_analyze(uint32_t cur_state)
 		KPRINT_INFO("==> LTSSM Timeout occurred!\n");
 	else {
 		if ((DlActive_Pre == DL_NOT_ACTIVE) && (DlActive == DL_ACTIVE))
-			KPRINT_INFO("==> Linkup!\n");
+			KPRINT_DEBUG1("==> Linkup!\n");
 		else if ((DlActive_Pre == DL_ACTIVE) && (DlActive == DL_NOT_ACTIVE))
-			KPRINT_INFO("==> Link is down!\n");
+			KPRINT_DEBUG1("==> Link is down!\n");
 
 		if (LinkSpeed_Pre != LOGSTAT_DUMMY_VALUE) {
 			if (LinkSpeed < LinkSpeed_Pre)
-				KPRINT_INFO("==> Speed down occurred! (Gen%d --> Gen%d)\n", LinkSpeed_Pre, LinkSpeed);
+				KPRINT_DEBUG1("==> Speed down occurred! (Gen%d --> Gen%d)\n", LinkSpeed_Pre, LinkSpeed);
 			else if (LinkSpeed > LinkSpeed_Pre)
-				KPRINT_INFO("==> Speed up occurred! (Gen%d --> Gen%d)\n", LinkSpeed_Pre, LinkSpeed);
+				KPRINT_DEBUG1("==> Speed up occurred! (Gen%d --> Gen%d)\n", LinkSpeed_Pre, LinkSpeed);
 		}
 
 		if ((LinkWidth_Pre != LOGSTAT_DUMMY_VALUE) && (LinkWidth_Pre != ALL_LANES_INACTIVE)) {
 			if (LinkWidth < LinkWidth_Pre) {
 				if (strcmp(ltssm_dec, "Detect.Active") == 0) {
 					if (LinkWidth > 1)
-						KPRINT_INFO("==> Receiver Detection is occurred! (Only %d Lanes is detected)\n", LinkWidth);
+						KPRINT_DEBUG1("==> Receiver Detection is occurred! (Only %d Lanes is detected)\n", LinkWidth);
 					else
-						KPRINT_INFO("==> Receiver Detection is occurred! (Only 1 Lane is detected)\n");
+						KPRINT_DEBUG1("==> Receiver Detection is occurred! (Only 1 Lane is detected)\n");
 				} else
-					KPRINT_INFO("==> Link Width down configure occurred! (x%d --> x%d)\n", LinkWidth_Pre, LinkWidth);
+					KPRINT_DEBUG1("==> Link Width down configure occurred! (x%d --> x%d)\n", LinkWidth_Pre, LinkWidth);
 			} else if (LinkWidth > LinkWidth_Pre)
-				KPRINT_INFO("==> Link Width upconfigure occurred! (x%d --> x%d)\n", LinkWidth_Pre, LinkWidth);
+				KPRINT_DEBUG1("==> Link Width upconfigure occurred! (x%d --> x%d)\n", LinkWidth_Pre, LinkWidth);
 		}
 
 		sprintf(append_str, "--> DL_Active:%d, Speed:Gen%d, Width:x%d, LTSSM:%s", DlActive, LinkSpeed, LinkWidth, ltssm_dec);
 
 		if ((tx_l0s != INACTIVE_L0s) && (rx_l0s != INACTIVE_L0s))
-			KPRINT_INFO("%s (%d:%s, %d:%s)\n", append_str, tx_l0s, txl0s_dec, rx_l0s, rxl0s_dec);
+			KPRINT_DEBUG1("%s (%d:%s, %d:%s)\n", append_str, tx_l0s, txl0s_dec, rx_l0s, rxl0s_dec);
 		else if ((tx_l0s != INACTIVE_L0s) && (rx_l0s == INACTIVE_L0s))
-			KPRINT_INFO("%s (%s)\n", append_str, txl0s_dec);
+			KPRINT_DEBUG1("%s (%s)\n", append_str, txl0s_dec);
 		else if ((tx_l0s == INACTIVE_L0s) && (rx_l0s != INACTIVE_L0s))
-			KPRINT_INFO("%s (%s)\n", append_str, rxl0s_dec);
+			KPRINT_DEBUG1("%s (%s)\n", append_str, rxl0s_dec);
 		else if (strcmp(ltssm_dec, "Recovery.Equalization"))
-			KPRINT_INFO("%s (Phase %d)\n", append_str, eqphase);
+			KPRINT_DEBUG1("%s (Phase %d)\n", append_str, eqphase);
 		else if (l1_substate != INACTIVE_L1)
-			KPRINT_INFO("%s (%s)\n", append_str, l1ss);
+			KPRINT_DEBUG1("%s (%s)\n", append_str, l1ss);
 	}
 	return 0;
 }
@@ -577,7 +577,7 @@ int tc956x_logstat_get_pcie_cur_ltssm(void __iomem *pbase_addr, enum ports nport
 		/* Read Current LTSSM State */
 		regval = readl(pbase_addr + TC956X_GLUE_SW_USP_TEST_OUT_127_096 + reg_offset);
 		*pltssm = (regval & TC956X_GLUE_LTSSM_STATE_MASK) >> TC956X_GLUE_LTSSM_STATE_SHIFT;
-		KPRINT_INFO("%s : LTSSM State %s for port %s\n", __func__, ltssm_states[(*pltssm)], pcie_port[nport]);
+		KPRINT_DEBUG1("%s : LTSSM State %s for port %s\n", __func__, ltssm_states[(*pltssm)], pcie_port[nport]);
 		if ((*pltssm) > LTSSM_MAX_VALUE)
 			ret = -1;
 	}
@@ -613,7 +613,7 @@ int tc956x_logstat_get_pcie_cur_dll(void __iomem *pbase_addr, enum ports nport, 
 		/* Read DLL State */
 		regval = readl(pbase_addr + TC956X_GLUE_SW_USP_TEST_OUT_127_096 + reg_offset);
 		*pdll = (regval & TC956X_GLUE_DLL_MASK) >> TC956X_GLUE_DLL_SHIFT;
-		KPRINT_INFO("%s : DLL State %s for port %s\n", __func__, dl_state[(*pdll)], pcie_port[nport]);
+		KPRINT_DEBUG1("%s : DLL State %s for port %s\n", __func__, dl_state[(*pdll)], pcie_port[nport]);
 	}
 	return ret;
 }
@@ -645,7 +645,7 @@ int tc956x_logstat_get_pcie_cur_speed(void __iomem *pbase_addr, enum ports nport
 		/* Read Speed */
 		regval = readl(pbase_addr + TC956X_GLUE_TL_LINK_SPEED_MON);
 		*pspeed_val = (regval & TC956X_GLUE_SPEED_MASK(nport)) >> TC956X_GLUE_SPEED_SHIFT(nport);
-		KPRINT_INFO("%s : Link Speed Gen%d for port %s\n", __func__, (*pspeed_val), pcie_port[nport]);
+		KPRINT_DEBUG1("%s : Link Speed Gen%d for port %s\n", __func__, (*pspeed_val), pcie_port[nport]);
 	}
 	return ret;
 }
@@ -677,7 +677,7 @@ int tc956x_logstat_get_pcie_cur_width(void __iomem *pbase_addr, enum ports nport
 		/* Read Lane Width */
 		regval = readl(pbase_addr + TC956X_GLUE_TL_NUM_LANES_MON);
 		*plane_width_val = (regval & TC956X_GLUE_LANE_WIDTH_MASK(nport)) >> TC956X_GLUE_LANE_WIDTH_SHIFT(nport);
-		KPRINT_INFO("%s : Lane Width x%d for port %s\n", __func__, (*plane_width_val), pcie_port[nport]);
+		KPRINT_DEBUG1("%s : Lane Width x%d for port %s\n", __func__, (*plane_width_val), pcie_port[nport]);
 	}
 	return ret;
 }
@@ -750,12 +750,12 @@ int tc956x_logstat_set_state_log_enable(void __iomem *pbase_addr, enum ports npo
 			writel(STATE_LOG_ENABLE, pbase_addr + TC956X_CONF_REG_NPCIEUSPLOGCTRL + port_offset);
 			/* Verify Sate Log Enable */
 			if (readl(pbase_addr + TC956X_CONF_REG_NPCIEUSPLOGCTRL + port_offset) == STATE_LOG_ENABLE)
-				KPRINT_INFO("%s : Enabling State Logging for port %s\n", __func__, pcie_port[nport]);
+				KPRINT_DEBUG1("%s : Enabling State Logging for port %s\n", __func__, pcie_port[nport]);
 		} else {
 			/* Stop State Log */
 			writel(STATE_LOG_DISABLE, pbase_addr + TC956X_CONF_REG_NPCIEUSPLOGCTRL + port_offset);
 		}
-		/* KPRINT_INFO("WR: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGCTRL + port_offset, enable); */
+		/* KPRINT_DEBUG1("WR: Addr= 0x%08X, Val= 0x%08X\n", TC956X_CONF_REG_NPCIEUSPLOGCTRL + port_offset, enable); */
 	}
 
 	return ret;

@@ -805,227 +805,227 @@ int tc956x_print_debug_regs(struct net_device *net_device, struct tc956x_regs *r
 
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
-	KPRINT_DEBUG1("regs->pcie_reg.rsc_mng_id = 0x%x\n", regs->pcie_reg.rsc_mng_id);
+	KPRINT_DEBUG2("regs->pcie_reg.rsc_mng_id = 0x%x\n", regs->pcie_reg.rsc_mng_id);
 
 	/* Configuration register dump */
-	KPRINT_DEBUG1("regs->config_reg.ncid = 0x%x\n", regs->config_reg.ncid);
-	KPRINT_DEBUG1("regs->config_reg.nclkctrl0 = 0x%x\n", regs->config_reg.nclkctrl0);
-	KPRINT_DEBUG1("regs->config_reg.nrstctrl0 = 0x%x\n", regs->config_reg.nrstctrl0);
-	KPRINT_DEBUG1("regs->config_reg.nclkctrl1 = 0x%x\n", regs->config_reg.nclkctrl1);
-	KPRINT_DEBUG1("regs->config_reg.nrstctrl1 = 0x%x\n", regs->config_reg.nrstctrl1);
-	KPRINT_DEBUG1("regs->config_reg.nemac0ctl = 0x%x\n", regs->config_reg.nemac0ctl);
-	KPRINT_DEBUG1("regs->config_reg.nemac1ctl = 0x%x\n", regs->config_reg.nemac1ctl);
-	KPRINT_DEBUG1("regs->config_reg.nemacsts = 0x%x\n", regs->config_reg.nemacsts);
-	KPRINT_DEBUG1("regs->config_reg.gpioi0 = 0x%x\n", regs->config_reg.gpioi0);
-	KPRINT_DEBUG1("regs->config_reg.gpioi1 = 0x%x\n", regs->config_reg.gpioi1);
-	KPRINT_DEBUG1("regs->config_reg.gpioe0 = 0x%x\n", regs->config_reg.gpioe0);
-	KPRINT_DEBUG1("regs->config_reg.gpioe1 = 0x%x\n", regs->config_reg.gpioe1);
+	KPRINT_DEBUG2("regs->config_reg.ncid = 0x%x\n", regs->config_reg.ncid);
+	KPRINT_DEBUG2("regs->config_reg.nclkctrl0 = 0x%x\n", regs->config_reg.nclkctrl0);
+	KPRINT_DEBUG2("regs->config_reg.nrstctrl0 = 0x%x\n", regs->config_reg.nrstctrl0);
+	KPRINT_DEBUG2("regs->config_reg.nclkctrl1 = 0x%x\n", regs->config_reg.nclkctrl1);
+	KPRINT_DEBUG2("regs->config_reg.nrstctrl1 = 0x%x\n", regs->config_reg.nrstctrl1);
+	KPRINT_DEBUG2("regs->config_reg.nemac0ctl = 0x%x\n", regs->config_reg.nemac0ctl);
+	KPRINT_DEBUG2("regs->config_reg.nemac1ctl = 0x%x\n", regs->config_reg.nemac1ctl);
+	KPRINT_DEBUG2("regs->config_reg.nemacsts = 0x%x\n", regs->config_reg.nemacsts);
+	KPRINT_DEBUG2("regs->config_reg.gpioi0 = 0x%x\n", regs->config_reg.gpioi0);
+	KPRINT_DEBUG2("regs->config_reg.gpioi1 = 0x%x\n", regs->config_reg.gpioi1);
+	KPRINT_DEBUG2("regs->config_reg.gpioe0 = 0x%x\n", regs->config_reg.gpioe0);
+	KPRINT_DEBUG2("regs->config_reg.gpioe1 = 0x%x\n", regs->config_reg.gpioe1);
 
 	/* MSI register dump */
-	KPRINT_DEBUG1("regs->msi_reg.msi_out_en = 0x%x\n", regs->msi_reg.msi_out_en);
-	KPRINT_DEBUG1("regs->msi_reg.msi_mask_set = 0x%x\n", regs->msi_reg.msi_mask_set);
-	KPRINT_DEBUG1("regs->msi_reg.msi_mask_clr = 0x%x\n", regs->msi_reg.msi_mask_clr);
-	KPRINT_DEBUG1("regs->msi_reg.int_sts = 0x%x\n", regs->msi_reg.int_sts);
-	KPRINT_DEBUG1("regs->msi_reg.int_raw_sts = 0x%x\n", regs->msi_reg.int_raw_sts);
-	KPRINT_DEBUG1("regs->msi_reg.msi_sts = 0x%x\n", regs->msi_reg.msi_sts);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int0 = 0x%x\n", regs->msi_reg.cnt_int0);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int1 = 0x%x\n", regs->msi_reg.cnt_int1);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int2 = 0x%x\n", regs->msi_reg.cnt_int2);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int3 = 0x%x\n", regs->msi_reg.cnt_int3);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int4 = 0x%x\n", regs->msi_reg.cnt_int4);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int11 = 0x%x\n", regs->msi_reg.cnt_int11);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int12 = 0x%x\n", regs->msi_reg.cnt_int12);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int20 = 0x%x\n", regs->msi_reg.cnt_int20);
-	KPRINT_DEBUG1("regs->msi_reg.cnt_int24 = 0x%x\n", regs->msi_reg.cnt_int24);
+	KPRINT_DEBUG2("regs->msi_reg.msi_out_en = 0x%x\n", regs->msi_reg.msi_out_en);
+	KPRINT_DEBUG2("regs->msi_reg.msi_mask_set = 0x%x\n", regs->msi_reg.msi_mask_set);
+	KPRINT_DEBUG2("regs->msi_reg.msi_mask_clr = 0x%x\n", regs->msi_reg.msi_mask_clr);
+	KPRINT_DEBUG2("regs->msi_reg.int_sts = 0x%x\n", regs->msi_reg.int_sts);
+	KPRINT_DEBUG2("regs->msi_reg.int_raw_sts = 0x%x\n", regs->msi_reg.int_raw_sts);
+	KPRINT_DEBUG2("regs->msi_reg.msi_sts = 0x%x\n", regs->msi_reg.msi_sts);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int0 = 0x%x\n", regs->msi_reg.cnt_int0);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int1 = 0x%x\n", regs->msi_reg.cnt_int1);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int2 = 0x%x\n", regs->msi_reg.cnt_int2);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int3 = 0x%x\n", regs->msi_reg.cnt_int3);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int4 = 0x%x\n", regs->msi_reg.cnt_int4);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int11 = 0x%x\n", regs->msi_reg.cnt_int11);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int12 = 0x%x\n", regs->msi_reg.cnt_int12);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int20 = 0x%x\n", regs->msi_reg.cnt_int20);
+	KPRINT_DEBUG2("regs->msi_reg.cnt_int24 = 0x%x\n", regs->msi_reg.cnt_int24);
 
 	/* INTC register dump */
-	KPRINT_DEBUG1("regs->intc_reg.intmcumask0 = 0x%x\n", regs->intc_reg.intmcumask0);
-	KPRINT_DEBUG1("regs->intc_reg.intmcumask1 = 0x%x\n", regs->intc_reg.intmcumask1);
-	KPRINT_DEBUG1("regs->intc_reg.intmcumask2 = 0x%x\n", regs->intc_reg.intmcumask2);
+	KPRINT_DEBUG2("regs->intc_reg.intmcumask0 = 0x%x\n", regs->intc_reg.intmcumask0);
+	KPRINT_DEBUG2("regs->intc_reg.intmcumask1 = 0x%x\n", regs->intc_reg.intmcumask1);
+	KPRINT_DEBUG2("regs->intc_reg.intmcumask2 = 0x%x\n", regs->intc_reg.intmcumask2);
 
 	/* DMA channel register dump */
-	KPRINT_DEBUG1("regs->dma_reg.debug_sts0 = 0x%x\n", regs->dma_reg.debug_sts0);
+	KPRINT_DEBUG2("regs->dma_reg.debug_sts0 = 0x%x\n", regs->dma_reg.debug_sts0);
 
 	for (ch = 0; ch < maxq; ch++) {
-		KPRINT_DEBUG1("regs->dma_reg.ch_control[%d] = 0x%x\n", ch, regs->dma_reg.ch_control[ch]);
-		KPRINT_DEBUG1("regs->dma_reg.interrupt_enable[%d] = 0x%x\n", ch, regs->dma_reg.interrupt_enable[ch]);
-		KPRINT_DEBUG1("regs->dma_reg.ch_status[%d] = 0x%x\n", ch, regs->dma_reg.ch_status[ch]);
-		KPRINT_DEBUG1("regs->dma_reg.debug_status[%d] = 0x%x\n", ch, regs->dma_reg.debug_status[ch]);
-		KPRINT_DEBUG1("regs->dma_reg.rxch_watchdog_timer[%d] = 0x%x\n", ch, regs->dma_reg.rxch_watchdog_timer[ch]);
+		KPRINT_DEBUG2("regs->dma_reg.ch_control[%d] = 0x%x\n", ch, regs->dma_reg.ch_control[ch]);
+		KPRINT_DEBUG2("regs->dma_reg.interrupt_enable[%d] = 0x%x\n", ch, regs->dma_reg.interrupt_enable[ch]);
+		KPRINT_DEBUG2("regs->dma_reg.ch_status[%d] = 0x%x\n", ch, regs->dma_reg.ch_status[ch]);
+		KPRINT_DEBUG2("regs->dma_reg.debug_status[%d] = 0x%x\n", ch, regs->dma_reg.debug_status[ch]);
+		KPRINT_DEBUG2("regs->dma_reg.rxch_watchdog_timer[%d] = 0x%x\n", ch, regs->dma_reg.rxch_watchdog_timer[ch]);
 	}
 
 	for (ch = 0; ch < tx_queues_cnt; ch++) {
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].control = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].control);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].list_haddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].list_haddr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].list_laddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].list_laddr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].ring_len = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].ring_len);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].curr_haddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].curr_haddr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].curr_laddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].curr_laddr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].tail_ptr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].tail_ptr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].buf_haddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].buf_haddr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_ch[%d].buf_laddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].buf_laddr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].control = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].control);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].list_haddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].list_haddr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].list_laddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].list_laddr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].ring_len = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].ring_len);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].curr_haddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].curr_haddr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].curr_laddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].curr_laddr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].tail_ptr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].tail_ptr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].buf_haddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].buf_haddr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_ch[%d].buf_laddr = 0x%x\n", ch, regs->dma_reg.tx_ch[ch].buf_laddr);
 	}
 
 	for (ch = 0; ch < rx_queues_cnt; ch++) {
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].control = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].control);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].list_haddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].list_haddr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].list_laddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].list_laddr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].ring_len = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].ring_len);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].curr_haddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].curr_haddr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].curr_laddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].curr_laddr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].tail_ptr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].tail_ptr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].buf_haddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].buf_haddr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_ch[%d].buf_laddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].buf_laddr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].control = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].control);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].list_haddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].list_haddr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].list_laddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].list_laddr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].ring_len = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].ring_len);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].curr_haddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].curr_haddr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].curr_laddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].curr_laddr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].tail_ptr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].tail_ptr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].buf_haddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].buf_haddr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_ch[%d].buf_laddr = 0x%x\n", ch, regs->dma_reg.rx_ch[ch].buf_laddr);
 	}
 
 	for (ch = 0; ch < tx_queues_cnt; ch++) {
-		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].desc_phy_addr = 0x%llx\n", ch, regs->dma_reg.tx_queue[ch].desc_phy_addr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].desc_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].desc_va_addr));
+		KPRINT_DEBUG2("regs->dma_reg.tx_queue[%d].desc_phy_addr = 0x%llx\n", ch, regs->dma_reg.tx_queue[ch].desc_phy_addr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_queue[%d].desc_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].desc_va_addr));
 #ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
-		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].buff_phy_addr = 0x%llx\n", ch, regs->dma_reg.tx_queue[ch].buff_phy_addr);
-		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].buff_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].buff_va_addr));
+		KPRINT_DEBUG2("regs->dma_reg.tx_queue[%d].buff_phy_addr = 0x%llx\n", ch, regs->dma_reg.tx_queue[ch].buff_phy_addr);
+		KPRINT_DEBUG2("regs->dma_reg.tx_queue[%d].buff_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].buff_va_addr));
 #endif
-		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].tx_skbuff = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].tx_skbuff));
-		KPRINT_DEBUG1("regs->dma_reg.tx_queue[%d].tx_skbuff_dma = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].tx_skbuff_dma));
+		KPRINT_DEBUG2("regs->dma_reg.tx_queue[%d].tx_skbuff = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].tx_skbuff));
+		KPRINT_DEBUG2("regs->dma_reg.tx_queue[%d].tx_skbuff_dma = 0x%zx\n", ch, (size_t)(regs->dma_reg.tx_queue[ch].tx_skbuff_dma));
 	}
 
 	for (ch = 0; ch < rx_queues_cnt; ch++) {
-		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].desc_phy_addr = 0x%llx\n", ch, regs->dma_reg.rx_queue[ch].desc_phy_addr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].desc_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].desc_va_addr));
+		KPRINT_DEBUG2("regs->dma_reg.rx_queue[%d].desc_phy_addr = 0x%llx\n", ch, regs->dma_reg.rx_queue[ch].desc_phy_addr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_queue[%d].desc_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].desc_va_addr));
 #ifdef CONFIG_TC956X_DMA_OFFLOAD_ENABLE
-		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].buff_phy_addr = 0x%llx\n", ch, regs->dma_reg.rx_queue[ch].buff_phy_addr);
-		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].buff_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].buff_va_addr));
+		KPRINT_DEBUG2("regs->dma_reg.rx_queue[%d].buff_phy_addr = 0x%llx\n", ch, regs->dma_reg.rx_queue[ch].buff_phy_addr);
+		KPRINT_DEBUG2("regs->dma_reg.rx_queue[%d].buff_va_addr = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].buff_va_addr));
 #endif
-		KPRINT_DEBUG1("regs->dma_reg.rx_queue[%d].buf_pool = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].buf_pool));
+		KPRINT_DEBUG2("regs->dma_reg.rx_queue[%d].buf_pool = 0x%zx\n", ch, (size_t)(regs->dma_reg.rx_queue[ch].buf_pool));
 	}
 
 	/* MAC register dump */
-	KPRINT_DEBUG1("regs->mac_reg.mac_tx_config = 0x%x\n", regs->mac_reg.mac_tx_config);
-	KPRINT_DEBUG1("regs->mac_reg.mac_rx_config = 0x%x\n", regs->mac_reg.mac_rx_config);
-	KPRINT_DEBUG1("regs->mac_reg.mac_pkt_filter = 0x%x\n", regs->mac_reg.mac_pkt_filter);
-	KPRINT_DEBUG1("regs->mac_reg.mac_tx_rx_status = 0x%x\n", regs->mac_reg.mac_tx_rx_status);
-	KPRINT_DEBUG1("regs->mac_reg.mac_debug = 0x%x\n", regs->mac_reg.mac_debug);
+	KPRINT_DEBUG2("regs->mac_reg.mac_tx_config = 0x%x\n", regs->mac_reg.mac_tx_config);
+	KPRINT_DEBUG2("regs->mac_reg.mac_rx_config = 0x%x\n", regs->mac_reg.mac_rx_config);
+	KPRINT_DEBUG2("regs->mac_reg.mac_pkt_filter = 0x%x\n", regs->mac_reg.mac_pkt_filter);
+	KPRINT_DEBUG2("regs->mac_reg.mac_tx_rx_status = 0x%x\n", regs->mac_reg.mac_tx_rx_status);
+	KPRINT_DEBUG2("regs->mac_reg.mac_debug = 0x%x\n", regs->mac_reg.mac_debug);
 
 	/* MTL register dump */
-	KPRINT_DEBUG1("regs->mtl_reg.op_mode = 0x%x\n", regs->mtl_reg.op_mode);
-	KPRINT_DEBUG1("regs->mtl_reg.mtl_rxq_dma_map0 = 0x%x\n",  regs->mtl_reg.mtl_rxq_dma_map0);
-	KPRINT_DEBUG1("regs->mtl_reg.mtl_rxq_dma_map1 = 0x%x\n", regs->mtl_reg.mtl_rxq_dma_map1);
+	KPRINT_DEBUG2("regs->mtl_reg.op_mode = 0x%x\n", regs->mtl_reg.op_mode);
+	KPRINT_DEBUG2("regs->mtl_reg.mtl_rxq_dma_map0 = 0x%x\n",  regs->mtl_reg.mtl_rxq_dma_map0);
+	KPRINT_DEBUG2("regs->mtl_reg.mtl_rxq_dma_map1 = 0x%x\n", regs->mtl_reg.mtl_rxq_dma_map1);
 
 	for (queue = 0; queue < MTL_MAX_TX_QUEUES; queue++) {
-		KPRINT_DEBUG1("regs->mtl_reg.tx_info[%d].op_mode = 0x%x\n", queue, regs->mtl_reg.tx_info[queue].op_mode);
-		KPRINT_DEBUG1("regs->mtl_reg.tx_info[%d].underflow = 0x%x\n", queue, regs->mtl_reg.tx_info[queue].underflow);
-		KPRINT_DEBUG1("regs->mtl_reg.tx_info[%d].debug = 0x%x\n", queue, regs->mtl_reg.tx_info[queue].debug);
+		KPRINT_DEBUG2("regs->mtl_reg.tx_info[%d].op_mode = 0x%x\n", queue, regs->mtl_reg.tx_info[queue].op_mode);
+		KPRINT_DEBUG2("regs->mtl_reg.tx_info[%d].underflow = 0x%x\n", queue, regs->mtl_reg.tx_info[queue].underflow);
+		KPRINT_DEBUG2("regs->mtl_reg.tx_info[%d].debug = 0x%x\n", queue, regs->mtl_reg.tx_info[queue].debug);
 	}
 
 	for (queue = 0; queue < MTL_MAX_RX_QUEUES; queue++) {
-		KPRINT_DEBUG1("regs->mtl_reg.rx_info[%d].op_mode = 0x%x\n", queue, regs->mtl_reg.rx_info[queue].op_mode);
-		KPRINT_DEBUG1("regs->mtl_reg.rx_info[%d].miss_pkt_overflow = 0x%x\n", queue, regs->mtl_reg.rx_info[queue].miss_pkt_overflow);
-		KPRINT_DEBUG1("regs->mtl_reg.rx_info[%d].debug = 0x%x\n", queue, regs->mtl_reg.rx_info[queue].debug);
-		KPRINT_DEBUG1("regs->mtl_reg.rx_info[%d].flow_control = 0x%x\n",  queue, regs->mtl_reg.rx_info[queue].flow_control);
+		KPRINT_DEBUG2("regs->mtl_reg.rx_info[%d].op_mode = 0x%x\n", queue, regs->mtl_reg.rx_info[queue].op_mode);
+		KPRINT_DEBUG2("regs->mtl_reg.rx_info[%d].miss_pkt_overflow = 0x%x\n", queue, regs->mtl_reg.rx_info[queue].miss_pkt_overflow);
+		KPRINT_DEBUG2("regs->mtl_reg.rx_info[%d].debug = 0x%x\n", queue, regs->mtl_reg.rx_info[queue].debug);
+		KPRINT_DEBUG2("regs->mtl_reg.rx_info[%d].flow_control = 0x%x\n",  queue, regs->mtl_reg.rx_info[queue].flow_control);
 	}
 
 	/* M3 SRAM dump */
 	for (ch = 0; ch < maxq; ch++) {
-		KPRINT_DEBUG1("regs->m3_reg.sram_tx_pcie_addr[%d] = 0x%x\n", ch, regs->m3_reg.sram_tx_pcie_addr[ch]);
-		KPRINT_DEBUG1("regs->m3_reg.sram_rx_pcie_addr[%d] = 0x%x\n", ch, regs->m3_reg.sram_rx_pcie_addr[ch]);
+		KPRINT_DEBUG2("regs->m3_reg.sram_tx_pcie_addr[%d] = 0x%x\n", ch, regs->m3_reg.sram_tx_pcie_addr[ch]);
+		KPRINT_DEBUG2("regs->m3_reg.sram_rx_pcie_addr[%d] = 0x%x\n", ch, regs->m3_reg.sram_rx_pcie_addr[ch]);
 	}
 
-	KPRINT_DEBUG1("regs->m3_reg.m3_fw_init_done = 0x%x\n", regs->m3_reg.m3_fw_init_done);
-	KPRINT_DEBUG1("regs->m3_reg.m3_fw_exit	= 0x%x\n", regs->m3_reg.m3_fw_exit);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt0 = 0x%x\n", regs->m3_reg.m3_debug_cnt0);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt1 = 0x%x\n", regs->m3_reg.m3_debug_cnt1);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt2 = 0x%x\n", regs->m3_reg.m3_debug_cnt2);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt3 = 0x%x\n", regs->m3_reg.m3_debug_cnt3);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt4 = 0x%x\n", regs->m3_reg.m3_debug_cnt4);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt5 = 0x%x\n", regs->m3_reg.m3_debug_cnt5);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt6 = 0x%x\n", regs->m3_reg.m3_debug_cnt6);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt7 = 0x%x\n", regs->m3_reg.m3_debug_cnt7);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt8 = 0x%x\n", regs->m3_reg.m3_debug_cnt8);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt9 = 0x%x\n", regs->m3_reg.m3_debug_cnt9);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt10 = 0x%x\n", regs->m3_reg.m3_debug_cnt10);
-	KPRINT_DEBUG1("regs->m3_reg.m3_watchdog_exp_cnt = 0x%x\n", regs->m3_reg.m3_watchdog_exp_cnt);
-	KPRINT_DEBUG1("regs->m3_reg.m3_watchdog_monitor_cnt = 0x%x\n", regs->m3_reg.m3_watchdog_monitor_cnt);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt13 = 0x%x\n", regs->m3_reg.m3_debug_cnt13);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt14 = 0x%x\n", regs->m3_reg.m3_debug_cnt14);
-	KPRINT_DEBUG1("regs->m3_reg.m3_systick_cnt_upper_value = 0x%x\n", regs->m3_reg.m3_systick_cnt_upper_value);
-	KPRINT_DEBUG1("regs->m3_reg.m3_systick_cnt_lower_value = 0x%x\n", regs->m3_reg.m3_systick_cnt_lower_value);
-	KPRINT_DEBUG1("regs->m3_reg.m3_tx_timeout_port0 = 0x%x\n", regs->m3_reg.m3_tx_timeout_port0);
-	KPRINT_DEBUG1("regs->m3_reg.m3_tx_timeout_port1 = 0x%x\n", regs->m3_reg.m3_tx_timeout_port1);
-	KPRINT_DEBUG1("regs->m3_reg.m3_debug_cnt19 = 0x%x\n", regs->m3_reg.m3_debug_cnt19);
+	KPRINT_DEBUG2("regs->m3_reg.m3_fw_init_done = 0x%x\n", regs->m3_reg.m3_fw_init_done);
+	KPRINT_DEBUG2("regs->m3_reg.m3_fw_exit	= 0x%x\n", regs->m3_reg.m3_fw_exit);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt0 = 0x%x\n", regs->m3_reg.m3_debug_cnt0);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt1 = 0x%x\n", regs->m3_reg.m3_debug_cnt1);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt2 = 0x%x\n", regs->m3_reg.m3_debug_cnt2);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt3 = 0x%x\n", regs->m3_reg.m3_debug_cnt3);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt4 = 0x%x\n", regs->m3_reg.m3_debug_cnt4);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt5 = 0x%x\n", regs->m3_reg.m3_debug_cnt5);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt6 = 0x%x\n", regs->m3_reg.m3_debug_cnt6);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt7 = 0x%x\n", regs->m3_reg.m3_debug_cnt7);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt8 = 0x%x\n", regs->m3_reg.m3_debug_cnt8);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt9 = 0x%x\n", regs->m3_reg.m3_debug_cnt9);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt10 = 0x%x\n", regs->m3_reg.m3_debug_cnt10);
+	KPRINT_DEBUG2("regs->m3_reg.m3_watchdog_exp_cnt = 0x%x\n", regs->m3_reg.m3_watchdog_exp_cnt);
+	KPRINT_DEBUG2("regs->m3_reg.m3_watchdog_monitor_cnt = 0x%x\n", regs->m3_reg.m3_watchdog_monitor_cnt);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt13 = 0x%x\n", regs->m3_reg.m3_debug_cnt13);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt14 = 0x%x\n", regs->m3_reg.m3_debug_cnt14);
+	KPRINT_DEBUG2("regs->m3_reg.m3_systick_cnt_upper_value = 0x%x\n", regs->m3_reg.m3_systick_cnt_upper_value);
+	KPRINT_DEBUG2("regs->m3_reg.m3_systick_cnt_lower_value = 0x%x\n", regs->m3_reg.m3_systick_cnt_lower_value);
+	KPRINT_DEBUG2("regs->m3_reg.m3_tx_timeout_port0 = 0x%x\n", regs->m3_reg.m3_tx_timeout_port0);
+	KPRINT_DEBUG2("regs->m3_reg.m3_tx_timeout_port1 = 0x%x\n", regs->m3_reg.m3_tx_timeout_port1);
+	KPRINT_DEBUG2("regs->m3_reg.m3_debug_cnt19 = 0x%x\n", regs->m3_reg.m3_debug_cnt19);
 
 	/* FRP Table Dump */
-	KPRINT_DEBUG1("regs->rxp_cfg->npe = %d\n", regs->rxp_cfg->npe);
-	KPRINT_DEBUG1("regs->rxp_cfg->nve = %d\n", regs->rxp_cfg->nve);
+	KPRINT_DEBUG2("regs->rxp_cfg->npe = %d\n", regs->rxp_cfg->npe);
+	KPRINT_DEBUG2("regs->rxp_cfg->nve = %d\n", regs->rxp_cfg->nve);
 	for (index = 0; index <= (regs->rxp_cfg->nve); index++) {
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].match_data = 0x%x\n", index, regs->rxp_cfg->entries[index].match_data);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].match_en = 0x%x\n", index, regs->rxp_cfg->entries[index].match_en);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].af = 0x%x\n", index, regs->rxp_cfg->entries[index].af);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].rf = 0x%x\n", index, regs->rxp_cfg->entries[index].rf);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].im = 0x%x\n", index, regs->rxp_cfg->entries[index].im);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].nc = 0x%x\n", index, regs->rxp_cfg->entries[index].nc);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].frame_offset = 0x%x\n", index, regs->rxp_cfg->entries[index].frame_offset);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].ok_index = 0x%x\n", index, regs->rxp_cfg->entries[index].ok_index);
-		KPRINT_DEBUG1("regs->rxp_cfg->entries[%d].dma_ch_no = 0x%x\n", index, regs->rxp_cfg->entries[index].dma_ch_no);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].match_data = 0x%x\n", index, regs->rxp_cfg->entries[index].match_data);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].match_en = 0x%x\n", index, regs->rxp_cfg->entries[index].match_en);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].af = 0x%x\n", index, regs->rxp_cfg->entries[index].af);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].rf = 0x%x\n", index, regs->rxp_cfg->entries[index].rf);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].im = 0x%x\n", index, regs->rxp_cfg->entries[index].im);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].nc = 0x%x\n", index, regs->rxp_cfg->entries[index].nc);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].frame_offset = 0x%x\n", index, regs->rxp_cfg->entries[index].frame_offset);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].ok_index = 0x%x\n", index, regs->rxp_cfg->entries[index].ok_index);
+		KPRINT_DEBUG2("regs->rxp_cfg->entries[%d].dma_ch_no = 0x%x\n", index, regs->rxp_cfg->entries[index].dma_ch_no);
 	}
 
 	/* TAMAP entries */
 	for (index = 0; index <= MAX_CM3_TAMAP_ENTRIES; index++) {
-		KPRINT_DEBUG1("regs->tamap[%d].trsl_addr_hi = 0x%x\n", index, regs->tamap[index].trsl_addr_hi);
-		KPRINT_DEBUG1("regs->tamap[%d].trsl_addr_low = 0x%x\n", index, regs->tamap[index].trsl_addr_low);
-		KPRINT_DEBUG1("regs->tamap[%d].src_addr_hi = 0x%x\n", index, regs->tamap[index].src_addr_hi);
-		KPRINT_DEBUG1("regs->tamap[%d].src_addr_low = 0x%x\n", index, regs->tamap[index].src_addr_low);
-		KPRINT_DEBUG1("regs->tamap[%d].atr_size = 0x%x\n", index, regs->tamap[index].atr_size);
-		KPRINT_DEBUG1("regs->tamap[%d].atr_impl = 0x%x\n", index, regs->tamap[index].atr_impl);
+		KPRINT_DEBUG2("regs->tamap[%d].trsl_addr_hi = 0x%x\n", index, regs->tamap[index].trsl_addr_hi);
+		KPRINT_DEBUG2("regs->tamap[%d].trsl_addr_low = 0x%x\n", index, regs->tamap[index].trsl_addr_low);
+		KPRINT_DEBUG2("regs->tamap[%d].src_addr_hi = 0x%x\n", index, regs->tamap[index].src_addr_hi);
+		KPRINT_DEBUG2("regs->tamap[%d].src_addr_low = 0x%x\n", index, regs->tamap[index].src_addr_low);
+		KPRINT_DEBUG2("regs->tamap[%d].atr_size = 0x%x\n", index, regs->tamap[index].atr_size);
+		KPRINT_DEBUG2("regs->tamap[%d].atr_impl = 0x%x\n", index, regs->tamap[index].atr_impl);
 	}
 
 	/* Driver & FW Information */
-	KPRINT_DEBUG1("regs->info.driver = %s\n", regs->info.driver);
-	KPRINT_DEBUG1("regs->info.version = %s\n", regs->info.version);
-	KPRINT_DEBUG1("regs->info.fw_version = %s\n", regs->info.fw_version);
+	KPRINT_DEBUG2("regs->info.driver = %s\n", regs->info.driver);
+	KPRINT_DEBUG2("regs->info.version = %s\n", regs->info.version);
+	KPRINT_DEBUG2("regs->info.fw_version = %s\n", regs->info.fw_version);
 
 	/* statistics */
 	for (ch = 0; ch < tx_queues_cnt; ch++) {
-		KPRINT_DEBUG1("regs->stats.rx_buf_unav_irq[%d] = 0x%llx\n", ch, regs->stats.rx_buf_unav_irq[ch]);
-		KPRINT_DEBUG1("regs->stats.tx_pkt_n[%d] = 0x%llx\n", ch, regs->stats.tx_pkt_n[ch]);
-		KPRINT_DEBUG1("regs->stats.tx_pkt_errors_n[%d] = 0x%llx\n", ch, regs->stats.tx_pkt_errors_n[ch]);
-		KPRINT_DEBUG1("regs->stats.rx_pkt_n[%d] = 0x%llx\n", ch, regs->stats.rx_pkt_n[ch]);
+		KPRINT_DEBUG2("regs->stats.rx_buf_unav_irq[%d] = 0x%llx\n", ch, regs->stats.rx_buf_unav_irq[ch]);
+		KPRINT_DEBUG2("regs->stats.tx_pkt_n[%d] = 0x%llx\n", ch, regs->stats.tx_pkt_n[ch]);
+		KPRINT_DEBUG2("regs->stats.tx_pkt_errors_n[%d] = 0x%llx\n", ch, regs->stats.tx_pkt_errors_n[ch]);
+		KPRINT_DEBUG2("regs->stats.rx_pkt_n[%d] = 0x%llx\n", ch, regs->stats.rx_pkt_n[ch]);
 	}
-	KPRINT_DEBUG1("regs->stats.mmc_tx_broadcastframe_g = 0x%llx\n", regs->stats.mmc_tx_broadcastframe_g);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_multicastframe_g = 0x%llx\n", regs->stats.mmc_tx_multicastframe_g);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_64_octets_gb = 0x%llx\n", regs->stats.mmc_tx_64_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_framecount_gb = 0x%llx\n", regs->stats.mmc_tx_framecount_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_65_to_127_octets_gb = 0x%llx\n", regs->stats.mmc_tx_65_to_127_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_128_to_255_octets_gb = 0x%llx\n", regs->stats.mmc_tx_128_to_255_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_256_to_511_octets_gb = 0x%llx\n", regs->stats.mmc_tx_256_to_511_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_512_to_1023_octets_gb = 0x%llx\n", regs->stats.mmc_tx_512_to_1023_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_1024_to_max_octets_gb = 0x%llx\n", regs->stats.mmc_tx_1024_to_max_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_unicast_gb = 0x%llx\n", regs->stats.mmc_tx_unicast_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_underflow_error = 0x%llx\n", regs->stats.mmc_tx_underflow_error);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_framecount_g = 0x%llx\n", regs->stats.mmc_tx_framecount_g);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_pause_frame = 0x%llx\n", regs->stats.mmc_tx_pause_frame);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_vlan_frame_g = 0x%llx\n", regs->stats.mmc_tx_vlan_frame_g);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_lpi_us_cntr = 0x%llx\n", regs->stats.mmc_tx_lpi_us_cntr);
-	KPRINT_DEBUG1("regs->stats.mmc_tx_lpi_tran_cntr = 0x%llx\n", regs->stats.mmc_tx_lpi_tran_cntr);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_broadcastframe_g = 0x%llx\n", regs->stats.mmc_tx_broadcastframe_g);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_multicastframe_g = 0x%llx\n", regs->stats.mmc_tx_multicastframe_g);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_64_octets_gb = 0x%llx\n", regs->stats.mmc_tx_64_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_framecount_gb = 0x%llx\n", regs->stats.mmc_tx_framecount_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_65_to_127_octets_gb = 0x%llx\n", regs->stats.mmc_tx_65_to_127_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_128_to_255_octets_gb = 0x%llx\n", regs->stats.mmc_tx_128_to_255_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_256_to_511_octets_gb = 0x%llx\n", regs->stats.mmc_tx_256_to_511_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_512_to_1023_octets_gb = 0x%llx\n", regs->stats.mmc_tx_512_to_1023_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_1024_to_max_octets_gb = 0x%llx\n", regs->stats.mmc_tx_1024_to_max_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_unicast_gb = 0x%llx\n", regs->stats.mmc_tx_unicast_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_underflow_error = 0x%llx\n", regs->stats.mmc_tx_underflow_error);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_framecount_g = 0x%llx\n", regs->stats.mmc_tx_framecount_g);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_pause_frame = 0x%llx\n", regs->stats.mmc_tx_pause_frame);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_vlan_frame_g = 0x%llx\n", regs->stats.mmc_tx_vlan_frame_g);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_lpi_us_cntr = 0x%llx\n", regs->stats.mmc_tx_lpi_us_cntr);
+	KPRINT_DEBUG2("regs->stats.mmc_tx_lpi_tran_cntr = 0x%llx\n", regs->stats.mmc_tx_lpi_tran_cntr);
 
-	KPRINT_DEBUG1("regs->stats.mmc_rx_framecount_gb = 0x%llx\n", regs->stats.mmc_rx_framecount_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_broadcastframe_g = 0x%llx\n", regs->stats.mmc_rx_broadcastframe_g);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_multicastframe_g = 0x%llx\n", regs->stats.mmc_rx_multicastframe_g);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_crc_error = 0x%llx\n", regs->stats.mmc_rx_crc_error);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_jabber_error = 0x%llx\n", regs->stats.mmc_rx_jabber_error);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_undersize_g = 0x%llx\n", regs->stats.mmc_rx_undersize_g);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_oversize_g = 0x%llx\n", regs->stats.mmc_rx_oversize_g);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_64_octets_gb = 0x%llx\n", regs->stats.mmc_rx_64_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_65_to_127_octets_gb = 0x%llx\n", regs->stats.mmc_rx_65_to_127_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_128_to_255_octets_gb = 0x%llx\n", regs->stats.mmc_rx_128_to_255_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_256_to_511_octets_gb = 0x%llx\n", regs->stats.mmc_rx_256_to_511_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_512_to_1023_octets_gb = 0x%llx\n", regs->stats.mmc_rx_512_to_1023_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_1024_to_max_octets_gb = 0x%llx\n", regs->stats.mmc_rx_1024_to_max_octets_gb);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_unicast_g = 0x%llx\n", regs->stats.mmc_rx_unicast_g);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_length_error = 0x%llx\n", regs->stats.mmc_rx_length_error);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_pause_frames = 0x%llx\n", regs->stats.mmc_rx_pause_frames);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_fifo_overflow = 0x%llx\n", regs->stats.mmc_rx_fifo_overflow);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_lpi_us_cntr = 0x%llx\n", regs->stats.mmc_rx_lpi_us_cntr);
-	KPRINT_DEBUG1("regs->stats.mmc_rx_lpi_tran_cntr = 0x%llx\n", regs->stats.mmc_rx_lpi_tran_cntr);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_framecount_gb = 0x%llx\n", regs->stats.mmc_rx_framecount_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_broadcastframe_g = 0x%llx\n", regs->stats.mmc_rx_broadcastframe_g);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_multicastframe_g = 0x%llx\n", regs->stats.mmc_rx_multicastframe_g);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_crc_error = 0x%llx\n", regs->stats.mmc_rx_crc_error);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_jabber_error = 0x%llx\n", regs->stats.mmc_rx_jabber_error);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_undersize_g = 0x%llx\n", regs->stats.mmc_rx_undersize_g);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_oversize_g = 0x%llx\n", regs->stats.mmc_rx_oversize_g);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_64_octets_gb = 0x%llx\n", regs->stats.mmc_rx_64_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_65_to_127_octets_gb = 0x%llx\n", regs->stats.mmc_rx_65_to_127_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_128_to_255_octets_gb = 0x%llx\n", regs->stats.mmc_rx_128_to_255_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_256_to_511_octets_gb = 0x%llx\n", regs->stats.mmc_rx_256_to_511_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_512_to_1023_octets_gb = 0x%llx\n", regs->stats.mmc_rx_512_to_1023_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_1024_to_max_octets_gb = 0x%llx\n", regs->stats.mmc_rx_1024_to_max_octets_gb);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_unicast_g = 0x%llx\n", regs->stats.mmc_rx_unicast_g);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_length_error = 0x%llx\n", regs->stats.mmc_rx_length_error);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_pause_frames = 0x%llx\n", regs->stats.mmc_rx_pause_frames);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_fifo_overflow = 0x%llx\n", regs->stats.mmc_rx_fifo_overflow);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_lpi_us_cntr = 0x%llx\n", regs->stats.mmc_rx_lpi_us_cntr);
+	KPRINT_DEBUG2("regs->stats.mmc_rx_lpi_tran_cntr = 0x%llx\n", regs->stats.mmc_rx_lpi_tran_cntr);
 
 	return 0;
 }
@@ -2470,7 +2470,7 @@ bool tc956xmac_eee_init(struct stmmac_priv *priv)
 	writel(value, priv->ioaddr + XGMAC_LPI_Auto_Entry_Timer);
 #endif
 	mutex_unlock(&priv->lock);
-	netdev_dbg(priv->dev, "Energy-Efficient Ethernet initialized\n");
+	NDBGPR_L2(priv->device, "Energy-Efficient Ethernet initialized\n");
 	return true;
 }
 
@@ -2519,7 +2519,7 @@ static void tc956xmac_get_tx_hwtstamp(struct stmmac_priv *priv,
 		memset(&shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
 		shhwtstamp.hwtstamp = ns_to_ktime(ns);
 
-		netdev_dbg(priv->dev, "get valid TX hw timestamp %llu\n", ns);
+		NDBGPR_L2(priv->device, "get valid TX hw timestamp %llu\n", ns);
 		/* pass tstamp to stack */
 		skb_tstamp_tx(skb, &shhwtstamp);
 	}
@@ -2531,7 +2531,7 @@ static void tc956xmac_get_tx_hwtstamp(struct stmmac_priv *priv,
 		if (count % 8000 == 0) {
 			rate = (8000*1000*1000000000ULL)/(unsigned int)(ns - prev_ns);
 #ifdef FPE
-			KPRINT_INFO("Tx FPE mmc_tx_frag_cnt:%d\n", priv->mmc.mmc_tx_fpe_fragment_cntr);
+			KPRINT_DEBUG1("Tx FPE mmc_tx_frag_cnt:%d\n", priv->mmc.mmc_tx_fpe_fragment_cntr);
 #endif
 			prev_ns = ns;
 		}
@@ -2671,7 +2671,7 @@ static void tc956xmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc 
 		static unsigned int count;
 
 		if (count % 8000 == 0) {
-			KPRINT_INFO("Rx FPE asmbly_ok_cnt:%lld,frag_cnt:%lld\n",
+			KPRINT_DEBUG1("Rx FPE asmbly_ok_cnt:%lld,frag_cnt:%lld\n",
 				priv->mmc.mmc_rx_packet_assembly_ok_cntr,
 				priv->mmc.mmc_rx_fpe_fragment_cntr);
 		}
@@ -2679,7 +2679,7 @@ static void tc956xmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc 
 #endif
 #endif
 		tc956xmac_get_timestamp(priv, desc, priv->adv_ts, &ns);
-		netdev_dbg(priv->dev, "get valid RX hw timestamp %llu\n", ns);
+		NDBGPR_L2(priv->device, "get valid RX hw timestamp %llu\n", ns);
 		shhwtstamp = skb_hwtstamps(skb);
 		memset(shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
 		shhwtstamp->hwtstamp = ns_to_ktime(ns);
@@ -2715,7 +2715,7 @@ static void tc956xmac_get_rx_hwtstamp(struct stmmac_priv *priv, struct dma_desc 
 		}
 #endif
 	} else {
-		netdev_dbg(priv->dev, "cannot get RX hw timestamp\n");
+		NDBGPR_L2(priv->device, "cannot get RX hw timestamp\n");
 	}
 }
 
@@ -2761,7 +2761,7 @@ static int tc956xmac_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
 			   sizeof(config)))
 		return -EFAULT;
 
-	netdev_dbg(priv->dev, "%s config flags:0x%x, tx_type:0x%x, rx_filter:0x%x\n",
+	NDBGPR_L2(priv->device, "%s config flags:0x%x, tx_type:0x%x, rx_filter:0x%x\n",
 		   __func__, config.flags, config.tx_type, config.rx_filter);
 
 	/* reserved for future extensions */
@@ -2977,10 +2977,10 @@ static int tc956xmac_init_ptp(struct stmmac_priv *priv)
 		priv->adv_ts = 1;
 
 	if (priv->dma_cap.time_stamp)
-		netdev_info(priv->dev, "IEEE 1588-2002 Timestamp supported\n");
+		netdev_dbg(priv->dev, "IEEE 1588-2002 Timestamp supported\n");
 
 	if (priv->adv_ts)
-		netdev_info(priv->dev,
+		netdev_dbg(priv->dev,
 			    "IEEE 1588-2008 Advanced Timestamp supported\n");
 
 	priv->hwts_tx_en = 0;
@@ -3181,7 +3181,7 @@ static void tc956xmac_mac_pcs_get_state(struct phylink_config *config,
 
 	reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS);
 	if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-		KPRINT_INFO("AN clause 37 completed");
+		KPRINT_DEBUG1("AN clause 37 completed");
 		if ((priv->plat->interface == PHY_INTERFACE_MODE_USXGMII) ||
 		   (priv->plat->interface == PHY_INTERFACE_MODE_10GKR)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
@@ -3190,7 +3190,7 @@ static void tc956xmac_mac_pcs_get_state(struct phylink_config *config,
 			) {
 			if (reg_value & XGMAC_USXG_AN_STS_LINK_MASK) {/*check link status*/
 				state->link = 1;
-				KPRINT_INFO("XPCS USXGMII link up");
+				KPRINT_DEBUG1("XPCS USXGMII link up");
 
 				if (((reg_value & XGMAC_USXG_AN_STS_SPEED_MASK) >> 9) == 0x3)/*If USXG_AN_STS is 10G*/
 					state->speed = SPEED_10000;
@@ -3210,14 +3210,14 @@ static void tc956xmac_mac_pcs_get_state(struct phylink_config *config,
 				else
 					state->duplex = DUPLEX_HALF;
 			} else {
-				KPRINT_INFO("XPCS USXGMII link down");
+				KPRINT_DEBUG1("XPCS USXGMII link down");
 				state->link = 0;
 			}
 
 		} else if (priv->plat->interface == PHY_INTERFACE_MODE_SGMII) {
 			if (reg_value & XGMAC_SGM_STS_LINK_MASK) {/*SGMII autonegotiated link */
 				state->link = 1;
-				KPRINT_INFO("XPCS SGMII link up");
+				KPRINT_DEBUG1("XPCS SGMII link up");
 
 				if (reg_value & XGMAC_SGM_STS_DUPLEX)/*SGMII autonegotiated duplex */
 					state->duplex = DUPLEX_FULL;
@@ -3233,7 +3233,7 @@ static void tc956xmac_mac_pcs_get_state(struct phylink_config *config,
 					state->speed = SPEED_100;
 			} else {
 				state->link = 0;
-				KPRINT_INFO("XPCS SGMII link down");
+				KPRINT_DEBUG1("XPCS SGMII link down");
 			}
 		}
 	}
@@ -3252,7 +3252,7 @@ static int tc956xmac_mac_link_state(struct phylink_config *config,
 
 	reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS);
 	if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-		KPRINT_INFO("AN clause 37 completed");
+		KPRINT_DEBUG1("AN clause 37 completed");
 		if ((priv->plat->interface == PHY_INTERFACE_MODE_USXGMII) ||
 		   (priv->plat->interface == PHY_INTERFACE_MODE_10GKR)
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 6, 0)
@@ -3261,7 +3261,7 @@ static int tc956xmac_mac_link_state(struct phylink_config *config,
 			) {
 			if (reg_value & XGMAC_USXG_AN_STS_LINK_MASK) {/*check link status*/
 				state->link = 1;
-				KPRINT_INFO("XPCS USXGMII link up");
+				KPRINT_DEBUG1("XPCS USXGMII link up");
 
 				/*If USXG_AN_STS is 10G*/
 				if (((reg_value & XGMAC_USXG_AN_STS_SPEED_MASK) >> 9) == 0x3)
@@ -3288,14 +3288,14 @@ static int tc956xmac_mac_link_state(struct phylink_config *config,
 				else
 					state->duplex = DUPLEX_HALF;
 			} else {
-				KPRINT_INFO("XPCS USXGMII link down");
+				KPRINT_DEBUG1("XPCS USXGMII link down");
 				state->link = 0;
 			}
 
 		} else if (priv->plat->interface == PHY_INTERFACE_MODE_SGMII) {
 			if (reg_value & XGMAC_SGM_STS_LINK_MASK) {/*SGMII autonegotiated link */
 				state->link = 1;
-				KPRINT_INFO("XPCS SGMII link up");
+				KPRINT_DEBUG1("XPCS SGMII link up");
 				/*SGMII autonegotiated duplex */
 				if (reg_value & XGMAC_SGM_STS_DUPLEX)
 					state->duplex = DUPLEX_FULL;
@@ -3311,7 +3311,7 @@ static int tc956xmac_mac_link_state(struct phylink_config *config,
 					state->speed = SPEED_100;
 			} else {
 				state->link = 0;
-				KPRINT_INFO("XPCS SGMII link down");
+				KPRINT_DEBUG1("XPCS SGMII link down");
 			}
 		}
 	}
@@ -3336,7 +3336,7 @@ static void tc956xmac_speed_change_init_mac(struct stmmac_priv *priv,
 	int ret = 0, reg = 0, reg_value = 0;
 	bool enable_an = true;
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	reg = readl(priv->tc956x_SFR_pci_base_addr + NMISCCTL_OFFSET);
 	reg &= MISC_CTRL;
@@ -3613,7 +3613,7 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 		tc956xmac_link_change_set_power(priv, LINK_UP);
 #endif
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	ctrl = readl(priv->ioaddr + MAC_CTRL_REG);
 	ctrl &= ~priv->hw->link.speed_mask;
@@ -3626,10 +3626,10 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 	if (priv->hw->xpcs) {
 		reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS);
 		if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-			KPRINT_INFO("AN clause 37 completed");
+			KPRINT_DEBUG1("AN clause 37 completed");
 			reg_value &= ~(XGMAC_C37_AN_COMPL);
 			tc956x_xpcs_write(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS, reg_value);
-			KPRINT_INFO("AN clause 37 complete bit cleared");
+			KPRINT_DEBUG1("AN clause 37 complete bit cleared");
 		}
 
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
@@ -3769,16 +3769,16 @@ static void tc956xmac_mac_config(struct phylink_config *config, unsigned int mod
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 		} else {
 			/* Configure Speed for WOL SGMII 1Gbps */
-			KPRINT_INFO("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
-			KPRINT_INFO("%s Port %d %s: Speed to configure %d", __func__, priv->port_num, priv->dev->name, state->speed);
+			KPRINT_DEBUG1("%s Port %d %s: Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
+			KPRINT_DEBUG1("%s Port %d %s: Speed to configure %d", __func__, priv->port_num, priv->dev->name, state->speed);
 			reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS);
 			/* Clear autonegotiation only if completed. As for XPCS, 2.5G autonegotiation is not supported */
 			/* Switching from SGMII 2.5G to any speed doesn't cause AN completion */
 			if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-				KPRINT_INFO("AN clause 37 completed");
+				KPRINT_DEBUG1("AN clause 37 completed");
 				reg_value &= ~(XGMAC_C37_AN_COMPL);
 				tc956x_xpcs_write(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS, reg_value);
-				KPRINT_INFO("AN clause 37 complete bit cleared");
+				KPRINT_DEBUG1("AN clause 37 complete bit cleared");
 			}
 			ret = tc956x_xpcs_init(priv, priv->xpcsaddr);
 			if (ret < 0)
@@ -3873,7 +3873,7 @@ static void tc956xmac_mac_an_restart(struct phylink_config *config)
 	struct stmmac_priv *priv = netdev_priv(to_net_dev(config->dev));
 	bool enable_en = true;
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	if (priv->hw->xpcs) {
 		/*Enable XPCS Autoneg*/
@@ -3884,18 +3884,18 @@ static void tc956xmac_mac_an_restart(struct phylink_config *config)
 #endif
 			) {
 			enable_en = false;
-			KPRINT_INFO("%s :Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
+			KPRINT_DEBUG1("%s :Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
 		} else if (priv->plat->interface == PHY_INTERFACE_MODE_SGMII) {
 			if (priv->is_sgmii_2p5g == true) {
 				enable_en = false;
-				KPRINT_INFO("%s : Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
+				KPRINT_DEBUG1("%s : Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
 			} else {
 				enable_en = true;
-				KPRINT_INFO("%s : Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
+				KPRINT_DEBUG1("%s : Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
 			}
 		} else {
 			enable_en = true;
-			KPRINT_INFO("%s : Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
+			KPRINT_DEBUG1("%s : Port %d %s AN Enable:%d", __func__, priv->port_num, priv->dev->name, enable_en);
 		}
 		tc956x_xpcs_ctrl_ane(priv, enable_en);
 	}
@@ -3933,14 +3933,14 @@ static void tc956xmac_mac_link_down(struct phylink_config *config,
 	else
 		priv->link_down_rst = false;
 
-	KPRINT_INFO("link down1 priv->link_down_rst = %d\n", priv->link_down_rst);
+	KPRINT_DEBUG1("link down1 priv->link_down_rst = %d\n", priv->link_down_rst);
 	if (priv->link_down_rst == true) {
 		tc956xmac_release(ndev);
 		tc956xmac_open(ndev);
 		priv->link_down_rst = false;
 	}
 
-	KPRINT_INFO("link down2 priv->link_down_rst = %d\n", priv->link_down_rst);
+	KPRINT_DEBUG1("link down2 priv->link_down_rst = %d\n", priv->link_down_rst);
 	mutex_lock(&priv->port_ld_release_lock);
 	/* Checking whether all offload Tx channels released or not*/
 	for (ch = 0; ch < MAX_TX_QUEUES_TO_USE; ch++) {
@@ -3999,7 +3999,7 @@ static int tc956x_phy_init_eee(struct phy_device *phydev, bool clk_stop_enable)
 	if (!phydev->drv)
 		return -EIO;
 
-	KPRINT_INFO("%s EEE phy init for 5G/2.5G\n", __func__);
+	KPRINT_DEBUG1("%s EEE phy init for 5G/2.5G\n", __func__);
 
 	/* According to 802.3az,the EEE is supported only in full duplex-mode.
 	 */
@@ -4096,7 +4096,7 @@ int phy_init_eee_local(struct phy_device *phydev, bool clk_stop_enable)
 	if (!phydev->drv)
 		return -EIO;
 
-	KPRINT_INFO("----> %s\n", __func__);
+	KPRINT_DEBUG1("----> %s\n", __func__);
 
 
 	/* According to 802.3az,the EEE is supported only in full duplex-mode.
@@ -4144,19 +4144,19 @@ int phy_init_eee_local(struct phy_device *phydev, bool clk_stop_enable)
 			goto eee_exit_err;
 		}
 
-		KPRINT_INFO("%s eee_adv: 0x%x\n", __func__, eee_adv);
-		KPRINT_INFO("%s eee_lp: 0x%x\n", __func__, eee_lp);
+		KPRINT_DEBUG1("%s eee_adv: 0x%x\n", __func__, eee_adv);
+		KPRINT_DEBUG1("%s eee_lp: 0x%x\n", __func__, eee_lp);
 
 
 		mmd_eee_adv_to_linkmode_local(adv, eee_adv);
 		mmd_eee_adv_to_linkmode_local(lp, eee_lp);
 
-		KPRINT_INFO("%s adv: 0x%x\n", __func__, adv);
-		KPRINT_INFO("%s eee_lp: 0x%x\n", __func__, lp);
+		KPRINT_DEBUG1("%s adv: 0x%x\n", __func__, adv);
+		KPRINT_DEBUG1("%s eee_lp: 0x%x\n", __func__, lp);
 
 		linkmode_and(common, adv, lp);
 
-		KPRINT_INFO("%s common: 0x%x\n", __func__, common);
+		KPRINT_DEBUG1("%s common: 0x%x\n", __func__, common);
 
 		if (!tc956x_phy_check_valid(phydev->speed, phydev->duplex, common)) {
 			KPRINT_ERR("Error 5\n");
@@ -4211,15 +4211,15 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 	misc_ctrl = readl(priv->ioaddr + NMISCCTL_OFFSET);
 	misc_ctrl &= MISC_CTRL;
 
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	if (priv->hw->xpcs) {
 		reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS);
 		if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-			KPRINT_INFO("AN clause 37 completed");
+			KPRINT_DEBUG1("AN clause 37 completed");
 			reg_value &= ~(XGMAC_C37_AN_COMPL);
 			tc956x_xpcs_write(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS, reg_value);
-			KPRINT_INFO("AN clause 37 complete bit cleared");
+			KPRINT_DEBUG1("AN clause 37 complete bit cleared");
 		}
 
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
@@ -4312,10 +4312,10 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 				/* Switching from SGMII 2.5G to any speed doesn't cause AN completion */
 
 				if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-					KPRINT_INFO("AN clause 37 completed");
+					KPRINT_DEBUG1("AN clause 37 completed");
 					reg_value &= ~(XGMAC_C37_AN_COMPL);
 					tc956x_xpcs_write(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS, reg_value);
-					KPRINT_INFO("AN clause 37 complete bit cleared");
+					KPRINT_DEBUG1("AN clause 37 complete bit cleared");
 				}
 
 				/* Invoke this only during speed change */
@@ -4360,22 +4360,22 @@ static void tc956xmac_mac_link_up(struct phylink_config *config,
 #ifdef CONFIG_TC956X_MAGIC_PACKET_WOL_CONF
 		} else {
 			/* Configure Speed for WOL SGMII 1Gbps */
-			KPRINT_INFO("%s Port %d %s : Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
-			KPRINT_INFO("%s Port %d %s : Speed to configure %d", __func__, priv->port_num, priv->dev->name, speed);
+			KPRINT_DEBUG1("%s Port %d %s : Entered with flag priv->wol_config_enabled %d", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
+			KPRINT_DEBUG1("%s Port %d %s : Speed to configure %d", __func__, priv->port_num, priv->dev->name, speed);
 			reg_value = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS);
 
 			/* Clear autonegotiation only if completed. As for XPCS, 2.5G autonegotiation is not supported */
 			/* Switching from SGMII 2.5G to any speed doesn't cause AN completion */
 			if (reg_value & XGMAC_C37_AN_COMPL) {/*check if AN 37 is complete CL37_ANCMPLT_INTR*/
-				KPRINT_INFO("AN clause 37 completed");
+				KPRINT_DEBUG1("AN clause 37 completed");
 				reg_value &= ~(XGMAC_C37_AN_COMPL);
 				tc956x_xpcs_write(priv->xpcsaddr, XGMAC_VR_MII_AN_INTR_STS, reg_value);
-				KPRINT_INFO("AN clause 37 complete bit cleared");
+				KPRINT_DEBUG1("AN clause 37 complete bit cleared");
 			}
 
 			ret = tc956x_xpcs_init(priv, priv->xpcsaddr);
 			if (ret < 0)
-				KPRINT_INFO("XPCS initialization error\n");
+				KPRINT_DEBUG1("XPCS initialization error\n");
 			tc956x_xpcs_ctrl_ane(priv, true);
 			val = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_SR_MII_CTRL);
 			val &= ~XGMAC_SR_MII_CTRL_SPEED; /* Mask speed ss13, ss6, ss5 */
@@ -4566,14 +4566,14 @@ static void tc956xmac_check_pcs_mode(struct stmmac_priv *priv)
 		    (interface == PHY_INTERFACE_MODE_RGMII_ID) ||
 		    (interface == PHY_INTERFACE_MODE_RGMII_RXID) ||
 		    (interface == PHY_INTERFACE_MODE_RGMII_TXID)) {
-			netdev_dbg(priv->dev, "PCS RGMII support enabled\n");
+			NDBGPR_L2(priv->device, "PCS RGMII support enabled\n");
 #ifdef TC956X
 			priv->hw->pcs = 0;
 #else
 			priv->hw->pcs = TC956XMAC_PCS_RGMII;
 #endif
 		} else if (interface == PHY_INTERFACE_MODE_SGMII) {
-			netdev_dbg(priv->dev, "PCS SGMII support enabled\n");
+			NDBGPR_L2(priv->device, "PCS SGMII support enabled\n");
 #ifdef TC956X
 			priv->hw->pcs = TC956XMAC_PCS_SGMII;
 #endif
@@ -4583,7 +4583,7 @@ static void tc956xmac_check_pcs_mode(struct stmmac_priv *priv)
 			  || (interface == PHY_INTERFACE_MODE_10GBASER)
 #endif
 			  ) {
-			netdev_dbg(priv->dev, "PCS USXGMII/XFI support enabled\n");
+			NDBGPR_L2(priv->device, "PCS USXGMII/XFI support enabled\n");
 #ifdef TC956X
 			priv->hw->pcs = TC956XMAC_PCS_USXGMII;
 #endif
@@ -4595,7 +4595,7 @@ static void tc956xmac_check_pcs_mode(struct stmmac_priv *priv)
 		(interface == PHY_INTERFACE_MODE_RGMII_ID)) {
 		priv->hw->xpcs = 0;
 	} else if (interface == PHY_INTERFACE_MODE_SGMII) {
-		netdev_dbg(priv->dev, "PCS SGMII support enabled\n");
+		NDBGPR_L2(priv->device, "PCS SGMII support enabled\n");
 		priv->hw->xpcs = TC956XMAC_PCS_SGMII;
 	} else if ((interface == PHY_INTERFACE_MODE_USXGMII) ||
 		  (interface == PHY_INTERFACE_MODE_10GKR)
@@ -4603,7 +4603,7 @@ static void tc956xmac_check_pcs_mode(struct stmmac_priv *priv)
 		  || (interface == PHY_INTERFACE_MODE_10GBASER)
 #endif
 		  ) {
-		netdev_dbg(priv->dev, "PCS USXGMII support enabled\n");
+		NDBGPR_L2(priv->device, "PCS USXGMII support enabled\n");
 		priv->hw->xpcs = TC956XMAC_PCS_USXGMII;
 	}
 #endif
@@ -4691,7 +4691,7 @@ static int tc956xmac_init_phy(struct net_device *dev)
 #else
 			phydev->irq = PHY_IGNORE_INTERRUPT;
 #endif
-			KPRINT_INFO("PHY configured in interrupt mode\n");
+			KPRINT_DEBUG1("PHY configured in interrupt mode\n");
 			DBGPR_FUNC(priv->device, "%s PHY configured in interrupt mode\n", __func__);
 
 			INIT_WORK(&priv->emac_phy_work, tc956xmac_defer_phy_isr_work);
@@ -4759,11 +4759,11 @@ static int tc956xmac_init_phy(struct net_device *dev)
 	if (priv->phylink) {
 		if ((priv->plat->interface != PHY_INTERFACE_MODE_RGMII) &&
 			(priv->plat->interface != PHY_INTERFACE_MODE_RGMII_ID)) {
-			netdev_info(priv->dev, "Ethtool EEE Setting\n");
+			netdev_dbg(priv->dev, "Ethtool EEE Setting\n");
 			phylink_ethtool_set_eee(priv->phylink, &edata);
 #ifdef TC956X_5_G_2_5_G_EEE_SUPPORT
 			/* Enable EEE for 2.5G and 5G speeds, when driver is loaded with EEE ON module param. */
-			netdev_info(priv->dev, "Ethtool EEE Setting for 5G/2.5G\n");
+			netdev_dbg(priv->dev, "Ethtool EEE Setting for 5G/2.5G\n");
 			ret |= phy_ethtool_set_eee_2p5(phydev, &edata);
 #endif
 		}
@@ -5685,7 +5685,7 @@ static void tc956xmac_mac_enable_rx_queues(struct stmmac_priv *priv)
  */
 static void tc956xmac_start_rx_dma(struct stmmac_priv *priv, u32 chan)
 {
-	netdev_dbg(priv->dev, "DMA RX processes started in channel %d\n", chan);
+	NDBGPR_L2(priv->device, "DMA RX processes started in channel %d\n", chan);
 	tc956xmac_start_rx(priv, priv->ioaddr, chan);
 }
 
@@ -5698,7 +5698,7 @@ static void tc956xmac_start_rx_dma(struct stmmac_priv *priv, u32 chan)
  */
 static void tc956xmac_start_tx_dma(struct stmmac_priv *priv, u32 chan)
 {
-	netdev_dbg(priv->dev, "DMA TX processes started in channel %d\n", chan);
+	NDBGPR_L2(priv->device, "DMA TX processes started in channel %d\n", chan);
 	tc956xmac_start_tx(priv, priv->ioaddr, chan);
 }
 
@@ -5711,7 +5711,7 @@ static void tc956xmac_start_tx_dma(struct stmmac_priv *priv, u32 chan)
  */
 static void tc956xmac_stop_rx_dma(struct stmmac_priv *priv, u32 chan)
 {
-	netdev_dbg(priv->dev, "DMA RX processes stopped in channel %d\n", chan);
+	NDBGPR_L2(priv->device, "DMA RX processes stopped in channel %d\n", chan);
 	tc956xmac_stop_rx(priv, priv->ioaddr, chan);
 }
 
@@ -5724,7 +5724,7 @@ static void tc956xmac_stop_rx_dma(struct stmmac_priv *priv, u32 chan)
  */
 static void tc956xmac_stop_tx_dma(struct stmmac_priv *priv, u32 chan)
 {
-	netdev_dbg(priv->dev, "DMA TX processes stopped in channel %d\n", chan);
+	NDBGPR_L2(priv->device, "DMA TX processes stopped in channel %d\n", chan);
 	tc956xmac_stop_tx(priv, priv->ioaddr, chan);
 }
 
@@ -6406,7 +6406,7 @@ static void tc956xmac_mmc_setup(struct stmmac_priv *priv)
 		if (priv->link_down_rst == false)
 			memset(&priv->mmc, 0, sizeof(struct stmmac_counters));
 	} else
-		netdev_info(priv->dev, "No MAC Management Counters available\n");
+		netdev_dbg(priv->dev, "No MAC Management Counters available\n");
 #else
 	memset(&priv->sw_stats, 0, sizeof(struct tc956x_sw_counters));
 #endif
@@ -6468,7 +6468,7 @@ static void tc956xmac_check_ether_addr(struct stmmac_priv *priv)
 		if (!is_valid_ether_addr(priv->dev->dev_addr))
 #endif
 			eth_hw_addr_random(priv->dev);
-		dev_info(priv->device, "device MAC address %pM\n",
+		dev_dbg(priv->device, "device MAC address %pM\n",
 			 priv->dev->dev_addr);
 #ifndef TC956X_SRIOV_VF
 	}
@@ -7054,12 +7054,12 @@ static void tc956xmac_mtl_configuration(struct stmmac_priv *priv)
 static void tc956xmac_safety_feat_configuration(struct stmmac_priv *priv)
 {
 	if (priv->dma_cap.asp) {
-		netdev_info(priv->dev, "Enabling Safety Features\n");
+		netdev_dbg(priv->dev, "Enabling Safety Features\n");
 #ifdef TC956X_UNSUPPORTED_UNTESTED_FEATURE
 		tc956xmac_safety_feat_config(priv, priv->ioaddr, priv->dma_cap.asp);
 #endif /* TC956X_UNSUPPORTED_UNTESTED_FEATURE */
 	} else {
-		netdev_info(priv->dev, "No Safety Features support found\n");
+		netdev_dbg(priv->dev, "No Safety Features support found\n");
 	}
 }
 
@@ -7121,7 +7121,7 @@ static int tc956xmac_hw_setup(struct net_device *dev, bool init_ptp)
 #if defined(TC956X_SRIOV_PF) && defined(TC956X_SRIOV_LOCK)
 	unsigned long flags;
 #endif
-	NMSGPR_INFO(priv->device, "-->%s\n", __func__);
+	NDBGPR_L1(priv->device, "-->%s\n", __func__);
 
 	/* Back up MMC registers into internal SW MMC counters */
 	if (priv->link_down_rst == true)
@@ -7509,11 +7509,11 @@ static int tc956xmac_open(struct net_device *dev)
 	int addr = priv->plat->phy_addr;
 	char *pwol_dev_name;
 
-	NMSGPR_INFO(priv->device, "---> light weight = %d %s : Port %d interface %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
+	NDBGPR_L1(priv->device, "---> light weight = %d %s : Port %d interface %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
 
 	if (priv->dma_cap.sma_mdio == 1)
 		phydev = mdiobus_get_phy(priv->mii, addr);
-	KPRINT_INFO("Open priv->link_down_rst = %d priv->tc956x_port_pm_suspend = %d\n", priv->link_down_rst, priv->tc956x_port_pm_suspend);
+	KPRINT_DEBUG1("Open priv->link_down_rst = %d priv->tc956x_port_pm_suspend = %d\n", priv->link_down_rst, priv->tc956x_port_pm_suspend);
 #ifdef TC956X_SRIOV_PF
 #ifdef CONFIG_DEBUG_FS
 	if (priv->link_down_rst == false)
@@ -7538,8 +7538,8 @@ static int tc956xmac_open(struct net_device *dev)
 		if (priv->dma_cap.sma_mdio == 1)
 			return -ENODEV;
 
-		KPRINT_INFO("%s Without MDIO/PHY configuration selected for Port %d %s", __func__, priv->port_num, dev->name);
-		KPRINT_INFO("Continue to configure DMA/MTL/MAC for Port %d %s", priv->port_num, dev->name);
+		KPRINT_DEBUG1("%s Without MDIO/PHY configuration selected for Port %d %s", __func__, priv->port_num, dev->name);
+		KPRINT_DEBUG1("Continue to configure DMA/MTL/MAC for Port %d %s", priv->port_num, dev->name);
 	}
 
 	if (priv->link_down_rst == false) {
@@ -7551,7 +7551,7 @@ static int tc956xmac_open(struct net_device *dev)
 				netdev_err(priv->dev,
 					   "%s: Cannot attach to PHY (error: %d)\n",
 					   __func__, ret);
-				KPRINT_INFO("<--- %s(1) : Port %d %s", __func__, priv->port_num, dev->name);
+				KPRINT_DEBUG1("<--- %s(1) : Port %d %s", __func__, priv->port_num, dev->name);
 
 				if (priv->dma_cap.sma_mdio == 1)
 					return ret;
@@ -7619,7 +7619,7 @@ static int tc956xmac_open(struct net_device *dev)
 		/* Allocate DMA channels for PF & VF.
 		 * To be called from both PFs
 		 */
-		KPRINT_INFO("%s: SRIOV Rsc Mgr Channel Allocation\n", __func__);
+		KPRINT_DEBUG1("%s: SRIOV Rsc Mgr Channel Allocation\n", __func__);
 		ret = tc956x_pf_vf_ch_alloc(dev);
 		if (ret < 0) {
 			netdev_err(priv->dev, "%s: SRIOV CH Alloc failed\n",
@@ -7775,7 +7775,7 @@ static int tc956xmac_open(struct net_device *dev)
 			if (priv->phylink)
 				phylink_start(priv->phylink);
 		}
-		NMSGPR_INFO(priv->device, "%s phylink started", __func__);
+		NDBGPR_L1(priv->device, "%s phylink started", __func__);
 	}
 #endif
 
@@ -7839,7 +7839,7 @@ static int tc956xmac_open(struct net_device *dev)
 		goto irq_error;
 	}
 #else
-	netdev_info(priv->dev, "%s: Only one interrupt handler registered\n",
+	netdev_dbg(priv->dev, "%s: Only one interrupt handler registered\n",
 				   __func__);
 #endif
 #endif
@@ -7899,7 +7899,7 @@ static int tc956xmac_open(struct net_device *dev)
 	mutex_lock(&tc956x_port_bridge_lock);
 	port_brige_state = 1;
 	mutex_unlock(&tc956x_port_bridge_lock);
-	netdev_info(priv->dev, "%s: Port bridge Feature enabled\n", __func__);
+	netdev_dbg(priv->dev, "%s: Port bridge Feature enabled\n", __func__);
 #endif
 
 #elif defined TC956X_SRIOV_VF
@@ -7915,10 +7915,10 @@ static int tc956xmac_open(struct net_device *dev)
 
 	if (link_status == true) {
 		netif_carrier_on(dev);
-		NMSGPR_INFO(priv->device, "PHY Link : UP\n");
+		NDBGPR_L1(priv->device, "PHY Link : UP\n");
 	} else {
 		netif_carrier_off(dev);
-		NMSGPR_INFO(priv->device, "PHY Link : DOWN\n");
+		NDBGPR_L1(priv->device, "PHY Link : DOWN\n");
 	}
 
 	tc956xmac_vf_reset(priv, VF_UP);
@@ -7927,7 +7927,7 @@ static int tc956xmac_open(struct net_device *dev)
 		writel(0, priv->tc956x_SRAM_pci_base_addr
 				+ TX_TIMER_SRAM_OFFSET(priv->port_num));
 #endif
-	NMSGPR_INFO(priv->device, "<--- light weight = %d %s(2) : Port %d %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
+	NDBGPR_L1(priv->device, "<--- light weight = %d %s(2) : Port %d %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
 	return 0;
 #ifdef TC956X_SRIOV_PF
 #ifndef TC956X
@@ -7973,7 +7973,7 @@ dma_desc_error:
 	if (priv->phylink)
 		phylink_disconnect_phy(priv->phylink);
 #endif
-	NMSGPR_INFO(priv->device, "<--- Err light weight = %d %s(3) : Port %d %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
+	NDBGPR_L1(priv->device, "<--- Err light weight = %d %s(3) : Port %d %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
 	return ret;
 }
 
@@ -8009,13 +8009,13 @@ static int tc956xmac_release(struct net_device *dev)
 	unsigned long flags;
 #endif
 
-	NMSGPR_INFO(priv->device, " ---> light weight = %d %s : Port %d interface %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
+	NDBGPR_L1(priv->device, " ---> light weight = %d %s : Port %d interface %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
 #ifdef TX_COMPLETION_WITHOUT_TIMERS
 	writel(0, priv->tc956x_SRAM_pci_base_addr
 			+ TX_TIMER_SRAM_OFFSET(priv->port_num));
 
 #endif
-	KPRINT_INFO("Release priv->link_down_rst = %d priv->tc956x_port_pm_suspend = %d\n", priv->link_down_rst, priv->tc956x_port_pm_suspend);
+	KPRINT_DEBUG1("Release priv->link_down_rst = %d priv->tc956x_port_pm_suspend = %d\n", priv->link_down_rst, priv->tc956x_port_pm_suspend);
 #ifdef TC956X_SRIOV_VF
 	tc956xmac_vf_reset(priv, VF_RELEASE);
 #endif
@@ -8029,7 +8029,7 @@ static int tc956xmac_release(struct net_device *dev)
 	if (port_brige_state) {
 		port_brige_state = 0;
 		writel(0x1 << 2, priv->ioaddr + INTC_MCUFLG);
-		KPRINT_INFO("Sending MCU Flag Port bridge exit signal\n");
+		KPRINT_DEBUG1("Sending MCU Flag Port bridge exit signal\n");
 	}
 	mutex_unlock(&tc956x_port_bridge_lock);
 #endif
@@ -8058,7 +8058,7 @@ static int tc956xmac_release(struct net_device *dev)
 
 	mutex_lock(&priv->port_ld_release_lock);
 	if (priv->port_link_down == true) {
-		KPRINT_INFO("Link down happened before %s, restoring clocks to stop DMA\n", __func__);
+		KPRINT_DEBUG1("Link down happened before %s, restoring clocks to stop DMA\n", __func__);
 		tc956xmac_link_change_set_power(priv, LINK_UP); /* Restore, De-assert and Enable Reset and Clock */
 	}
 
@@ -8148,7 +8148,7 @@ static int tc956xmac_release(struct net_device *dev)
 #endif
 	if (priv->link_down_rst == false)
 		netif_carrier_off(dev);
-	NMSGPR_INFO(priv->device, "PHY Link : DOWN\n");
+	NDBGPR_L1(priv->device, "PHY Link : DOWN\n");
 
 	tc956xmac_release_ptp(priv);
 
@@ -8171,7 +8171,7 @@ static int tc956xmac_release(struct net_device *dev)
 	}
 	/* If all channels are freed, call API for power saving*/
 	if (priv->port_link_down == false && offload_release_sts == true) {
-		KPRINT_INFO(" %s, Assert Reset and Disabling clock\n", __func__);
+		KPRINT_DEBUG1(" %s, Assert Reset and Disabling clock\n", __func__);
 		tc956xmac_link_change_set_power(priv, LINK_DOWN); /* Save, Assert and Disable Reset and Clock */
 	}
 	priv->port_release = true; /* setting port release to true as release invoked, and clear from open or link-up */
@@ -8205,7 +8205,7 @@ static int tc956xmac_release(struct net_device *dev)
 	spin_unlock_irqrestore(&priv->spn_lock.vlan_filter, flags);
 #endif
 #endif
-	NMSGPR_INFO(priv->device, "<--- light weight = %d %s : Port %d %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
+	NDBGPR_L1(priv->device, "<--- light weight = %d %s : Port %d %s", priv->link_down_rst, __func__, priv->port_num, dev->name);
 	return 0;
 }
 
@@ -8608,19 +8608,19 @@ static netdev_tx_t tc956xmac_xmit(struct sk_buff *skb, struct net_device *dev)
 	tx_q = &priv->tx_queue[queue];
 	first_tx = tx_q->cur_tx;
 
-	KPRINT_DEBUG1("tso en = %d\n", priv->tso);
-	KPRINT_DEBUG1("skb tso en = %d\n", skb_is_gso(skb));
+	KPRINT_DEBUG2("tso en = %d\n", priv->tso);
+	KPRINT_DEBUG2("skb tso en = %d\n", skb_is_gso(skb));
 	/* Manage oversized TCP frames for GMAC4 device */
 
 	/* TSO feature is supported based on configuration in PF */
 	if (skb_is_gso(skb) && priv->tso) {
-		KPRINT_DEBUG1("XMIT TSO IF\n");
+		KPRINT_DEBUG2("XMIT TSO IF\n");
 		if (gso & (SKB_GSO_TCPV4 | SKB_GSO_TCPV6))
 			return tc956xmac_tso_xmit(skb, dev);
 		if (priv->plat->has_gmac4 && (gso & SKB_GSO_UDP_L4))
 			return tc956xmac_tso_xmit(skb, dev);
 	}
-	KPRINT_DEBUG1("XMIT Normal\n");
+	KPRINT_DEBUG2("XMIT Normal\n");
 
 	if (unlikely(tc956xmac_tx_avail(priv, queue) < nfrags + 1)) {
 		if (!netif_tx_queue_stopped(netdev_get_tx_queue(dev, queue))) {
@@ -8681,8 +8681,8 @@ static netdev_tx_t tc956xmac_xmit(struct sk_buff *skb, struct net_device *dev)
 	else
 		csum_insertion = 0;
 
-	KPRINT_DEBUG1("csum_insertion = %d\n", csum_insertion);
-	KPRINT_DEBUG1("priv->tx_crc_pad_state = %d\n", priv->tx_crc_pad_state);
+	KPRINT_DEBUG2("csum_insertion = %d\n", csum_insertion);
+	KPRINT_DEBUG2("priv->tx_crc_pad_state = %d\n", priv->tx_crc_pad_state);
 	if (likely(priv->extend_desc))
 		desc = (struct dma_desc *)(tx_q->dma_etx + entry);
 	else if (tx_q->tbs & TC956XMAC_TBS_AVAIL)
@@ -8795,12 +8795,12 @@ static netdev_tx_t tc956xmac_xmit(struct sk_buff *skb, struct net_device *dev)
 	tx_q->cur_tx = entry;
 
 	if (netif_msg_pktdata(priv)) {
-		netdev_dbg(priv->dev,
+		NDBGPR_L2(priv->device,
 			   "%s: curr=%d dirty=%d f=%d, e=%d, first=%p, nfrags=%d",
 			   __func__, tx_q->cur_tx, tx_q->dirty_tx, first_entry,
 			   entry, first, nfrags);
 
-		netdev_dbg(priv->dev, ">>> frame to be transmitted: ");
+		NDBGPR_L2(priv->device, ">>> frame to be transmitted: ");
 		print_pkt(skb->data, skb->len);
 	}
 
@@ -9192,7 +9192,7 @@ static int tc956xmac_rx(struct stmmac_priv *priv, int limit, u32 queue)
 	if (netif_msg_rx_status(priv)) {
 		void *rx_head;
 
-		netdev_dbg(priv->dev, "%s: descriptor ring:\n", __func__);
+		NDBGPR_L2(priv->device, "%s: descriptor ring:\n", __func__);
 		if (priv->extend_desc)
 			rx_head = (void *)rx_q->dma_erx;
 		else
@@ -9689,7 +9689,7 @@ static int tc956xmac_set_features(struct net_device *netdev,
 	else
 		priv->csum_insertion = 0;
 
-	KPRINT_DEBUG1("priv->csum_insertion = %d\n", priv->csum_insertion);
+	KPRINT_DEBUG2("priv->csum_insertion = %d\n", priv->csum_insertion);
 #ifdef TC956X_SRIOV_PF /* Clean up needed */
 	/* Rx fcs Configuration via Ethtool */
 	if (features & NETIF_F_RXFCS) {
@@ -9705,7 +9705,7 @@ static int tc956xmac_set_features(struct net_device *netdev,
 	}
 
 	tc956x_rx_crc_pad_config(priv, priv->rx_crc_pad_state);
-	KPRINT_DEBUG1("priv->rx_crc_pad_state = %d\n", priv->rx_crc_pad_state);
+	KPRINT_DEBUG2("priv->rx_crc_pad_state = %d\n", priv->rx_crc_pad_state);
 
 	sph_en = (priv->hw->rx_csum > 0) && priv->sph;
 	for (chan = 0; chan < priv->plat->rx_queues_to_use; chan++)
@@ -9965,19 +9965,19 @@ static irqreturn_t tc956xmac_interrupt_v0(int irq, void *dev_id)
 	val = readl(priv->ioaddr + TC956X_MSI_INT_STS_OFFSET(priv->fn_id_info.pf_no, priv->fn_id_info.vf_no));
 
 	if (val & TC956X_EXT_PHY_ETH_INT) {
-		NMSGPR_INFO(priv->device, "PHY Interrupt %s\n", __func__);
+		NDBGPR_L1(priv->device, "PHY Interrupt %s\n", __func__);
 #ifndef TC956X_SRIOV_VF
 		if (priv->port_link_down == true)
 			tc956xmac_link_change_set_power(priv, LINK_UP); /* Restore, De-assert and Enable Reset and Clock */
 #endif
 		/* Queue the work in system_wq */
 		if (priv->tc956x_port_pm_suspend == true) {
-			KPRINT_INFO("%s : (Do not queue PHY Work during suspend. Set WOL Interrupt flag)\n", __func__);
+			KPRINT_DEBUG1("%s : (Do not queue PHY Work during suspend. Set WOL Interrupt flag)\n", __func__);
 			priv->tc956xmac_pm_wol_interrupt = true;
 		} else {
 			struct phy_device *phydev;
 			phydev = mdiobus_get_phy(priv->mii, priv->plat->phy_addr);
-			KPRINT_INFO("%s : (Queue PHY Work.)\n", __func__);
+			KPRINT_DEBUG1("%s : (Queue PHY Work.)\n", __func__);
 			queue_work(system_wq, &priv->emac_phy_work);
 		}
 		/* phy_mac_interrupt(priv->dev->phydev); */
@@ -10226,7 +10226,7 @@ static irqreturn_t tc956xmac_interrupt_v1(int irq, void *dev_id)
 
 				status = status &  (~CORE_IRQ_MTL_RX_OVERFLOW);
 				priv->mbx_wq_param.queue_no = queue;
-				KPRINT_INFO("CORE_IRQ_MTL_RX_OVERFLOW for queue = %d\n", queue);
+				KPRINT_DEBUG1("CORE_IRQ_MTL_RX_OVERFLOW for queue = %d\n", queue);
 				if (queue == 0 || queue == 1 || queue == 7) {
 					pf_dma_ch = priv->pf_queue_dma_map[queue];
 					rx_q = &priv->rx_queue[pf_dma_ch];
@@ -10283,20 +10283,20 @@ static irqreturn_t tc956xmac_interrupt_v1(int irq, void *dev_id)
 	val = readl(priv->ioaddr + TC956X_MSI_INT_STS_OFFSET(priv->fn_id_info.pf_no, priv->fn_id_info.vf_no));
 
 	if (val & TC956X_EXT_PHY_ETH_INT) {
-		NMSGPR_INFO(priv->device, "PHY Interrupt %s\n", __func__);
+		NDBGPR_L1(priv->device, "PHY Interrupt %s\n", __func__);
 #ifndef TC956X_SRIOV_VF
 		if (priv->port_link_down == true)
 			tc956xmac_link_change_set_power(priv, LINK_UP); /* Restore, De-assert and Enable Reset and Clock */
 #endif
 		/* Queue the work in system_wq */
 		if (priv->tc956x_port_pm_suspend == true) {
-			KPRINT_INFO("%s : (Do not queue PHY Work during suspend. Set WOL Interrupt flag)\n", __func__);
+			KPRINT_DEBUG1("%s : (Do not queue PHY Work during suspend. Set WOL Interrupt flag)\n", __func__);
 			priv->tc956xmac_pm_wol_interrupt = true;
 		} else {
 			struct phy_device *phydev;
 			phydev = mdiobus_get_phy(priv->mii, priv->plat->phy_addr);
 
-			KPRINT_INFO("%s : (Queue PHY Work.)\n", __func__);
+			KPRINT_DEBUG1("%s : (Queue PHY Work.)\n", __func__);
 			queue_work(system_wq, &priv->emac_phy_work);
 		}
 		/* phy_mac_interrupt(priv->dev->phydev); */
@@ -10374,7 +10374,7 @@ int tc956xmac_rx_parser_configuration(struct stmmac_priv *priv)
 			if (ret_val)
 				KPRINT_INFO("Phylink get EEE error\n\r");
 
-			KPRINT_INFO("Disabling EEE\n\r");
+			KPRINT_DEBUG1("Disabling EEE\n\r");
 			priv->eee_enabled = 0;
 			edata.tx_lpi_enabled = priv->eee_enabled;
 			edata.tx_lpi_timer = priv->tx_lpi_timer;
@@ -10396,7 +10396,7 @@ int tc956xmac_rx_parser_configuration(struct stmmac_priv *priv)
 					break;
 				}
 			}
-			KPRINT_INFO("AN duration : %d\n\r", dly_cnt*10);
+			KPRINT_DEBUG1("AN duration : %d\n\r", dly_cnt*10);
 
 			re_init_eee = 1;
 		}
@@ -10419,7 +10419,7 @@ int tc956xmac_rx_parser_configuration(struct stmmac_priv *priv)
 			if (ret_val)
 				KPRINT_INFO("Phylink get EEE error\n\r");
 
-			KPRINT_INFO("Enabling EEE\n\r");
+			KPRINT_DEBUG1("Enabling EEE\n\r");
 			edata.tx_lpi_enabled = priv->eee_enabled;
 			edata.tx_lpi_timer = priv->tx_lpi_timer;
 
@@ -10446,7 +10446,7 @@ int tc956xmac_rx_parser_configuration(struct stmmac_priv *priv)
 					break;
 				}
 			}
-			KPRINT_INFO("AN duration : %d \n\r", dly_cnt*10);
+			KPRINT_DEBUG1("AN duration : %d \n\r", dly_cnt*10);
 		}
 	}
 
@@ -11340,7 +11340,7 @@ static int tc956xmac_config_vlan_filter(struct stmmac_priv *priv, void __user *d
 #if defined(TC956X_SRIOV_PF) && defined(TC956X_SRIOV_LOCK)
 	spin_unlock_irqrestore(&priv->spn_lock.vlan_filter, flags);
 #endif
-	KPRINT_INFO("Successfully %s VLAN %s filtering and %s matching\n",
+	KPRINT_DEBUG1("Successfully %s VLAN %s filtering and %s matching\n",
 		  (ioctl_data.filter_enb_dis ? "ENABLED" : "DISABLED"),
 		  (ioctl_data.perfect_hash ? "HASH" : "PERFECT"),
 		  (ioctl_data.perfect_inverse_match ? "INVERSE" : "PERFECT"));
@@ -12665,7 +12665,7 @@ static int tc956xmac_pcie_lane_change(struct stmmac_priv *priv, void __user *dat
 	reg_data = readl(priv->ioaddr + NMODESTS_OFFSET);
 	pcie_mode = (reg_data & NMODESTS_MODE2) >> NMODESTS_MODE2_SHIFT;
 
-	KPRINT_INFO("Pcie mode: %d\n\r", pcie_mode);
+	KPRINT_DEBUG1("Pcie mode: %d\n\r", pcie_mode);
 
 	/* Get the current lane setting from glue lane monitor register */
 	reg_data = readl(priv->ioaddr + TC956X_GLUE_TL_NUM_LANES_MON);
@@ -12771,7 +12771,7 @@ static int tc956xmac_pcie_set_tx_margin(struct stmmac_priv *priv, void __user *d
 	reg_data = readl(priv->ioaddr + NMODESTS_OFFSET);
 	pcie_mode = (reg_data & NMODESTS_MODE2) >> NMODESTS_MODE2_SHIFT;
 
-	KPRINT_INFO("Pcie mode: %d\n\r", pcie_mode);
+	KPRINT_DEBUG1("Pcie mode: %d\n\r", pcie_mode);
 
 	switch (pcie_mode) {
 	case TC956X_PCIE_SETTING_A: /* 0:Setting A: x4x1x1 mode */
@@ -13019,7 +13019,7 @@ static int tc956xmac_pcie_set_tx_deemphasis(struct stmmac_priv *priv, void __use
 	reg_data = readl(priv->ioaddr + NMODESTS_OFFSET);
 	pcie_mode = (reg_data & NMODESTS_MODE2) >> NMODESTS_MODE2_SHIFT;
 
-	KPRINT_INFO("Pcie mode: %d\n\r", pcie_mode);
+	KPRINT_DEBUG1("Pcie mode: %d\n\r", pcie_mode);
 
 	switch (pcie_mode) {
 	case TC956X_PCIE_SETTING_A: /* 0:Setting A: x4x1x1 mode */
@@ -13150,7 +13150,7 @@ static int tc956xmac_pcie_set_dfe(struct stmmac_priv *priv, void __user *data)
 	reg_data = readl(priv->ioaddr + NMODESTS_OFFSET);
 	pcie_mode = (reg_data & NMODESTS_MODE2) >> NMODESTS_MODE2_SHIFT;
 
-	KPRINT_INFO("Pcie mode: %d\n\r", pcie_mode);
+	KPRINT_DEBUG1("Pcie mode: %d\n\r", pcie_mode);
 
 	switch (pcie_mode) {
 	case TC956X_PCIE_SETTING_A: /* 0:Setting A: x4x1x1 mode */
@@ -13590,7 +13590,7 @@ static int tc956xmac_pcie_set_ctle_fixed(struct stmmac_priv *priv, void __user *
 	reg_data = readl(priv->ioaddr + NMODESTS_OFFSET);
 	pcie_mode = (reg_data & NMODESTS_MODE2) >> NMODESTS_MODE2_SHIFT;
 
-	KPRINT_INFO("Pcie mode: %d\n\r", pcie_mode);
+	KPRINT_DEBUG1("Pcie mode: %d\n\r", pcie_mode);
 
 	switch (pcie_mode) {
 	case TC956X_PCIE_SETTING_A: /* 0:Setting A: x4x1x1 mode */
@@ -14283,9 +14283,9 @@ static int tc956xmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 					NMSGPR_ALERT(priv->device, "PHY ID: SIOCGMIIPHY\n");
 				}
 			}
-			KPRINT_DEBUG2("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
+			KPRINT_DEBUG3("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 		}
 #endif
 		ret = 0;
@@ -14318,7 +14318,7 @@ static int tc956xmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 		 */
 		if (ret > 0) {
 			if (ret == ACK) {
-				KPRINT_DEBUG2("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
+				KPRINT_DEBUG3("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
 
 				mbx[0] = OPCODE_MBX_VF_IOCTL; //opcode for ioctl
 				mbx[1] = 1; //size
@@ -14326,7 +14326,7 @@ static int tc956xmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 				ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 				if (ret > 0) {
-					KPRINT_DEBUG2("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
+					KPRINT_DEBUG3("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
 
 					if (ret == ACK) {
 						/* Check the acknowledgement message for opcode and size,
@@ -14336,10 +14336,10 @@ static int tc956xmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 							memcpy(&(data->val_out), &mbx[6], 2);
 					}
 				} else
-					KPRINT_DEBUG2("mailbox write failed");
+					KPRINT_DEBUG3("mailbox write failed");
 			}
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 		}
 		ret = 0;
 		break;
@@ -14372,9 +14372,9 @@ static int tc956xmac_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 						ret = -EFAULT;
 				}
 			}
-			KPRINT_DEBUG2("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
+			KPRINT_DEBUG3("mailbox write with ACK or NACK %d %x %x", ret, mbx[4], mbx[5]);
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 		}
 #endif
 		break;
@@ -14512,7 +14512,7 @@ static u16 tc956xmac_select_queue(struct net_device *dev, struct sk_buff *skb,
 		}
 #endif
 	}
-	netdev_dbg(priv->dev, "%s: Tx Queue select = %d", __func__, txqueue_select);
+	NDBGPR_L2(priv->device, "%s: Tx Queue select = %d", __func__, txqueue_select);
 	return txqueue_select;
 #else
 	int gso = skb_shinfo(skb)->gso_type;
@@ -15090,7 +15090,7 @@ static int tc956xmac_hw_init(struct stmmac_priv *priv)
 	/* Get the HW capability (new GMAC newer than 3.50a) */
 	priv->hw_cap_support = tc956xmac_get_hw_features(priv);
 	if (priv->hw_cap_support) {
-		dev_info(priv->device, "DMA HW capability register supported\n");
+		dev_dbg(priv->device, "DMA HW capability register supported\n");
 
 		/* We can override some gmac/dma configuration fields: e.g.
 		 * enh_desc, tx_coe (e.g. that are passed through the
@@ -15123,27 +15123,27 @@ static int tc956xmac_hw_init(struct stmmac_priv *priv)
 			priv->plat->rx_coe = TC956XMAC_RX_COE_TYPE1;
 
 	} else {
-		dev_info(priv->device, "No HW DMA feature register supported\n");
+		dev_dbg(priv->device, "No HW DMA feature register supported\n");
 	}
 
 	if (priv->plat->rx_coe) {
 		priv->hw->rx_csum = priv->plat->rx_coe;
-		dev_info(priv->device, "RX Checksum Offload Engine supported\n");
+		dev_dbg(priv->device, "RX Checksum Offload Engine supported\n");
 		if (priv->synopsys_id < DWMAC_CORE_4_00)
-			dev_info(priv->device, "COE Type %d\n", priv->hw->rx_csum);
+			dev_dbg(priv->device, "COE Type %d\n", priv->hw->rx_csum);
 	}
 	if (priv->plat->tx_coe) {
-		dev_info(priv->device, "TX Checksum insertion supported\n");
+		dev_dbg(priv->device, "TX Checksum insertion supported\n");
 		priv->csum_insertion = 1;	/* Enable Tx Csum Offload */
 	}
 
 	if (priv->plat->pmt) {
-		dev_info(priv->device, "Wake-Up On Lan supported\n");
+		dev_dbg(priv->device, "Wake-Up On Lan supported\n");
 		device_set_wakeup_capable(priv->device, 1);
 	}
 
 	if (priv->dma_cap.tsoen)
-		dev_info(priv->device, "TSO supported\n");
+		dev_dbg(priv->device, "TSO supported\n");
 
 	/* Run HW quirks, if any */
 	if (priv->hwif_quirks) {
@@ -15160,7 +15160,7 @@ static int tc956xmac_hw_init(struct stmmac_priv *priv)
 	if (((priv->synopsys_id >= DWMAC_CORE_3_50) ||
 	    (priv->plat->has_xgmac)) && (!priv->plat->riwt_off)) {
 		priv->use_riwt = 1;
-		dev_info(priv->device,
+		dev_dbg(priv->device,
 			 "Enable RX Mitigation via HW Watchdog Timer\n");
 	}
 
@@ -15183,10 +15183,10 @@ static unsigned char tc956x_get_tx_channel_count(struct tc956xmac_resources *res
 	u32 mac_offset_base = res->port_num == RM_PF0_ID ?
 					MAC0_BASE_OFFSET : MAC1_BASE_OFFSET;
 
-	KPRINT_INFO("-->%s\n", __func__);
+	KPRINT_DEBUG1("-->%s\n", __func__);
 	varMAC_HFR2 = readl(res->addr + mac_offset_base + XGMAC_HW_FEATURE2_BASE);
 	count = ((varMAC_HFR2 & XGMAC_HWFEAT_TXCHCNT) >> XGMAC_HWFEAT_TXCHCNT_SHIFT) + 1;
-	KPRINT_INFO("<-- %s\n", __func__);
+	KPRINT_DEBUG1("<-- %s\n", __func__);
 	return count;
 }
 
@@ -15205,11 +15205,11 @@ static unsigned char tc956x_get_rx_channel_count(struct tc956xmac_resources *res
 	u32 mac_offset_base = res->port_num == RM_PF0_ID ?
 						MAC0_BASE_OFFSET : MAC1_BASE_OFFSET;
 
-	KPRINT_INFO("--> %s\n", __func__);
+	KPRINT_DEBUG1("--> %s\n", __func__);
 
 	varMAC_HFR2 = readl(res->addr + mac_offset_base + XGMAC_HW_FEATURE2_BASE);
 	count = ((varMAC_HFR2 & XGMAC_HWFEAT_RXCHCNT) >> XGMAC_HWFEAT_RXCHCNT_SHIFT) + 1;
-	KPRINT_INFO("<-- %s\n", __func__);
+	KPRINT_DEBUG1("<-- %s\n", __func__);
 	return count;
 }
 #endif
@@ -15268,7 +15268,7 @@ static void extract_macid(char *string, uint8_t vf_id)
 		} else
 			break;
 	}
-	KPRINT_DEBUG1("MAC Addr : %pM\n", &dev_addr[addr_found][0]);
+	KPRINT_DEBUG2("MAC Addr : %pM\n", &dev_addr[addr_found][0]);
 #elif defined TC956X_SRIOV_VF
 	static int k;
 	int addr_found = 0;
@@ -15285,7 +15285,7 @@ static void extract_macid(char *string, uint8_t vf_id)
 		} else
 			break;
 	}
-	KPRINT_INFO("MAC Addr : %pM\n", &dev_addr[k][addr_found + vf_id][0]);
+	KPRINT_DEBUG1("MAC Addr : %pM\n", &dev_addr[k][addr_found + vf_id][0]);
 
 	k++;
 #endif
@@ -15355,7 +15355,7 @@ static bool lookfor_macid(char *file_buf, uint8_t port_id, uint8_t dev_id)
 				 */
 				if (strncmp(token_s, config_param_list[0].mac_key, 6) == 0) {
 
-					KPRINT_INFO("MAC_ID Key is found\n");
+					KPRINT_DEBUG1("MAC_ID Key is found\n");
 					/* Read next word */
 					token_s = strsep(&token_n, "\n");
 					if (token_s != NULL) {
@@ -15416,7 +15416,7 @@ static void parse_config_file(uint8_t port_id, uint8_t dev_id, struct net_device
 		KPRINT_ERR("Mac configuration file not found\n");
 		eth_random_addr(&dev_addr[tc956xmac_pm_usage_counter][0]);
 		dev->addr_assign_type = NET_ADDR_RANDOM;
-		KPRINT_INFO("tc956xmac_pm_usage_counter=%d\n",tc956xmac_pm_usage_counter);
+		KPRINT_DEBUG1("tc956xmac_pm_usage_counter=%d\n",tc956xmac_pm_usage_counter);
 		return;
 	} else {
 
@@ -15424,10 +15424,10 @@ static void parse_config_file(uint8_t port_id, uint8_t dev_id, struct net_device
 		/* Parse the file */
 		for (i = 0; i < CONFIG_PARAM_NUM; i++) {
 			if (strstr((const char *)cdata, config_param_list[i].mdio_key)) {
-				KPRINT_DEBUG1("Pattern Match\n");
+				KPRINT_DEBUG2("Pattern Match\n");
 				if (strncmp(config_param_list[i].mdio_key, "MDIOBUSID", 9) == 0) {
 					/* MAC ID Configuration */
-					KPRINT_DEBUG1("MAC_ID Configuration\n");
+					KPRINT_DEBUG2("MAC_ID Configuration\n");
 					lookfor_macid(data, port_id, dev_id);
 				}
 			}
@@ -15435,7 +15435,7 @@ static void parse_config_file(uint8_t port_id, uint8_t dev_id, struct net_device
 	}
 
 	vfree(data);
-	KPRINT_INFO("<--%s", __func__);
+	KPRINT_DEBUG1("<--%s", __func__);
 }
 #endif
 
@@ -15451,7 +15451,7 @@ static int validate_rsc_mgr_alloc(struct stmmac_priv *priv, struct net_device *n
 
 	tc956xmac_rsc_mng_get_rscs(priv, ndev, &rsc);
 
-	dev_info(priv->device, "VF %d Resource allocation %x\n", priv->plat->vf_id+1, rsc);
+	dev_dbg(priv->device, "VF %d Resource allocation %x\n", priv->plat->vf_id+1, rsc);
 
 	for (i = 0; i < ch_cnt; i++) {
 		if (priv->plat->ch_in_use[i])
@@ -15495,16 +15495,16 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 	void *nrst_reg = NULL, *nclk_reg = NULL;
 	u32 nrst_val = 0, nclk_val = 0;
 
-	NMSGPR_INFO(device, "-->%s\n", __func__);
+	NDBGPR_L1(device, "-->%s\n", __func__);
 
 #ifdef TC956X
-	KPRINT_INFO("HFR0 Val = 0x%08x", readl(res->addr + mac_offset_base +
+	KPRINT_DEBUG1("HFR0 Val = 0x%08x", readl(res->addr + mac_offset_base +
 							XGMAC_HW_FEATURE0_BASE));
-	KPRINT_INFO("HFR1 Val = 0x%08x", readl(res->addr + mac_offset_base +
+	KPRINT_DEBUG1("HFR1 Val = 0x%08x", readl(res->addr + mac_offset_base +
 							XGMAC_HW_FEATURE1_BASE));
-	KPRINT_INFO("HFR2 Val = 0x%08x", readl(res->addr + mac_offset_base +
+	KPRINT_DEBUG1("HFR2 Val = 0x%08x", readl(res->addr + mac_offset_base +
 							XGMAC_HW_FEATURE2_BASE));
-	KPRINT_INFO("HFR3 Val = 0x%08x", readl(res->addr + mac_offset_base +
+	KPRINT_DEBUG1("HFR3 Val = 0x%08x", readl(res->addr + mac_offset_base +
 							XGMAC_HW_FEATURE3_BASE));
 
 
@@ -15692,7 +15692,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #else
 
 	/* CPE */
-	KPRINT_INFO("****************************************************cpe q ch enable***************************\n");
+	KPRINT_DEBUG1("****************************************************cpe q ch enable***************************\n");
 	/* Tx & Rx Channel Configuration */
 	priv->plat->tx_ch_in_use[0] = TC956X_ENABLE_CHNL;
 	priv->plat->tx_ch_in_use[1] = TC956X_DISABLE_CHNL;
@@ -15738,7 +15738,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #endif /* TC956X_SRIOV_PF */
 
 #if defined(TC956X_SRIOV_PF) && defined(TC956X_SRIOV_LOCK)
-	dev_info(priv->device, "Locks enabled for shared resources\n");
+	dev_dbg(priv->device, "Locks enabled for shared resources\n");
 	spin_lock_init(&priv->spn_lock.mac_filter);
 	spin_lock_init(&priv->spn_lock.vlan_filter);
 	spin_lock_init(&priv->spn_lock.est);
@@ -15809,7 +15809,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #else
 	ret = of_get_mac_address_nvmem(priv->device->of_node, dev_addr[priv->probe_seq_no]);
 	if (ret == -EPROBE_DEFER) {
-		dev_info(priv->device, "Deferring probe for MAC address from NVMEM\n");
+		dev_dbg(priv->device, "Deferring probe for MAC address from NVMEM\n");
 		return ret;
 	} else if (ret) {
 		/* To be enabled for config.ini parsing */
@@ -15821,7 +15821,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #ifndef TC956X_SRIOV_VF
 	res->mac = &dev_addr[priv->probe_seq_no][0];
 
-	NMSGPR_INFO(device, "MAC Address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+	NDBGPR_L1(device, "MAC Address: %02x:%02x:%02x:%02x:%02x:%02x\n",
 		dev_addr[priv->probe_seq_no][0], dev_addr[priv->probe_seq_no][1],
 		dev_addr[priv->probe_seq_no][2], dev_addr[priv->probe_seq_no][3],
 		dev_addr[priv->probe_seq_no][4], dev_addr[priv->probe_seq_no][5]);
@@ -15829,7 +15829,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 #elif (defined TC956X_SRIOV_VF)
 
 	res->mac = &dev_addr[priv->port_num][priv->plat->vf_id][0];
-	NMSGPR_INFO(device, "MAC Address: %02x:%02x:%02x:%02x:%02x:%02x\n",
+	NDBGPR_L1(device, "MAC Address: %02x:%02x:%02x:%02x:%02x:%02x\n",
 		dev_addr[priv->port_num][priv->plat->vf_id][0], dev_addr[priv->port_num][priv->plat->vf_id][1],
 		dev_addr[priv->port_num][priv->plat->vf_id][2], dev_addr[priv->port_num][priv->plat->vf_id][3],
 		dev_addr[priv->port_num][priv->plat->vf_id][4], dev_addr[priv->port_num][priv->plat->vf_id][5]);
@@ -15951,7 +15951,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 		 * enable/disable
 		 */
 		priv->pf_drv_cap.tso_en = true;
-		dev_info(priv->device, "TSO feature enabled\n");
+		dev_dbg(priv->device, "TSO feature enabled\n");
 	} else {
 		priv->tso = false;
 		/* Update driver cap to let VF know about feature
@@ -15964,14 +15964,14 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 	if (priv->dma_cap.sphen && priv->plat->sph_en) {
 		ndev->hw_features |= NETIF_F_GRO;
 		priv->sph = true;
-		dev_info(priv->device, "SPH feature enabled\n");
+		dev_dbg(priv->device, "SPH feature enabled\n");
 	}
 
 	if (priv->dma_cap.addr64) {
 		ret = dma_set_mask_and_coherent(device,
 				DMA_BIT_MASK(priv->dma_cap.addr64));
 		if (!ret) {
-			dev_info(priv->device, "Using %d bits DMA width\n",
+			dev_dbg(priv->device, "Using %d bits DMA width\n",
 				 priv->dma_cap.addr64);
 		} else {
 			ret = dma_set_mask_and_coherent(device,
@@ -16006,7 +16006,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 
 	/* Get PF driver capabilities */
 	tc956x_get_drv_cap(priv, priv);
-	KPRINT_DEBUG1("priv->pf_drv_cap.jumbo_en = %d\n", priv->pf_drv_cap.jumbo_en);
+	KPRINT_DEBUG2("priv->pf_drv_cap.jumbo_en = %d\n", priv->pf_drv_cap.jumbo_en);
 
 	/* These features will be modified based on PF configuration and mailbox
 	 * request from PF
@@ -16030,7 +16030,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 				ndev->features |= NETIF_F_GSO_UDP_L4;
 			}
 			priv->tso = true;
-			dev_info(priv->device, "TSO feature enabled\n");
+			dev_dbg(priv->device, "TSO feature enabled\n");
 		} else {
 			priv->tso = false;
 		}
@@ -16121,7 +16121,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 			 "%s: warning: maxmtu having invalid value (%d)\n",
 			 __func__, priv->plat->maxmtu);
 
-	netdev_dbg(priv->dev, "%s: MAX MTU size = %d", __func__, ndev->max_mtu);
+	NDBGPR_L2(priv->device, "%s: MAX MTU size = %d", __func__, ndev->max_mtu);
 
 	if (flow_ctrl)
 		priv->flow_ctrl = FLOW_AUTO;/* RX/TX pause on */
@@ -16285,7 +16285,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 			if (ret < 0) {
 				/* tc956xmac_mdio_register() will return -ENODEV when No PHY is found */
 				if (ret == -ENODEV) {
-					dev_info(priv->device, "Port%d Bus id %x will not be registered as ethernet controller", priv->port_num, priv->plat->bus_id);
+					dev_dbg(priv->device, "Port%d Bus id %x will not be registered as ethernet controller", priv->port_num, priv->plat->bus_id);
 					goto error_mdio_register;
 				} else {
 					dev_err(priv->device,
@@ -16295,7 +16295,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 				}
 			}
 		} else {
-			dev_info(priv->device, "Port%d Bus id %x is selected for without MDIO/PHY configuration, continue to register for ethernet interface without PHY/MDIO", priv->port_num, priv->plat->bus_id);
+			dev_dbg(priv->device, "Port%d Bus id %x is selected for without MDIO/PHY configuration, continue to register for ethernet interface without PHY/MDIO", priv->port_num, priv->plat->bus_id);
 		}
 	}
 
@@ -16327,7 +16327,7 @@ int tc956xmac_vf_dvr_probe(struct device *device,
 	if (priv->pbridge_buffaddr == NULL)
 		ret = -ENOSPC;
 #endif
-	NMSGPR_INFO(priv->device, "<--%s\n", __func__);
+	NDBGPR_L1(priv->device, "<--%s\n", __func__);
 
 	return ret;
 
@@ -16378,14 +16378,14 @@ error_mdio_register:
 	}
 	nrst_val = readl(nrst_reg);
 	nclk_val = readl(nclk_reg);
-	KPRINT_INFO("%s : Port %d interface %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, ndev->name,
+	KPRINT_DEBUG1("%s : Port %d interface %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, ndev->name,
 		nrst_val, nclk_val);
 	/* Assert reset and Disable Clock for EMAC */
 	nrst_val = nrst_val | NRSTCTRL_EMAC_MASK;
 	nclk_val = nclk_val & ~NCLKCTRL_EMAC_MASK;
 	writel(nrst_val, nrst_reg);
 	writel(nclk_val, nclk_reg);
-	KPRINT_INFO("%s : Port %d interface %s Wr RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, ndev->name,
+	KPRINT_DEBUG1("%s : Port %d interface %s Wr RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, ndev->name,
 		readl(nrst_reg), readl(nclk_reg));
 error_hw_init:
 #ifndef TC956X
@@ -16394,7 +16394,7 @@ error_hw_init:
 #if (defined(TC956X_SRIOV_PF) && !defined(TC956X_AUTOMOTIVE_CONFIG) && !defined(TC956X_ENABLE_MAC2MAC_BRIDGE) && !defined(TC956X_CPE_CONFIG)) | defined(TC956X_SRIOV_VF)
 	destroy_workqueue(priv->mbx_wq);
 #endif
-	NMSGPR_INFO(priv->device, "<--Err %s\n", __func__);
+	NDBGPR_L1(priv->device, "<--Err %s\n", __func__);
 
 	return ret;
 }
@@ -16426,7 +16426,7 @@ int tc956xmac_vf_dvr_remove(struct device *dev)
 		phydev = mdiobus_get_phy(priv->mii, addr);
 
 #endif
-	netdev_info(priv->dev, "%s: removing driver", __func__);
+	netdev_dbg(priv->dev, "%s: removing driver", __func__);
 
 #ifdef TC956X_SRIOV_VF
 	tc956xmac_vf_reset(priv, VF_DOWN);
@@ -16530,7 +16530,7 @@ int tc956xmac_vf_suspend(struct device *dev)
 	struct phy_device *phydev = NULL; /* For cancelling Work queue */
 	int addr = priv->plat->phy_addr;
 #endif
-	KPRINT_INFO("---> %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
+	KPRINT_DEBUG1("---> %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
 #ifndef TC956X_SRIOV_VF
 	if ((priv->plat->phy_addr != -1) && (priv->mii != NULL))
 		phydev = mdiobus_get_phy(priv->mii, addr);
@@ -16558,7 +16558,7 @@ int tc956xmac_vf_suspend(struct device *dev)
 		tc956xmac_disable_eee_mode(priv);
 
 	//if (priv->wolopts) {
-	//	KPRINT_INFO("%s : Port %d - Phy Speed Down", __func__, priv->port_num);
+	//	KPRINT_DEBUG1("%s : Port %d - Phy Speed Down", __func__, priv->port_num);
 	//	phy_speed_down(phydev, true);
 	//}
 #endif
@@ -16591,7 +16591,7 @@ clean_exit:
 	priv->speed = SPEED_UNKNOWN;
 	priv->oldduplex = DUPLEX_UNKNOWN;
 
-	KPRINT_INFO("<--- %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
+	KPRINT_DEBUG1("<--- %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
 	return 0;
 }
 #ifdef TC956X_SRIOV_PF
@@ -16670,7 +16670,7 @@ int tc956xmac_vf_resume(struct device *dev)
 	u32 nrst_val = 0, nclk_val = 0;
 #endif /* TC956X_SRIOV_VF */
 
-	KPRINT_INFO("---> %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
+	KPRINT_DEBUG1("---> %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
 #ifdef TC956X
 	memset(&res, 0, sizeof(res));
 #ifndef TC956X_SRIOV_VF
@@ -16688,7 +16688,7 @@ int tc956xmac_vf_resume(struct device *dev)
 	}
 
 	//if (priv->wolopts) {
-	//	KPRINT_INFO("%s : Port %d - Phy Speed Up", __func__, priv->port_num);
+	//	KPRINT_DEBUG1("%s : Port %d - Phy Speed Up", __func__, priv->port_num);
 	//	phy_speed_up(phydev);
 	//}
 #elif defined(TC956X_SRIOV_VF)
@@ -16737,18 +16737,18 @@ clean_exit:
 		}
 		nrst_val = readl(nrst_reg);
 		nclk_val = readl(nclk_reg);
-		KPRINT_INFO("%s : Port %d %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
+		KPRINT_DEBUG1("%s : Port %d %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
 			nrst_val, nclk_val);
 		/* Assert reset and Disable Clock for EMAC */
 		nrst_val = nrst_val | NRSTCTRL_EMAC_MASK;
 		nclk_val = nclk_val & ~NCLKCTRL_EMAC_MASK;
 		writel(nrst_val, nrst_reg);
 		writel(nclk_val, nclk_reg);
-		KPRINT_INFO("%s : Port %d %s Wr RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
+		KPRINT_DEBUG1("%s : Port %d %s Wr RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
 			readl(nrst_reg), readl(nclk_reg));
 	}
 #endif
-	KPRINT_INFO("<--- %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
+	KPRINT_DEBUG1("<--- %s : Port %d %s", __func__, priv->port_num, priv->dev->name);
 	return 0;
 }
 #ifdef TC956X_SRIOV_PF
@@ -16778,8 +16778,8 @@ void tc956xmac_link_change_set_power(struct stmmac_priv *priv, enum TC956X_PORT_
 	bool enable_en = true;
 
 	if (priv->plat->mac_power_save_at_link_down == ENABLE) {
-		NMSGPR_INFO(priv->device, "-->%s : Port %d %s", __func__, priv->port_num, priv->dev->name);
-		NMSGPR_INFO(priv->device, "Status of Power saving at Link down %d\n", priv->plat->mac_power_save_at_link_down);
+		NDBGPR_L1(priv->device, "-->%s : Port %d %s", __func__, priv->port_num, priv->dev->name);
+		NDBGPR_L1(priv->device, "Status of Power saving at Link down %d\n", priv->plat->mac_power_save_at_link_down);
 
 		/* Select register address by port */
 		if (priv->port_num == 0) {
@@ -16790,20 +16790,20 @@ void tc956xmac_link_change_set_power(struct stmmac_priv *priv, enum TC956X_PORT_
 			nclk_reg = priv->tc956x_SFR_pci_base_addr + NCLKCTRL1_OFFSET;
 		}
 		if (state == LINK_DOWN) {
-			NMSGPR_INFO(priv->device, "%s : Port %d %s Set Power for Link Down", __func__, priv->port_num, priv->dev->name);
+			NDBGPR_L1(priv->device, "%s : Port %d %s Set Power for Link Down", __func__, priv->port_num, priv->dev->name);
 			nrst_val = readl(nrst_reg);
 			nclk_val = readl(nclk_reg);
-			NMSGPR_INFO(priv->device, "%s : Port %d %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
+			NDBGPR_L1(priv->device, "%s : Port %d %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
 				nrst_val, nclk_val);
 			/* Save register values before Asserting reset and Clock Disable */
 			priv->pm_saved_linkdown_rst = ((~nrst_val) & NRSTCTRL_LINK_DOWN_SAVE); /* Save Non-Common De-Asserted Resets */
 			priv->pm_saved_linkdown_clk = (nclk_val & NCLKCTRL_LINK_DOWN_SAVE); /* Save Non-Common Enabled Clocks */
-			NMSGPR_INFO(priv->device, "%s : Port %d %s priv->pm_saved_linkdown_rst %x priv->pm_saved_linkdown_clk %x", __func__,
+			NDBGPR_L1(priv->device, "%s : Port %d %s priv->pm_saved_linkdown_rst %x priv->pm_saved_linkdown_clk %x", __func__,
 				priv->port_num, priv->dev->name, priv->pm_saved_linkdown_rst, priv->pm_saved_linkdown_clk);
 			/* Assert Reset and Disable Clock */
 			nrst_val = nrst_val | NRSTCTRL_LINK_DOWN;
 			nclk_val = nclk_val & ~NCLKCTRL_LINK_DOWN;
-			NMSGPR_INFO(priv->device, "%s : Port %d %s Wr RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
+			NDBGPR_L1(priv->device, "%s : Port %d %s Wr RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
 				nrst_val, nclk_val);
 			writel(nrst_val, nrst_reg);
 			writel(nclk_val, nclk_reg);
@@ -16814,50 +16814,50 @@ void tc956xmac_link_change_set_power(struct stmmac_priv *priv, enum TC956X_PORT_
 				commonclk_reg = priv->tc956x_SFR_pci_base_addr + NCLKCTRL0_OFFSET;
 				commonrst_val = readl(commonrst_reg);
 				commonclk_val = readl(commonclk_reg);
-				NMSGPR_INFO(priv->device, "%s : Port %d %s Common Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
+				NDBGPR_L1(priv->device, "%s : Port %d %s Common Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
 					commonrst_val, commonclk_val);
 				pm_saved_cmn_linkdown_rst = ((~commonrst_val) & NRSTCTRL_LINK_DOWN_CMN_SAVE); /* Save Common De-Asserted Resets */
 				pm_saved_cmn_linkdown_clk = commonclk_val & NCLKCTRL_LINK_DOWN_CMN_SAVE; /* Save Common Enabled Clocks */
-				NMSGPR_INFO(priv->device, "%s : Port %d %s pm_saved_cmn_linkdown_rst %x pm_saved_cmn_linkdown_clk %x", __func__,
+				NDBGPR_L1(priv->device, "%s : Port %d %s pm_saved_cmn_linkdown_rst %x pm_saved_cmn_linkdown_clk %x", __func__,
 					priv->port_num, priv->dev->name, pm_saved_cmn_linkdown_rst, pm_saved_cmn_linkdown_clk);
 			}
 			priv->port_link_down = true; /* Set per port flag to true */
 		} else if (state == LINK_UP) {
-			KPRINT_INFO("%s : Port %d %s Set Power for Link Up", __func__, priv->port_num, priv->dev->name);
+			KPRINT_DEBUG1("%s : Port %d %s Set Power for Link Up", __func__, priv->port_num, priv->dev->name);
 			if (tx956x_pci_shrd_mem[priv->pci_bd].eth_link_down_cnt == TC956X_ALL_MAC_PORT_LINK_DOWN) {
 				/* Restore Common register values */
-				NMSGPR_INFO(priv->device, "%s : Port %d %s pm_saved_cmn_linkdown_clk %x, pm_saved_cmn_linkdown_rst %x", __func__,
+				NDBGPR_L1(priv->device, "%s : Port %d %s pm_saved_cmn_linkdown_clk %x, pm_saved_cmn_linkdown_rst %x", __func__,
 					priv->port_num, priv->dev->name, pm_saved_cmn_linkdown_clk, pm_saved_cmn_linkdown_rst);
 				/* Enable Common Clock and De-Assert Common Resets */
 				commonclk_reg = priv->tc956x_SFR_pci_base_addr + NCLKCTRL0_OFFSET;
 				commonrst_reg = priv->tc956x_SFR_pci_base_addr + NRSTCTRL0_OFFSET;
 				commonclk_val = readl(commonclk_reg);
 				commonrst_val = readl(commonrst_reg);
-				NMSGPR_INFO(priv->device, "%s : Port %d %s Common Rd CLK Reg:%x, RST Reg:%x ", __func__, priv->port_num, priv->dev->name,
+				NDBGPR_L1(priv->device, "%s : Port %d %s Common Rd CLK Reg:%x, RST Reg:%x ", __func__, priv->port_num, priv->dev->name,
 					commonclk_val, commonrst_val);
 				/* Clear Common Clocks only when both port suspends */
 				commonclk_val = (commonclk_val | pm_saved_cmn_linkdown_clk); /* Enable Common Saved Clock */
 				commonrst_val = (commonrst_val & (~pm_saved_cmn_linkdown_rst)); /* De-assert Common Saved Reset */
 				writel(commonclk_val, commonclk_reg);
 				writel(commonrst_val, commonrst_reg);
-				NMSGPR_INFO(priv->device, "%s : Port %d %s Common Wr CLK Reg:%x, RST Reg:%x ", __func__, priv->port_num, priv->dev->name,
+				NDBGPR_L1(priv->device, "%s : Port %d %s Common Wr CLK Reg:%x, RST Reg:%x ", __func__, priv->port_num, priv->dev->name,
 					commonclk_val, commonrst_val);
-				NMSGPR_INFO(priv->device, "%s : Port %d %s Common Rd CLK Reg:%x, RST Reg:%x", __func__, priv->port_num, priv->dev->name,
+				NDBGPR_L1(priv->device, "%s : Port %d %s Common Rd CLK Reg:%x, RST Reg:%x", __func__, priv->port_num, priv->dev->name,
 					readl(commonclk_reg), readl(commonrst_reg));
 			}
 			/* Restore register values */
-			NMSGPR_INFO(priv->device, "%s : Port %d %s pm_saved_linkdown_clk %x, pm_saved_linkdown_rst %x", __func__,
+			NDBGPR_L1(priv->device, "%s : Port %d %s pm_saved_linkdown_clk %x, pm_saved_linkdown_rst %x", __func__,
 				priv->port_num, priv->dev->name, priv->pm_saved_linkdown_clk, priv->pm_saved_linkdown_rst);
 			nclk_val = readl(nclk_reg);
 			nrst_val = readl(nrst_reg);
-			NMSGPR_INFO(priv->device, "%s : Port %d %s Rd CLK Reg:%x, RST Reg:%x", __func__, priv->port_num, priv->dev->name,
+			NDBGPR_L1(priv->device, "%s : Port %d %s Rd CLK Reg:%x, RST Reg:%x", __func__, priv->port_num, priv->dev->name,
 				nrst_val, nclk_val);
 			/* Restore values same as before link down */
 			nclk_val = (nclk_val | priv->pm_saved_linkdown_clk); /* Enable Saved Clock */
 			nrst_val = (nrst_val & (~(priv->pm_saved_linkdown_rst))); /* De-assert Saved Reset */
 			writel(nclk_val, nclk_reg);
 			writel(nrst_val, nrst_reg);
-			NMSGPR_INFO(priv->device, "%s : Port %d %s Wr CLK Reg:%x, RST Reg:%x ", __func__, priv->port_num, priv->dev->name,
+			NDBGPR_L1(priv->device, "%s : Port %d %s Wr CLK Reg:%x, RST Reg:%x ", __func__, priv->port_num, priv->dev->name,
 				nclk_val, nrst_val);
 
 			tx956x_pci_shrd_mem[priv->pci_bd].eth_link_down_cnt--; /* Decrement Counter Only when this api called */
@@ -16866,7 +16866,7 @@ void tc956xmac_link_change_set_power(struct stmmac_priv *priv, enum TC956X_PORT_
 			/* Re-Init XPCS module as MACxPONRST is asserted during link-down */
 			ret = tc956x_xpcs_init(priv, priv->xpcsaddr);
 			if (ret < 0)
-				NMSGPR_INFO(priv->device, "XPCS initialization error\n");
+				NDBGPR_L1(priv->device, "XPCS initialization error\n");
 
 			/*C37 AN enable*/
 			if ((priv->plat->interface == PHY_INTERFACE_MODE_10GKR) ||
@@ -16886,12 +16886,12 @@ void tc956xmac_link_change_set_power(struct stmmac_priv *priv, enum TC956X_PORT_
 
 			tc956x_xpcs_ctrl_ane(priv, enable_en);
 		}
-		NMSGPR_INFO(priv->device, "%s : Port %d %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
+		NDBGPR_L1(priv->device, "%s : Port %d %s Rd RST Reg:%x, CLK Reg:%x", __func__, priv->port_num, priv->dev->name,
 			readl(nrst_reg), readl(nclk_reg));
-		NMSGPR_INFO(priv->device, "<--%s : Port %d %s", __func__, priv->port_num,  priv->dev->name);
+		NDBGPR_L1(priv->device, "<--%s : Port %d %s", __func__, priv->port_num,  priv->dev->name);
 	} else {
-		NMSGPR_INFO(priv->device, "-->%s : Port %d %s", __func__, priv->port_num, priv->dev->name);
-		NMSGPR_INFO(priv->device, "Status of Power saving at Link down %d\n", priv->plat->mac_power_save_at_link_down);
+		NDBGPR_L1(priv->device, "-->%s : Port %d %s", __func__, priv->port_num, priv->dev->name);
+		NDBGPR_L1(priv->device, "Status of Power saving at Link down %d\n", priv->plat->mac_power_save_at_link_down);
 	}
 
 }

@@ -84,7 +84,7 @@ static void tc956x_mbx_phy_link(struct stmmac_priv *priv)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return;
 	}
 
@@ -111,13 +111,13 @@ static void tc956x_mbx_phy_link(struct stmmac_priv *priv)
 			*/
 
 			if (ret > 0)
-				KPRINT_DEBUG1(
+				KPRINT_DEBUG2(
 					"mailbox write with ACK or NACK %d msgbuff %x %x\n",
 									ret, mbx[i-vf0][0], mbx[i-vf0][4]);
 			else
-				KPRINT_DEBUG1("mailbox write failed");
+				KPRINT_DEBUG2("mailbox write failed");
 		} else
-			KPRINT_DEBUG1("VF %d not up", i-vf0);
+			KPRINT_DEBUG2("VF %d not up", i-vf0);
 	}
 }
 
@@ -146,7 +146,7 @@ static int tc956x_mbx_rx_dma_ch_tlptr(struct stmmac_priv *priv, u32 ch, u8 vf)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return -EFAULT;
 	}
 
@@ -165,13 +165,13 @@ static int tc956x_mbx_rx_dma_ch_tlptr(struct stmmac_priv *priv, u32 ch, u8 vf)
 		 * by reading the mbx buffer for ACK opcode (0xFF)
 		 */
 		if (ret > 0)
-			KPRINT_DEBUG1(
+			KPRINT_DEBUG2(
 				"mailbox write with ACK or NACK %d msgbuff %x %x\n",
 								ret, mbx[0], mbx[4]);
 		else
-			KPRINT_DEBUG1("mailbox write failed");
+			KPRINT_DEBUG2("mailbox write failed");
 	} else
-		KPRINT_DEBUG1("VF %d is not UP", vf);
+		KPRINT_DEBUG2("VF %d is not UP", vf);
 
 	return ret;
 }
@@ -198,7 +198,7 @@ static int tc956x_mbx_set_dma_tx_mode(struct stmmac_priv *priv, u8 *mbx_buff, u8
 	int txfifosz;
 
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -245,7 +245,7 @@ static int tc956x_mbx_set_mtl_tx_queue_weight(struct stmmac_priv *priv, u8 *mbx_
 	u32 weight, traffic_class;
 
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -292,7 +292,7 @@ static int tc956x_mbx_config_cbs(struct stmmac_priv *priv,
 	unsigned long flags;
 #endif
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -372,7 +372,7 @@ static int tc956x_mbx_setup_cbs(struct stmmac_priv *priv,
 	struct tc_cbs_qopt_offload qopt;
 
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -419,7 +419,7 @@ static int tc956x_mbx_tx_queue_prio(struct stmmac_priv *priv,
 	u32 prio;
 
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -463,7 +463,7 @@ static int tc956x_mbx_vf_get_link_status(struct stmmac_priv *priv,
 					u8 *mbx_buff, u8 *ack_buff)
 {
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -509,7 +509,7 @@ static int tc956xmac_pf_ioctl_interface(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || mbx == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1000,7 +1000,7 @@ static int tc956xmac_pf_ethtool_interface(struct stmmac_priv *priv, struct net_d
 	unsigned long flags;
 
 	if (priv == NULL || mbx == NULL || netdev == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1061,7 +1061,7 @@ static int tc956xmac_pf_set_mac_filter(struct stmmac_priv *priv, struct net_devi
 #endif
 
 	if (priv == NULL || mbx_buff == NULL || dev == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1119,7 +1119,7 @@ static int tc956xmac_pf_del_mac_filter(struct stmmac_priv *priv, struct net_devi
 #endif
 
 	if (priv == NULL || mbx_buff == NULL || dev == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1172,7 +1172,7 @@ static int tc956xmac_pf_set_vlan_filter(struct stmmac_priv *priv, struct net_dev
 	unsigned long flags;
 #endif
 	if (priv == NULL || mbx_buff == NULL || dev == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1228,7 +1228,7 @@ static int tc956xmac_pf_del_vlan_filter(struct stmmac_priv *priv, struct net_dev
 #endif
 
 	if (priv == NULL || mbx_buff == NULL || dev == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1278,7 +1278,7 @@ static void tc956x_mbx_rx_crc(struct stmmac_priv *priv)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return;
 	}
 
@@ -1304,12 +1304,12 @@ static void tc956x_mbx_rx_crc(struct stmmac_priv *priv)
 		 */
 
 		if (ret > 0)
-			KPRINT_DEBUG1(
+			KPRINT_DEBUG2(
 			"mailbox write with ACK or NACK %d msgbuff %x %x", ret, mbx[i-vf0][0], mbx[i-vf0][4]);
 		else
-			KPRINT_DEBUG1("mailbox write failed");
+			KPRINT_DEBUG2("mailbox write failed");
 		} else
-			KPRINT_DEBUG1("VF %d not up", i-vf0);
+			KPRINT_DEBUG2("VF %d not up", i-vf0);
 	}
 }
 
@@ -1335,7 +1335,7 @@ static void tc956x_mbx_rx_csum(struct stmmac_priv *priv)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return;
 	}
 
@@ -1358,12 +1358,12 @@ static void tc956x_mbx_rx_csum(struct stmmac_priv *priv)
 		 * by reading the mbx buffer for ACK opcode (0xFE)
 		 */
 			if (ret > 0)
-				KPRINT_DEBUG1(
+				KPRINT_DEBUG2(
 				"mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[i-vf0][0], mbx[i-vf0][4]);
 			else
-				KPRINT_DEBUG1("mailbox write failed");
+				KPRINT_DEBUG2("mailbox write failed");
 		} else
-			KPRINT_DEBUG1("VF %d not up", i-vf0);
+			KPRINT_DEBUG2("VF %d not up", i-vf0);
 	}
 }
 
@@ -1384,7 +1384,7 @@ static void tc956x_mbx_rx_csum(struct stmmac_priv *priv)
 static int tc956x_mbx_get_drv_cap(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_buff)
 {
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1428,7 +1428,7 @@ static int tc956x_mbx_get_umac_addr(struct stmmac_priv *priv, u8 *mbx_buff, u8 *
 #endif
 
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1481,7 +1481,7 @@ static int tc956x_mbx_set_umac_addr(struct stmmac_priv *priv, u8 *mbx_buff, u8 *
 #endif
 
 	if (priv == NULL || mbx_buff == NULL || ack_buff == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1527,7 +1527,7 @@ static int tc956x_mbx_set_umac_addr(struct stmmac_priv *priv, u8 *mbx_buff, u8 *
 static int tc956x_mbx_reset_eee_mode(struct stmmac_priv *priv, u8 *mbx_buff, u8 *ack_msg)
 {
 	if (priv == NULL || mbx_buff == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1570,7 +1570,7 @@ static int tc956xmac_mbx_vf_reset(struct stmmac_priv *priv, u8 *mbx_buff,
 #endif
 
 	if (priv == NULL || mbx_buff == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG1("NULL pointer error\n");
+		KPRINT_DEBUG2("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1582,7 +1582,7 @@ static int tc956xmac_mbx_vf_reset(struct stmmac_priv *priv, u8 *mbx_buff,
 
 	if (mbx_buff[2] == VF_UP) {
 		priv->clear_to_send[vf-1] = VF_UP;
-		KPRINT_DEBUG1("P%d VF%d MBX State : UP\n", priv->port_num, vf-1);
+		KPRINT_DEBUG2("P%d VF%d MBX State : UP\n", priv->port_num, vf-1);
 	} else if (mbx_buff[2] == VF_DOWN) {
 		priv->clear_to_send[vf-1] = VF_DOWN;
 
@@ -1614,14 +1614,14 @@ static int tc956xmac_mbx_vf_reset(struct stmmac_priv *priv, u8 *mbx_buff,
 #if defined(TC956X_SRIOV_PF) && defined(TC956X_SRIOV_LOCK)
 		spin_unlock_irqrestore(&priv->spn_lock.vlan_filter, flags);
 #endif
-		KPRINT_DEBUG1("P%d VF%d MBX State : DOWN\n", priv->port_num, vf-1);
+		KPRINT_DEBUG2("P%d VF%d MBX State : DOWN\n", priv->port_num, vf-1);
 	} else if (mbx_buff[2] == VF_SUSPEND || mbx_buff[2] == VF_RELEASE) {
 		priv->clear_to_send[vf-1] = mbx_buff[2];
 
 		if (mbx_buff[2] == VF_SUSPEND)
-			KPRINT_DEBUG1("P%d VF%d MBX State : SUSPEND\n", priv->port_num, vf-1);
+			KPRINT_DEBUG2("P%d VF%d MBX State : SUSPEND\n", priv->port_num, vf-1);
 		else
-			KPRINT_DEBUG1("P%d VF%d MBX State : RELEASE\n", priv->port_num, vf-1);
+			KPRINT_DEBUG2("P%d VF%d MBX State : RELEASE\n", priv->port_num, vf-1);
 	}
 
 	ack_msg[0] = OPCODE_MBX_ACK_MSG;
@@ -1654,7 +1654,7 @@ static int tc956x_mbx_setup_etf(struct stmmac_priv *priv, u32 ch, u8 vf)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return -EFAULT;
 	}
 
@@ -1674,13 +1674,13 @@ static int tc956x_mbx_setup_etf(struct stmmac_priv *priv, u32 ch, u8 vf)
 		 * by reading the mbx buffer for ACK opcode (0xFF)
 		 */
 		if (ret > 0)
-			KPRINT_DEBUG1(
+			KPRINT_DEBUG2(
 				"mailbox write with ACK or NACK %d msgbuff %x %x\n",
 								ret, mbx[0], mbx[4]);
 		else
-			KPRINT_DEBUG1("mailbox write failed");
+			KPRINT_DEBUG2("mailbox write failed");
 	} else
-		KPRINT_DEBUG1("VF %d is not UP", vf);
+		KPRINT_DEBUG2("VF %d is not UP", vf);
 	return ret;
 }
 
@@ -1706,7 +1706,7 @@ static void tc956x_mbx_flr(struct stmmac_priv *priv)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return;
 	}
 
@@ -1727,12 +1727,12 @@ static void tc956x_mbx_flr(struct stmmac_priv *priv)
 			 */
 			if (ret > 0) {
 				priv->clear_to_send[i-vf0] = VF_DOWN;
-				KPRINT_DEBUG1(
+				KPRINT_DEBUG2(
 				"mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[i-vf0][0], mbx[i-vf0][4]);
 			} else
-				KPRINT_DEBUG1("mailbox write failed");
+				KPRINT_DEBUG2("mailbox write failed");
 		} else
-			KPRINT_DEBUG1("VF %d not up", i-vf0);
+			KPRINT_DEBUG2("VF %d not up", i-vf0);
 	}
 }
 
@@ -1759,7 +1759,7 @@ static int tc956x_mbx_rx_dma_err(struct stmmac_priv *priv, u8 vf)
 	enum mbx_msg_fns msg_dst;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG1("NULL pointer error");
+		KPRINT_DEBUG2("NULL pointer error");
 		return -EFAULT;
 	}
 
@@ -1776,13 +1776,13 @@ static int tc956x_mbx_rx_dma_err(struct stmmac_priv *priv, u8 vf)
 		 */
 
 		if (ret > 0)
-			KPRINT_DEBUG1(
+			KPRINT_DEBUG2(
 				"mailbox write with ACK or NACK %d msgbuff %x %x\n",
 								ret, mbx[0], mbx[4]);
 		else
-			KPRINT_DEBUG1("mailbox write failed\n");
+			KPRINT_DEBUG2("mailbox write failed\n");
 	} else
-		KPRINT_DEBUG1("VF %d is not UP", vf);
+		KPRINT_DEBUG2("VF %d is not UP", vf);
 
 	return ret;
 }

@@ -204,7 +204,7 @@ int tc956x_platform_probe(struct stmmac_priv *priv,
 	}
 
 	res->wol_irq = qpriv->wol_irq;
-	dev_info(priv->device, "QPS615 platform probing has finished successfully\n");
+	dev_dbg(priv->device, "QPS615 platform probing has finished successfully\n");
 
 	return 0;
 

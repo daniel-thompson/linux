@@ -335,7 +335,7 @@ static int __tc956xmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
 				(datareg == MII_AQR113C_PHY_GLBL_1G_REG_ADDR) &&
 				((dataval & MII_AQR113C_AN_EN_SGMII_MODE_MASK) == MII_AQR113C_AN_EN_SGMII_MODE_MASK))) {
 				priv->wol_config_enabled = true; /* Enable SGMII SERDES Flag */
-				KPRINT_INFO("%s Port %d %s: Changing flag priv->wol_config_enabled to %d\n", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
+				KPRINT_DEBUG1("%s Port %d %s: Changing flag priv->wol_config_enabled to %d\n", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 			}
 		} else if (((devtype == MII_AQR113C_PHY_GLOBAL_DEV) && /* Check for 1e.31b = 0x00 and 1e.31c = 0x00 */
 			(datareg == MII_AQR113C_PHY_GLBL_100M_REG_ADDR) &&
@@ -344,7 +344,7 @@ static int __tc956xmac_xgmac2_mdio_write(struct mii_bus *bus, int phyaddr,
 			(datareg == MII_AQR113C_PHY_GLBL_1G_REG_ADDR) &&
 			((dataval & MII_AQR113C_AN_EN_SGMII_MODE_MASK) == MII_AQR113C_AN_DIS_SGMII_DIS))) {
 			priv->wol_config_enabled = false; /* Disable SGMII SERDES Flag */
-			KPRINT_INFO("%s Port %d %s: Changing flag priv->wol_config_enabled to %d\n", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
+			KPRINT_DEBUG1("%s Port %d %s: Changing flag priv->wol_config_enabled to %d\n", __func__, priv->port_num, priv->dev->name, priv->wol_config_enabled);
 		}
 	}
 #endif

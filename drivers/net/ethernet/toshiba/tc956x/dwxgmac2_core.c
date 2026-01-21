@@ -165,10 +165,10 @@ static void dwxgmac2_core_init(struct stmmac_priv *priv,
 #ifdef TC956X_LPI_INTERRUPT
 	writel(XGMAC_INT_DEFAULT_EN, ioaddr + XGMAC_INT_EN);
 #endif
-	netdev_dbg(priv->dev, "%s: MAC TX Config = 0x%x", __func__,
+	NDBGPR_L2(priv->device, "%s: MAC TX Config = 0x%x", __func__,
 			readl(ioaddr + XGMAC_TX_CONFIG));
 
-	netdev_dbg(priv->dev, "%s: MAC RX Config = 0x%x", __func__,
+	NDBGPR_L2(priv->device, "%s: MAC RX Config = 0x%x", __func__,
 			readl(ioaddr + XGMAC_RX_CONFIG));
 }
 
@@ -247,7 +247,7 @@ static void dwxgmac2_rx_queue_enable(struct stmmac_priv *priv,
 		value |= 0x2 << XGMAC_RXQEN_SHIFT(queue);
 	writel(value, ioaddr + XGMAC_RXQ_CTRL0);
 
-	netdev_dbg(priv->dev, "%s: MAC RxQ%d Control = 0x%x", __func__,
+	NDBGPR_L2(priv->device, "%s: MAC RxQ%d Control = 0x%x", __func__,
 			queue, readl(ioaddr + XGMAC_RXQ_CTRL0));
 }
 
@@ -268,7 +268,7 @@ static void dwxgmac2_rx_queue_prio(struct stmmac_priv *priv,
 
 	writel(value, ioaddr + reg);
 
-	netdev_dbg(priv->dev, "%s: MAC RxQ%d Control = 0x%x", __func__,
+	NDBGPR_L2(priv->device, "%s: MAC RxQ%d Control = 0x%x", __func__,
 			queue, readl(ioaddr + reg));
 }
 
@@ -418,7 +418,7 @@ static void dwxgmac2_set_mtl_tx_queue_weight(struct stmmac_priv *priv,
 	value |= weight & XGMAC_MTL_TCx_QUANTUM_WEIGHT_ISCQW_MASK;
 	writel(value, ioaddr + XGMAC_MTL_TCx_QUANTUM_WEIGHT(tc));
 
-	netdev_dbg(priv->dev, "%s: MTL_TC%d weight = %d", __func__, tc, weight);
+	NDBGPR_L2(priv->device, "%s: MTL_TC%d weight = %d", __func__, tc, weight);
 }
 
 static void dwxgmac2_map_mtl_to_dma(struct stmmac_priv *priv,
@@ -448,7 +448,7 @@ static void dwxgmac2_map_mtl_to_dma(struct stmmac_priv *priv,
 
 	writel(value, ioaddr + reg);
 
-	netdev_dbg(priv->dev, "%s: MTLQ%d DMA mapping = 0x%x", __func__, queue,
+	NDBGPR_L2(priv->device, "%s: MTLQ%d DMA mapping = 0x%x", __func__, queue,
 			readl(ioaddr + reg));
 }
 
@@ -493,13 +493,13 @@ static void dwxgmac2_config_cbs(struct stmmac_priv *priv,
 	value |= XGMAC_CBS;
 	writel(value, ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(traffic_class));
 
-	netdev_dbg(priv->dev, "%s: MTL_TC%d Send Slope Register = 0x%x", __func__, traffic_class,
+	NDBGPR_L2(priv->device, "%s: MTL_TC%d Send Slope Register = 0x%x", __func__, traffic_class,
 			readl(ioaddr + XGMAC_MTL_TCx_SENDSLOPE(traffic_class)));
-	netdev_dbg(priv->dev, "%s: MTL_TC%d Idle Slope Register = 0x%x", __func__, traffic_class,
+	NDBGPR_L2(priv->device, "%s: MTL_TC%d Idle Slope Register = 0x%x", __func__, traffic_class,
 			readl(ioaddr + XGMAC_MTL_TCx_QUANTUM_WEIGHT(traffic_class)));
-	netdev_dbg(priv->dev, "%s: MTL_TC%d High Credit Register = 0x%x", __func__, traffic_class,
+	NDBGPR_L2(priv->device, "%s: MTL_TC%d High Credit Register = 0x%x", __func__, traffic_class,
 			readl(ioaddr + XGMAC_MTL_TCx_HICREDIT(traffic_class)));
-	netdev_dbg(priv->dev, "%s: MTL_TC%d Lo Credit Register = 0x%x", __func__, traffic_class,
+	NDBGPR_L2(priv->device, "%s: MTL_TC%d Lo Credit Register = 0x%x", __func__, traffic_class,
 			readl(ioaddr + XGMAC_MTL_TCx_LOCREDIT(traffic_class)));
 
 }
@@ -510,27 +510,27 @@ static void dwxgmac2_dump_regs(struct stmmac_priv *priv,
 	void __iomem *ioaddr = hw->pcsr;
 	int i, ch, tc, k;
 
-	KPRINT_DEBUG1("************************************EMAC Dump***********************************************");
+	KPRINT_DEBUG2("************************************EMAC Dump***********************************************");
 	for (i = ETH_CORE_DUMP_OFFSET1; i <= ETH_CORE_DUMP_OFFSET1_END; i++) {/*MAC reg*/
 		reg_space[i] = readl(ioaddr + MAC_OFFSET + (i * 4));
-		KPRINT_DEBUG1("%04x : %08x\n", i*4, reg_space[i]);
+		KPRINT_DEBUG2("%04x : %08x\n", i*4, reg_space[i]);
 	}
 
 	for (i = ETH_CORE_DUMP_OFFSET2; i <= ETH_CORE_DUMP_OFFSET2_END; i++) { /*MAC reg*/
 		reg_space[i] = readl(ioaddr + MAC_OFFSET + (i * 4));
-		KPRINT_DEBUG1("%04x : %08x\n", i*4, reg_space[i]);
+		KPRINT_DEBUG2("%04x : %08x\n", i*4, reg_space[i]);
 	}
 
 	for (i = ETH_CORE_DUMP_OFFSET3; i <= ETH_CORE_DUMP_OFFSET3_END; i++) {/*MTL reg*/
 		reg_space[i] = readl(ioaddr + MAC_OFFSET + (i * 4));
-		KPRINT_DEBUG1("%04x : %08x\n", i*4, reg_space[i]);
+		KPRINT_DEBUG2("%04x : %08x\n", i*4, reg_space[i]);
 	}
 
 	for (i = ETH_CORE_DUMP_OFFSET4; i <= ETH_CORE_DUMP_OFFSET4_END; i++) {/*MTL TX reg*/
 		for (ch = 0; ch < 8; ch++) {
 			k = i + (0x20 * ch);
 			reg_space[k] = readl(ioaddr + MAC_OFFSET + ((0x0080 * ch) + (i * 4)));
-			KPRINT_DEBUG1("%04x : %08x\n", (0x0080 * ch) + (i * 4), reg_space[k]);
+			KPRINT_DEBUG2("%04x : %08x\n", (0x0080 * ch) + (i * 4), reg_space[k]);
 		}
 	}
 
@@ -538,7 +538,7 @@ static void dwxgmac2_dump_regs(struct stmmac_priv *priv,
 		for (tc = 0; tc < 5; tc++) {
 			k = i + (0x20 * tc);
 			reg_space[k] = readl(ioaddr + MAC_OFFSET + ((0x0080 * tc) + (i * 4)));
-			KPRINT_DEBUG1("%04x : %08x\n", (0x0080 * tc) + (i * 4), reg_space[k]);
+			KPRINT_DEBUG2("%04x : %08x\n", (0x0080 * tc) + (i * 4), reg_space[k]);
 		}
 	}
 
@@ -546,7 +546,7 @@ static void dwxgmac2_dump_regs(struct stmmac_priv *priv,
 		for (ch = 0; ch < 8; ch++) {
 			k = i + (0x20 * ch);
 			reg_space[k] = readl(ioaddr + MAC_OFFSET + (0x0080*ch) + (i * 4));
-			KPRINT_DEBUG1("%04x : %08x\n", (0x0080 * ch) + (i * 4), reg_space[k]);
+			KPRINT_DEBUG2("%04x : %08x\n", (0x0080 * ch) + (i * 4), reg_space[k]);
 		}
 	}
 }
@@ -574,48 +574,48 @@ static int dwxgmac2_host_irq_status(struct stmmac_priv *priv,
 		u32 lpi = readl(ioaddr + XGMAC_LPI_CTRL);
 
 		if (lpi & XGMAC_TLPIEN) {
-			KPRINT_INFO("Transmit LPI Entry.....\n");
+			KPRINT_DEBUG1("Transmit LPI Entry.....\n");
 			ret |= CORE_IRQ_TX_PATH_IN_LPI_MODE;
 			x->irq_tx_path_in_lpi_mode_n++;
 		}
 		if (lpi & XGMAC_TLPIEX) {
-			KPRINT_INFO("Transmit LPI Exit.....\n");
+			KPRINT_DEBUG1("Transmit LPI Exit.....\n");
 			ret |= CORE_IRQ_TX_PATH_EXIT_LPI_MODE;
 			x->irq_tx_path_exit_lpi_mode_n++;
 		}
 		if (lpi & XGMAC_RLPIEN) {
-			KPRINT_INFO("Receive LPI Entry.......\n");
+			KPRINT_DEBUG1("Receive LPI Entry.......\n");
 			x->irq_rx_path_in_lpi_mode_n++;
 		}
 		if (lpi & XGMAC_RLPIEX) {
-			KPRINT_INFO("Receive LPI Exit......\n");
+			KPRINT_DEBUG1("Receive LPI Exit......\n");
 			x->irq_rx_path_exit_lpi_mode_n++;
 		}
 
 #ifdef EEE
 		val = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_VR_XS_PCS_DIG_STS);
-		KPRINT_INFO("XPCS LPI status : %x........\n", val);
+		KPRINT_DEBUG1("XPCS LPI status : %x........\n", val);
 		if (val & XGMAC_LTX_LRX_STATE) {
 			if (val & XGMAC_LPI_RECEIVE_STATE)
-				KPRINT_INFO("XPCS LPI Receive State.........\n");
+				KPRINT_DEBUG1("XPCS LPI Receive State.........\n");
 			if (val & XGMAC_LPI_TRANSMIT_STATE)
-				KPRINT_INFO("XPCS LPI transmit state.....\n");
+				KPRINT_DEBUG1("XPCS LPI transmit state.....\n");
 		}
 
 		val = tc956x_xpcs_read(priv->xpcsaddr, XGMAC_SR_XS_PCS_STS1);
 		if (val & XGMAC_RX_LPI_RECEIVE)
-			KPRINT_INFO("XPCS RX LPI Received......");
+			KPRINT_DEBUG1("XPCS RX LPI Received......");
 		if (val & XGAMC_TX_LPI_RECEIVE)
-			KPRINT_INFO("XPCS TX LPI Received......");
+			KPRINT_DEBUG1("XPCS TX LPI Received......");
 #endif
 	}
 #if LINUX_VERSION_CODE < KERNEL_VERSION(5, 13, 0)
 	if (stat & XGMAC_TSIS) {
 		val = readl(ioaddr + PTP_XGMAC_OFFSET + PTP_TS_STATUS);
 		if (val & XGMAC_AUXTSTRIG) {
-			KPRINT_INFO("\n");
-			KPRINT_INFO("second: %x\n",	readl(ioaddr + PTP_XGMAC_OFFSET + PTP_ATS_SEC));
-			KPRINT_INFO("subsec(ns): %x\n", readl(ioaddr + PTP_XGMAC_OFFSET + PTP_ATS_NSEC));
+			KPRINT_DEBUG1("\n");
+			KPRINT_DEBUG1("second: %x\n",	readl(ioaddr + PTP_XGMAC_OFFSET + PTP_ATS_SEC));
+			KPRINT_DEBUG1("subsec(ns): %x\n", readl(ioaddr + PTP_XGMAC_OFFSET + PTP_ATS_NSEC));
 		}
 	}
 #endif
@@ -769,7 +769,7 @@ static void dwxgmac2_set_eee_pls(struct stmmac_priv *priv,
 	else
 		value &= ~XGMAC_PLS;
 	writel(value, ioaddr + XGMAC_LPI_CTRL);
-	KPRINT_DEBUG1("LPI Control status register PLS bit: 0x%X\n", ((value & 0x20000) >> 17));
+	KPRINT_DEBUG2("LPI Control status register PLS bit: 0x%X\n", ((value & 0x20000) >> 17));
 }
 
 static void dwxgmac2_set_eee_timer(struct stmmac_priv *priv,
@@ -908,7 +908,7 @@ void tc956x_filter_debug(struct stmmac_priv *priv)
 			netdev_err(priv->dev, "Setting XDCS Failed\n");
 			return;
 		}
-		KPRINT_INFO("%d %08x %08x %01x\n", offset, readl(ioaddr + XGMAC_ADDRx_HIGH(offset)), readl(ioaddr + XGMAC_ADDRx_LOW(offset)), reg_data);
+		KPRINT_DEBUG1("%d %08x %08x %01x\n", offset, readl(ioaddr + XGMAC_ADDRx_HIGH(offset)), readl(ioaddr + XGMAC_ADDRx_LOW(offset)), reg_data);
 	}
 }
 #endif
@@ -1190,7 +1190,7 @@ static int tc956x_mac_duplication(struct stmmac_priv *priv,
 		if (mac_table->status == TC956X_MAC_STATE_OCCUPIED) {
 			if (ether_addr_equal(mac, mac_table->mac_address)) {
 				if (is_unicast_ether_addr(mac)) {
-					KPRINT_DEBUG1("%pM mac is unicast address and it cannot be duplicated\n", mac);
+					KPRINT_DEBUG2("%pM mac is unicast address and it cannot be duplicated\n", mac);
 					return -1;
 				}
 				for (vf_no = 0; vf_no < 4; vf_no++) {
@@ -1206,7 +1206,7 @@ static int tc956x_mac_duplication(struct stmmac_priv *priv,
 					 *than add vf no, in free index
 					 *of vf[]
 					 */
-					KPRINT_DEBUG1(KERN_DEBUG "%d offset %pM mac duplication\n", i, mac);
+					KPRINT_DEBUG2(KERN_DEBUG "%d offset %pM mac duplication\n", i, mac);
 					mac_table->vf[free_index] = vf;
 					mac_table->counter++;
 #ifdef TC956X_ENABLE_MAC2MAC_BRIDGE
@@ -2358,7 +2358,7 @@ static int dwxgmac2_rx_parser_init(struct stmmac_priv *priv,
 	/* Restore RX to previous state */
 	writel(old_value, ioaddr + XGMAC_RX_CONFIG);
 
-	netdev_info(ndev, "Enabling RX Parser\n");
+	netdev_dbg(ndev, "Enabling RX Parser\n");
 	return 0;
 }
 static int dwxgmac3_rxp_config(struct stmmac_priv *priv, void __iomem *ioaddr,
@@ -3018,18 +3018,18 @@ static int dwxgmac3_est_configure(struct stmmac_priv *priv,
 	if (ret)
 		return ret;
 
-	netdev_dbg(priv->dev, "%s: EST BTR Low = 0x%x", __func__, cfg->btr[0]);
-	netdev_dbg(priv->dev, "%s: EST BTR High = 0x%x", __func__, cfg->btr[1]);
-	netdev_dbg(priv->dev, "%s: EST TER = 0x%x", __func__, cfg->ter);
-	netdev_dbg(priv->dev, "%s: EST LLR = 0x%x", __func__, cfg->gcl_size);
-	netdev_dbg(priv->dev, "%s: EST CTR Low = 0x%x", __func__, cfg->ctr[0]);
-	netdev_dbg(priv->dev, "%s: EST CTR High = 0x%x", __func__, cfg->ctr[1]);
+	NDBGPR_L2(priv->device, "%s: EST BTR Low = 0x%x", __func__, cfg->btr[0]);
+	NDBGPR_L2(priv->device, "%s: EST BTR High = 0x%x", __func__, cfg->btr[1]);
+	NDBGPR_L2(priv->device, "%s: EST TER = 0x%x", __func__, cfg->ter);
+	NDBGPR_L2(priv->device, "%s: EST LLR = 0x%x", __func__, cfg->gcl_size);
+	NDBGPR_L2(priv->device, "%s: EST CTR Low = 0x%x", __func__, cfg->ctr[0]);
+	NDBGPR_L2(priv->device, "%s: EST CTR High = 0x%x", __func__, cfg->ctr[1]);
 
 	for (i = 0; i < cfg->gcl_size; i++) {
 		ret = dwxgmac3_est_write(priv, ioaddr, i, cfg->gcl[i], true);
 		if (ret)
 			return ret;
-		netdev_dbg(priv->dev, "%s: EST GCL[%d] = 0x%x", __func__, i, cfg->gcl[i]);
+		NDBGPR_L2(priv->device, "%s: EST GCL[%d] = 0x%x", __func__, i, cfg->gcl[i]);
 	}
 
 #if defined(TX_LOGGING_TRACE) /* Log the actual time of BTR to be used for comparision */
@@ -3163,14 +3163,14 @@ static void tc956x_enable_jumbo_frm(struct stmmac_priv *priv,
 	if (en) {
 
 		value_tx |= XGMAC_CONFIG_JD;
-		netdev_dbg(priv->dev, "%s: Jumbo frame enabled with size = %d",
+		NDBGPR_L2(priv->device, "%s: Jumbo frame enabled with size = %d",
 			__func__, dev->mtu);
 	} else {
 
 		value_tx &= ~XGMAC_CONFIG_JD;
 		value_rx &= ~XGMAC_CONFIG_JE;
 
-		netdev_dbg(priv->dev, "%s: Jumbo frame disabled with size = %d",
+		NDBGPR_L2(priv->device, "%s: Jumbo frame disabled with size = %d",
 			__func__, dev->mtu);
 	}
 

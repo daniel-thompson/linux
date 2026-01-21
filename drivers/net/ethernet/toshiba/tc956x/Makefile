@@ -1,6 +1,10 @@
 ccflags-y += -DTC956X
 ccflags-y += -DCONFIG_TC956X_PLATFORM_SUPPORT
 
+ifdef CONFIG_TC956X_DEBUG
+ccflags-y += -DDEBUG
+endif
+
 ifdef CONFIG_TC965X_SPIOV_VF
 ccflags-y += -DTC956X_SRIOV_VF
 

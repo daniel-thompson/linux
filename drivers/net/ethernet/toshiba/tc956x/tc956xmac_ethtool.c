@@ -1852,7 +1852,7 @@ int phy_ethtool_get_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 
 	/* Get Supported EEE */
 	val = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
-	KPRINT_INFO("%s --- cap: 0x%x\n", __func__, val);
+	KPRINT_DEBUG1("%s --- cap: 0x%x\n", __func__, val);
 	if (val < 0)
 		return val;
 	data->supported = mmd_eee_cap_to_ethtool_sup_t(val);
@@ -1862,7 +1862,7 @@ int phy_ethtool_get_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 	if (val < 0)
 		return val;
 
-	KPRINT_INFO("%s --- adv: 0x%x\n", __func__, val);
+	KPRINT_DEBUG1("%s --- adv: 0x%x\n", __func__, val);
 
 	data->advertised = mmd_eee_adv_to_ethtool_adv_t(val);
 	data->eee_enabled = !!data->advertised;
@@ -1871,18 +1871,18 @@ int phy_ethtool_get_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 	val = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_LPABLE);
 	if (val < 0)
 		return val;
-	KPRINT_INFO("%s --- lp_adv: 0x%x\n", __func__, val);
+	KPRINT_DEBUG1("%s --- lp_adv: 0x%x\n", __func__, val);
 
 	data->lp_advertised = mmd_eee_adv_to_ethtool_adv_t(val);
 
-	KPRINT_INFO("%s --- data->advertised: 0x%x\n", __func__, data->advertised);
-	KPRINT_INFO("%s --- data->lp_advertised: 0x%x\n", __func__, data->lp_advertised);
+	KPRINT_DEBUG1("%s --- data->advertised: 0x%x\n", __func__, data->advertised);
+	KPRINT_DEBUG1("%s --- data->lp_advertised: 0x%x\n", __func__, data->lp_advertised);
 
 	data->eee_active = !!(data->advertised & data->lp_advertised);
 
 
-	KPRINT_INFO("%s --- data->eee_enabled: 0x%x\n", __func__, data->eee_enabled);
-	KPRINT_INFO("%s --- data->eee_active: 0x%x\n", __func__, data->eee_active);
+	KPRINT_DEBUG1("%s --- data->eee_enabled: 0x%x\n", __func__, data->eee_enabled);
+	KPRINT_DEBUG1("%s --- data->eee_active: 0x%x\n", __func__, data->eee_active);
 
 	return 0;
 }
@@ -1901,13 +1901,13 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 
 	/* Get Supported EEE */
 	cap = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE);
-	KPRINT_INFO("%s --- cap: 0x%x\n", __func__, cap);
+	KPRINT_DEBUG1("%s --- cap: 0x%x\n", __func__, cap);
 	if (cap < 0)
 		return cap;
 
 
 	old_adv = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
-	KPRINT_INFO("%s --- old_adv:0x%x\n", __func__, old_adv);
+	KPRINT_DEBUG1("%s --- old_adv:0x%x\n", __func__, old_adv);
 	if (old_adv < 0)
 		return old_adv;
 
@@ -1918,7 +1918,7 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 		/* Mask prohibited EEE modes */
 		adv &= ~phydev->eee_broken_modes;
 	}
-	KPRINT_INFO("%s --- adv:0x%x\n", __func__, adv);
+	KPRINT_DEBUG1("%s --- adv:0x%x\n", __func__, adv);
 
 	if (old_adv != adv) {
 		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV, adv);
@@ -1926,7 +1926,7 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 			return ret;
 
 		ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV);
-		KPRINT_INFO("%s --- readback adv:0x%x\n", __func__, ret);
+		KPRINT_DEBUG1("%s --- readback adv:0x%x\n", __func__, ret);
 		if (ret < 0)
 			return ret;
 
@@ -1942,12 +1942,12 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 	}
 #ifdef TC956X_5_G_2_5_G_EEE_SUPPORT
 	cap2p5 = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE2);
-	KPRINT_INFO("%s --- cap2p5: 0x%x\n", __func__, cap2p5);
+	KPRINT_DEBUG1("%s --- cap2p5: 0x%x\n", __func__, cap2p5);
 	if (cap < 0)
 		return cap;
 
 	old_adv_2p5 = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV2);
-	KPRINT_INFO("%s --- old_adv_2p5:0x%x\n", __func__, old_adv_2p5);
+	KPRINT_DEBUG1("%s --- old_adv_2p5:0x%x\n", __func__, old_adv_2p5);
 	if (old_adv_2p5 < 0)
 		return old_adv_2p5;
 
@@ -1957,7 +1957,7 @@ int phy_ethtool_set_eee_local(struct phy_device *phydev, struct ethtool_eee *dat
 		/* Mask prohibited EEE modes */
 		adv_2p5 &= ~phydev->eee_broken_modes;
 	}
-	KPRINT_INFO("%s --- adv_2p5:0x%x\n", __func__, adv_2p5);
+	KPRINT_DEBUG1("%s --- adv_2p5:0x%x\n", __func__, adv_2p5);
 
 	if (old_adv_2p5 != adv_2p5) {
 		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV2, adv_2p5);
@@ -2019,12 +2019,12 @@ int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_eee *data)
 		return -EIO;
 
 	cap2p5 = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_EEE_ABLE2);
-	KPRINT_INFO("%s --- cap2p5: 0x%x\n", __func__, cap2p5);
+	KPRINT_DEBUG1("%s --- cap2p5: 0x%x\n", __func__, cap2p5);
 	if (cap2p5 < 0)
 		return cap2p5;
 
 	old_adv_2p5 = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV2);
-	KPRINT_INFO("%s --- old_adv_2p5:0x%x\n", __func__, old_adv_2p5);
+	KPRINT_DEBUG1("%s --- old_adv_2p5:0x%x\n", __func__, old_adv_2p5);
 	if (old_adv_2p5 < 0)
 		return old_adv_2p5;
 	/* EEE advertise checking API corrected for 2.5G and 5G speeds. */
@@ -2051,7 +2051,7 @@ int phy_ethtool_set_eee_2p5(struct phy_device *phydev, struct ethtool_eee *data)
 		adv_2p5 &= ~phydev->eee_broken_modes;
 #endif
 	}
-	KPRINT_INFO("%s --- adv_2p5:0x%x\n", __func__, adv_2p5);
+	KPRINT_DEBUG1("%s --- adv_2p5:0x%x\n", __func__, adv_2p5);
 
 	if (old_adv_2p5 != adv_2p5) {
 		ret = phy_write_mmd(phydev, MDIO_MMD_AN, MDIO_AN_EEE_ADV2, adv_2p5);
@@ -2397,7 +2397,7 @@ static int tc956xmac_set_coalesce(struct net_device *dev,
 		rx_riwt = tc956xmac_usec2riwt(ec->rx_coalesce_usecs, priv);
 
 		if ((rx_riwt > MAX_DMA_RIWT) || (rx_riwt < MIN_DMA_RIWT)) {
-			KPRINT_DEBUG1("Invalid rx_usecs value 0x%X\n", ec->rx_coalesce_usecs);
+			KPRINT_DEBUG2("Invalid rx_usecs value 0x%X\n", ec->rx_coalesce_usecs);
 			return -EINVAL;
 		}
 
@@ -2406,7 +2406,7 @@ static int tc956xmac_set_coalesce(struct net_device *dev,
 	}
 
 	if (ec->rx_max_coalesced_frames > TC956XMAC_RX_MAX_FRAMES) {
-		KPRINT_DEBUG1("Invalid rx_frames value 0x%X\n", ec->rx_max_coalesced_frames);
+		KPRINT_DEBUG2("Invalid rx_frames value 0x%X\n", ec->rx_max_coalesced_frames);
 		return -EINVAL;
 	}
 
@@ -2600,7 +2600,7 @@ static int tc956x_set_priv_flag(struct net_device *dev, u32 priv_flag)
 		priv->tx_crc_pad_state = TC956X_TX_CRC_PAD_INSERT;
 	else
 		priv->tx_crc_pad_state = TC956X_TX_CRC_PAD_DISABLE;
-	KPRINT_INFO("tx_crc_pad_state : %x", priv->tx_crc_pad_state);
+	KPRINT_DEBUG1("tx_crc_pad_state : %x", priv->tx_crc_pad_state);
 
 	return 0;
 }
@@ -2614,7 +2614,7 @@ static u32 tc956x_get_priv_flag(struct net_device *dev)
 		ret = 1;
 	else
 		ret = 0;
-	KPRINT_INFO("tx_crc_pad_state : %x", priv->tx_crc_pad_state);
+	KPRINT_DEBUG1("tx_crc_pad_state : %x", priv->tx_crc_pad_state);
 	return ret;
 }
 

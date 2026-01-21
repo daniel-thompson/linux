@@ -229,15 +229,15 @@ static void dwxgmac2_dma_dump_regs(struct stmmac_priv *priv,
 
 	for (i = ETH_DMA_DUMP_OFFSET1; i <= ETH_DMA_DUMP_OFFSET1_END; i++) {
 		reg_space[i] = readl(ioaddr + MAC_OFFSET + (4 * i));
-		KPRINT_DEBUG1("%04x : %08x\n", i*4, reg_space[i]);
+		KPRINT_DEBUG2("%04x : %08x\n", i*4, reg_space[i]);
 	}
 
 	for (i = ETH_DMA_DUMP_OFFSET2; i < XGMAC_REGSIZE; i++) {
 		reg_space[i] = readl(ioaddr + MAC_OFFSET + (4 * i));
-		KPRINT_DEBUG1("%04x : %08x\n", i*4, reg_space[i]);
+		KPRINT_DEBUG2("%04x : %08x\n", i*4, reg_space[i]);
 	}
 
-	KPRINT_DEBUG1("**********************************************************************************");
+	KPRINT_DEBUG2("**********************************************************************************");
 }
 
 /**
@@ -598,10 +598,10 @@ static void dwxgmac2_get_hw_feature(struct stmmac_priv *priv,
 	}
 
 	if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)) {
-		NMSGPR_INFO(priv->device, "64 bit platform\n");
+		NDBGPR_L1(priv->device, "64 bit platform\n");
 		dma_cap->addr64 = 36; /* XGMAC IP is configured to support till 40 bits but TC956X IP supports only 36bit width */
 	} else {
-		NMSGPR_INFO(priv->device, "32 bit platform\n");
+		NDBGPR_L1(priv->device, "32 bit platform\n");
 		dma_cap->addr64 = 32;
 	}
 

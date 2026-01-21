@@ -65,7 +65,7 @@ static void tc956xmac_mbx_dma_tx_mode(struct stmmac_priv *priv, int mode,
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -84,10 +84,10 @@ static void tc956xmac_mbx_dma_tx_mode(struct stmmac_priv *priv, int mode,
 	 */
 
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
 								mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -115,7 +115,7 @@ static void tc956xmac_mbx_set_mtl_tx_queue_weight(struct stmmac_priv *priv,
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -132,10 +132,10 @@ static void tc956xmac_mbx_set_mtl_tx_queue_weight(struct stmmac_priv *priv,
 	 */
 
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
 								mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -167,7 +167,7 @@ static void tc956xmac_mbx_config_cbs(struct stmmac_priv *priv,
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -186,10 +186,10 @@ static void tc956xmac_mbx_config_cbs(struct stmmac_priv *priv,
 	 */
 
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
 								mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -217,7 +217,7 @@ static void tc956xmac_mbx_tx_queue_prio(struct stmmac_priv *priv,
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -234,10 +234,10 @@ static void tc956xmac_mbx_tx_queue_prio(struct stmmac_priv *priv,
 	 */
 
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 								ret, mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -266,7 +266,7 @@ static void tc956xmac_mbx_get_link_status(struct stmmac_priv *priv,
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || link_status == NULL || speed == NULL || duplex == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -290,9 +290,9 @@ static void tc956xmac_mbx_get_link_status(struct stmmac_priv *priv,
 				memcpy(duplex, &mbx[14], 4);
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 	}
 }
 
@@ -318,7 +318,7 @@ static void tc956xmac_mbx_get_umac_addr(struct stmmac_priv *priv,
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || addr == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -333,10 +333,10 @@ static void tc956xmac_mbx_get_umac_addr(struct stmmac_priv *priv,
 				memcpy(addr, &mbx[6], SIZE_MBX_VF_MAC);
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n"
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n"
 					, ret, mbx[0], mbx[4]);
 	} else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -360,7 +360,7 @@ static int tc956xmac_mbx_set_umac_addr(struct stmmac_priv *priv, unsigned char *
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || addr == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -372,10 +372,10 @@ static int tc956xmac_mbx_set_umac_addr(struct stmmac_priv *priv, unsigned char *
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0) {
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x, %x\n"
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x, %x\n"
 					, ret, mbx[0], mbx[4]);
 	} else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 
 	return ret;
 }
@@ -405,7 +405,7 @@ static int tc956xmac_vf_ioctl_reg_wr(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -424,10 +424,10 @@ static int tc956xmac_vf_ioctl_reg_wr(struct stmmac_priv *priv,
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return ret;
 	}
 
@@ -460,7 +460,7 @@ static int tc956xmac_vf_ioctl_get_connected_speed(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -482,9 +482,9 @@ static int tc956xmac_vf_ioctl_get_connected_speed(struct stmmac_priv *priv,
 			if ((mbx[4] == OPCODE_MBX_ACK_MSG) && (mbx[5] == sizeof(ioctl_data.connected_speed)))
 				memcpy(&ioctl_data.connected_speed, &mbx[6], sizeof(ioctl_data.connected_speed));
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return ret;
 	}
 
@@ -523,7 +523,7 @@ static int tc956xmac_vf_ioctl_set_cbs(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -580,10 +580,10 @@ static int tc956xmac_vf_ioctl_set_cbs(struct stmmac_priv *priv,
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0) {
 		ack |= 1 << seq++;
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	} else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 
 	mbx[0] = OPCODE_MBX_VF_IOCTL;
 	mbx[1] = SIZE_MBX_SET_GET_CBS_2;
@@ -594,10 +594,10 @@ static int tc956xmac_vf_ioctl_set_cbs(struct stmmac_priv *priv,
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0) {
 		ack |= 1 << seq;
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	} else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 
 	if (ack == 0x3) {
 		return 0;
@@ -636,7 +636,7 @@ static int tc956xmac_vf_ioctl_get_cbs(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -658,9 +658,9 @@ static int tc956xmac_vf_ioctl_get_cbs(struct stmmac_priv *priv,
 				memcpy(&mbx_loc[0], &mbx[6], SIZE_MBX_SET_GET_CBS_1);
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 
 	mbx[0] = OPCODE_MBX_VF_IOCTL;
 	mbx[1] = SIZE_MBX_VF_GET_CBS;
@@ -675,9 +675,9 @@ static int tc956xmac_vf_ioctl_get_cbs(struct stmmac_priv *priv,
 				memcpy(&mbx_loc[SIZE_MBX_SET_GET_CBS_1], &mbx[6], SIZE_MBX_SET_GET_CBS_2);
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 
 	if (ack == 0x3) {
 		memcpy(&cbs.speed100cfg.send_slope, &mbx_loc[0], sizeof(cbs.speed100cfg.send_slope));
@@ -749,7 +749,7 @@ static int tc956xmac_vf_ioctl_set_est(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -786,10 +786,10 @@ static int tc956xmac_vf_ioctl_set_est(struct stmmac_priv *priv,
 
 		ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 		if (ret > 0) {
-			KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+			KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 			ret, mbx[0], mbx[4]);
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 			goto out_free;
 		}
 
@@ -808,10 +808,10 @@ static int tc956xmac_vf_ioctl_set_est(struct stmmac_priv *priv,
 			memcpy(&mbx[3], &mbx_loc[offset * SIZE_MBX_SET_GET_EST_1], msg_size);
 			ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 			if (ret > 0) {
-				KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+				KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 				ret, mbx[0], mbx[4]);
 			} else {
-				KPRINT_DEBUG2("mailbox write failed");
+				KPRINT_DEBUG3("mailbox write failed");
 				goto out_free;
 			}
 
@@ -857,7 +857,7 @@ static int tc956xmac_vf_ioctl_get_est(struct stmmac_priv *priv,	void __user *dat
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -893,9 +893,9 @@ static int tc956xmac_vf_ioctl_get_est(struct stmmac_priv *priv,	void __user *dat
 					}
 				}
 			}
-			KPRINT_DEBUG2("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+			KPRINT_DEBUG3("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 			goto out_free;
 		}
 	} while (offset != total_msg_size);
@@ -938,7 +938,7 @@ static int tc956xmac_vf_ioctl_set_fpe(struct stmmac_priv *priv, void __user *dat
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -957,10 +957,10 @@ static int tc956xmac_vf_ioctl_set_fpe(struct stmmac_priv *priv, void __user *dat
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0) {
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	} else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return -EFAULT;
 	}
 
@@ -993,7 +993,7 @@ static int tc956xmac_vf_ioctl_get_fpe(struct stmmac_priv *priv, void __user *dat
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1012,9 +1012,9 @@ static int tc956xmac_vf_ioctl_get_fpe(struct stmmac_priv *priv, void __user *dat
 				memcpy(&fpe.HA_time, &mbx[22], sizeof(fpe.HA_time));
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return -EFAULT;
 	}
 
@@ -1051,7 +1051,7 @@ static int tc956xmac_vf_ioctl_set_rxp(struct stmmac_priv *priv, void __user *dat
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1091,10 +1091,10 @@ static int tc956xmac_vf_ioctl_set_rxp(struct stmmac_priv *priv, void __user *dat
 
 		ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 		if (ret > 0) {
-			KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+			KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 			ret, mbx[0], mbx[4]);
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 			goto out_free;
 		}
 
@@ -1111,10 +1111,10 @@ static int tc956xmac_vf_ioctl_set_rxp(struct stmmac_priv *priv, void __user *dat
 			memcpy(&mbx[3], &mbx_loc[offset * SIZE_MBX_SET_GET_RXP_1], msg_size);
 			ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 			if (ret > 0) {
-				KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+				KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 				ret, mbx[0], mbx[4]);
 			} else {
-				KPRINT_DEBUG2("mailbox write failed");
+				KPRINT_DEBUG3("mailbox write failed");
 				goto out_free;
 			}
 
@@ -1156,7 +1156,7 @@ static int tc956xmac_vf_ioctl_get_rxp(struct stmmac_priv *priv,	void __user *dat
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || data == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1193,9 +1193,9 @@ static int tc956xmac_vf_ioctl_get_rxp(struct stmmac_priv *priv,	void __user *dat
 					}
 				}
 			}
-			KPRINT_DEBUG2("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+			KPRINT_DEBUG3("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 		} else {
-			KPRINT_DEBUG2("mailbox write failed");
+			KPRINT_DEBUG3("mailbox write failed");
 			goto out_free;
 		}
 	} while (offset != total_msg_size);
@@ -1237,7 +1237,7 @@ static int tc956xmac_vf_ethtool_get_pauseparam(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || pause == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1261,13 +1261,13 @@ static int tc956xmac_vf_ethtool_get_pauseparam(struct stmmac_priv *priv,
 					}
 				}
 			} else {
-				KPRINT_DEBUG2("mailbox write failed");
+				KPRINT_DEBUG3("mailbox write failed");
 				return ret;
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d  msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return ret;
 	}
 
@@ -1297,7 +1297,7 @@ static int tc956xmac_vf_ethtool_get_eee(struct stmmac_priv *priv,
 	DBGPR_FUNC(priv->device, "-->%s\n", __func__);
 
 	if (priv == NULL || edata == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1313,9 +1313,9 @@ static int tc956xmac_vf_ethtool_get_eee(struct stmmac_priv *priv,
 				memcpy(edata, &mbx[6], sizeof(struct ethtool_eee));
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[0], mbx[4]);
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret, mbx[0], mbx[4]);
 	} else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return ret;
 	}
 
@@ -1346,7 +1346,7 @@ static int tc956xmac_vf_add_mac(struct stmmac_priv *priv, const u8 *mac)
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || mac == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1357,10 +1357,10 @@ static int tc956xmac_vf_add_mac(struct stmmac_priv *priv, const u8 *mac)
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return ret;
 	}
 
@@ -1391,7 +1391,7 @@ static void tc956xmac_vf_delete_mac(struct stmmac_priv *priv, const u8 *mac)
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || mac == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -1402,10 +1402,10 @@ static void tc956xmac_vf_delete_mac(struct stmmac_priv *priv, const u8 *mac)
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -1432,7 +1432,7 @@ static void tc956xmac_vf_add_vlan(struct stmmac_priv *priv, u16 vid)
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -1443,10 +1443,10 @@ static void tc956xmac_vf_add_vlan(struct stmmac_priv *priv, u16 vid)
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -1473,7 +1473,7 @@ static void tc956xmac_vf_delete_vlan(struct stmmac_priv *priv, u16 vid)
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -1484,10 +1484,10 @@ static void tc956xmac_vf_delete_vlan(struct stmmac_priv *priv, u16 vid)
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n",
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n",
 		ret, mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -1512,7 +1512,7 @@ static void tc956x_mbx_get_drv_cap(struct stmmac_priv *priv, struct tc956xmac_pr
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -1531,14 +1531,14 @@ static void tc956x_mbx_get_drv_cap(struct stmmac_priv *priv, struct tc956xmac_pr
 							SIZE_MBX_DRV_CAP);
 			}
 		}
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n"
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n"
 					, ret, mbx[0], mbx[4]);
 	} else {
 		priv->pf_drv_cap.jumbo_en = false;
 		priv->pf_drv_cap.tso_en = false;
 		priv->pf_drv_cap.crc_en = false;
 		priv->pf_drv_cap.csum_en = false;
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 	}
 }
 
@@ -1562,7 +1562,7 @@ static void tc956xmac_vf_mbx_reset_eee_mode(struct stmmac_priv *priv, struct mac
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || hw == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -1572,10 +1572,10 @@ static void tc956xmac_vf_mbx_reset_eee_mode(struct stmmac_priv *priv, struct mac
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
 								mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -1598,7 +1598,7 @@ static void tc956xmac_vf_mbx_reset(struct stmmac_priv *priv, u8 vf_status)
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return;
 	}
 
@@ -1609,10 +1609,10 @@ static void tc956xmac_vf_mbx_reset(struct stmmac_priv *priv, u8 vf_status)
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
 								mbx[0], mbx[4]);
 	else
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 }
 
 /**
@@ -1635,7 +1635,7 @@ static int tc956x_mbx_setup_cbs(struct stmmac_priv *priv, struct tc_cbs_qopt_off
 	enum mbx_msg_fns msg_dst = priv->fn_id_info.pf_no + 1;
 
 	if (priv == NULL || qopt == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return -EFAULT;
 	}
 
@@ -1654,10 +1654,10 @@ static int tc956x_mbx_setup_cbs(struct stmmac_priv *priv, struct tc_cbs_qopt_off
 
 	ret = tc956xmac_mbx_write(priv, mbx, msg_dst, &priv->fn_id_info);
 	if (ret > 0)
-		KPRINT_DEBUG2("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
+		KPRINT_DEBUG3("mailbox write with ACK or NACK %d msgbuff %x %x\n", ret,
 								mbx[0], mbx[4]);
 	else {
-		KPRINT_DEBUG2("mailbox write failed");
+		KPRINT_DEBUG3("mailbox write failed");
 		return ret;
 	}
 
@@ -1687,7 +1687,7 @@ static int tc956x_mbx_phy_link(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_ms
 	unsigned long flags;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1704,7 +1704,7 @@ static int tc956x_mbx_phy_link(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_ms
 	/* Indicate state change to NW layer */
 	if (priv->link) {
 		netif_carrier_on(priv->dev);
-		NMSGPR_INFO(priv->device, "PHY Link : UP\n");
+		NDBGPR_L1(priv->device, "PHY Link : UP\n");
 
 		datal = readl(priv->ioaddr + XGMAC_ADDRx_LOW(HOST_MAC_ADDR_OFFSET + priv->fn_id_info.vf_no));
 		datah = readl(priv->ioaddr + XGMAC_ADDRx_HIGH(HOST_MAC_ADDR_OFFSET + priv->fn_id_info.vf_no));
@@ -1725,10 +1725,10 @@ static int tc956x_mbx_phy_link(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_ms
 		}
 	} else {
 		netif_carrier_off(priv->dev);
-		NMSGPR_INFO(priv->device, "PHY Link : DOWN\n");
+		NDBGPR_L1(priv->device, "PHY Link : DOWN\n");
 	}
 
-	KPRINT_DEBUG2("Link state change update received from PF\n");
+	KPRINT_DEBUG3("Link state change update received from PF\n");
 
 	ack_msg[0] = OPCODE_MBX_ACK_MSG;
 	memset(&ack_msg[1], 0, MBX_MSG_SIZE-1);
@@ -1755,7 +1755,7 @@ static int tc956x_mbx_rx_crc(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 	unsigned long flags;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1774,7 +1774,7 @@ static int tc956x_mbx_rx_crc(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 	tc956xmac_mailbox_service_event_schedule(priv);
 	spin_unlock_irqrestore(&priv->wq_lock, flags);
 
-	KPRINT_DEBUG2("Rx CRC state received from PF");
+	KPRINT_DEBUG3("Rx CRC state received from PF");
 	ack_msg[0] = OPCODE_MBX_ACK_MSG;
 	memset(&ack_msg[1], 0, MBX_MSG_SIZE-1);
 
@@ -1800,7 +1800,7 @@ static int tc956x_mbx_rx_csum(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg
 	unsigned long flags;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1818,7 +1818,7 @@ static int tc956x_mbx_rx_csum(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg
 	tc956xmac_mailbox_service_event_schedule(priv);
 	spin_unlock_irqrestore(&priv->wq_lock, flags);
 
-	KPRINT_DEBUG2("Rx CSum state received from PF");
+	KPRINT_DEBUG3("Rx CSum state received from PF");
 
 	ack_msg[0] = OPCODE_MBX_ACK_MSG;
 	memset(&ack_msg[1], 0, MBX_MSG_SIZE-1);
@@ -1846,7 +1846,7 @@ static int tc956x_mbx_rx_dma_ch_tlptr(struct stmmac_priv *priv, u8 *msg_buf, u8 
 	struct tc956xmac_rx_queue *rx_q;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1890,7 +1890,7 @@ static int tc956x_mbx_setup_etf(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_m
 	u8 tbs_status;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1937,7 +1937,7 @@ static int tc956x_mbx_pf_flr(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_msg)
 	unsigned long flags;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
@@ -1977,7 +1977,7 @@ static int tc956x_mbx_rx_dma_err(struct stmmac_priv *priv, u8 *msg_buf, u8 *ack_
 	unsigned long flags;
 
 	if (priv == NULL || msg_buf == NULL || ack_msg == NULL) {
-		KPRINT_DEBUG2("NULL pointer error\n");
+		KPRINT_DEBUG3("NULL pointer error\n");
 		return NACK;
 	}
 
