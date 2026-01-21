@@ -286,6 +286,39 @@
 		regulator-enable-ramp-delay = <10000>;
 	};
 
+	/*
+	 * TODO: Name needs review... it's copied from a v6.6 .dtsi file and
+	 * has not been checked (many other regulators were renamed during
+	 * upstreaming).
+	 */
+	upd_3p3_vreg: upd_3p3_vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "upd_3p3_vreg";
+		gpio = <&pm7250b_gpios 1 0>;
+		//vin-supply = <&qps615_rsex_vreg>;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		enable-active-high;
+		regulator-enable-ramp-delay = <10000>;
+		regulator-always-on;
+	};
+
+	/*
+	 * TODO: This isn't a regulator. It's a reset line but it's easy to
+	 * (ab)use regulators to ensure the PCIe/USB bridge doesn't stay
+	 * in reset.
+	 */
+	upd_rest_vreg: upd_rest_vreg {
+		compatible = "regulator-fixed";
+		regulator-name = "upd_rest_vreg";
+		gpio = <&pm8350c_gpios 4 0>;
+		vin-supply = <&upd_3p3_vreg>;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		enable-active-high;
+		regulator-always-on;
+	};
+
 	wcn6750-pmu {
 		compatible = "qcom,wcn6750-pmu";
 		pinctrl-0 = <&bt_en>;
