@@ -644,6 +644,18 @@ config TC9564_PCI
 	  driver uses a pci-ep-bus node in devicetree to provide MMIO
 	  access to other SoC devices through PCI function BARs.
 
+config TC9564_TRANSLATE
+	tristate "Toshiba TC9564 configuration support"
+	depends on TC9564_PCI
+	default TC9564_PCI
+	help
+	  Enable support for configuring the address translation unit
+	  found inside the TC9564 SoC.  This translates addresses
+	  between PCIe space and a 36-bit AXI bus space used by the
+	  XGMACs on the TC9564 chip.  The hardware is configured using
+	  addresses in a range is managed by a syscon regmap, defined
+	  by the "toshiba,bridge-syscon" property.
+
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
 source "drivers/misc/cb710/Kconfig"
