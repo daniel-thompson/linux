@@ -27391,6 +27391,14 @@ S:	Maintained
 F:	Documentation/devicetree/bindings/misc/toshiba,tc9564-translate.yaml
 F:	drivers/misc/tc9564-translate.c
 
+TOSHIBA TC9564/QUALCOMM QPS615 DWMAC ETHERNET DRIVER
+M:	Alex Elder <elder@kernel.org>
+M:	Daniel Thompson <danielt@kernel.org>
+S:	Maintained
+F:	Documentation/devicetree/bindings/net/toshiba,tc9564-dwmac.yaml
+F:	drivers/net/ethernet/stmicro/stmmac/dwmac-tc9564.c
+F:	include/soc/toshiba/tc9564-dwmac.h
+
 TOSHIBA WMI HOTKEYS DRIVER
 M:	Azael Avalos <coproscefalo@gmail.com>
 L:	platform-driver-x86@vger.kernel.org

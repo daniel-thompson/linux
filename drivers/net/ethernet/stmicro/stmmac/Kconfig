@@ -352,6 +352,17 @@ config DWMAC_LOONGSON1
 	  device driver. This driver is used for Loongson1-based boards
 	  like Loongson LS1B/LS1C.
 
+config DWMAC_TC9564
+	tristate "Toshiba TC9564 DWMAC support"
+	depends on OF && COMMON_CLK
+	default TC9564_PCI
+	help
+	  This selects the Toshiba TC9564 (and Qualcomm QPS615) support in the
+	  stmmac driver.
+
+	  This provides support for the ethernet controllers found on these
+	  devices.
+
 config DWMAC_TEGRA
 	tristate "NVIDIA Tegra MGBE support"
 	depends on ARCH_TEGRA || COMPILE_TEST
