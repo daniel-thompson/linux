@@ -22,20 +22,25 @@
  * this driver reserves these two GPIOS.
  */
 
-#include <linux/auxiliary_bus.h>
 #include <linux/gpio/driver.h>
-#include <linux/module.h>
-#include <linux/regmap.h>
 #include <linux/gpio/regmap.h>
+#include <linux/mfd/syscon.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/regmap.h>
 
 #define DRIVER_NAME		"tc956x-gpio"
 
 #define TC956X_GPIO_COUNT	37	/* Number of GPIOs (20-21 reserved) */
 
-/* The GPIO offsets are relative to 0x1200 in TC956X SFR space. */
-#define GPIO_IN0_OFFSET		0x00		/* Input value (0-31) */
-#define GPIO_EN0_OFFSET		0x08		/* 0: out; 1: in (0-31) */
-#define GPIO_OUT0_OFFSET	0x10		/* Output value (0-31) */
+/*
+ * These offsets are relative to the base of the chip configuration space
+ * mapped by the system controller referred to by the "toshiba,config-syscon"
+ * property.
+ */
+#define GPIO_IN0_OFFSET		0x1200		/* Input value (0-31) */
+#define GPIO_EN0_OFFSET		0x1208		/* 0: out; 1: in (0-31) */
+#define GPIO_OUT0_OFFSET	0x1210		/* Output value (0-31) */
 
 /*
  * There are two sets of registers, each representing (up to) 32 GPIOs with a
@@ -60,18 +65,22 @@ static int tc956x_gpio_init_valid_mask(struct gpio_chip *gc,
 	return 0;
 }
 
-static int tc956x_gpio_probe(struct auxiliary_device *adev,
-			     const struct auxiliary_device_id *id)
+static int tc956x_gpio_probe(struct platform_device *pdev)
 {
 	DECLARE_BITMAP(zeroes, TC956X_GPIO_COUNT);
 	DECLARE_BITMAP(fixed, TC956X_GPIO_COUNT);
 	struct gpio_regmap_config config = { };
 	struct gpio_regmap *gpio_regmap;
-	struct device *dev = &adev->dev;
+	struct device *dev = &pdev->dev;
+	struct regmap *regmap;
 
-	/* We need the regmap pointer, stored in our platform data */
-	if (!dev->platform_data)
-		return -EINVAL;
+	dev_info(dev, " === %s starting\n", __func__);
+
+	regmap = syscon_regmap_lookup_by_phandle(dev_of_node(dev),
+						 "toshiba,config-syscon");
+	if (IS_ERR(regmap))
+		return dev_err_probe(dev, PTR_ERR(regmap),
+				     "failed to get config regmap\n");
 
 	/*
 	 * Only some of our GPIOs are fixed direction:
@@ -88,7 +97,7 @@ static int tc956x_gpio_probe(struct auxiliary_device *adev,
 	bitmap_zero(zeroes, TC956X_GPIO_COUNT);
 
 	config.parent = dev;
-	config.regmap = dev->platform_data;
+	config.regmap = regmap;
 	config.label = DRIVER_NAME;
 	config.ngpio = TC956X_GPIO_COUNT;
 	config.reg_dat_base = GPIO_REGMAP_ADDR(GPIO_IN0_OFFSET);
@@ -102,29 +111,36 @@ static int tc956x_gpio_probe(struct auxiliary_device *adev,
 
 	gpio_regmap = devm_gpio_regmap_register(dev, &config);
 	if (IS_ERR(gpio_regmap))
-		return PTR_ERR(gpio_regmap);
+		return dev_err_probe(dev, PTR_ERR(gpio_regmap),
+				     "registration failed\n");
+
+	dev_info(dev, " === %s successful\n", __func__);
 
 	return 0;
+};
+
+static void tc956x_gpio_remove(struct platform_device *pdev)
+{
+	/* Nothing to do for now */
 }
 
-static const struct auxiliary_device_id tc956x_gpio_ids[] = {
-	{ .name = "tc956x_pci.tc9564-gpio", },
-	{ }
+static const struct of_device_id tc956x_gpio_ids[] = {
+	{ .compatible	= "toshiba,tc9564-gpio", },
+	{ },
 };
-MODULE_DEVICE_TABLE(auxiliary, tc956x_gpio_ids);
+MODULE_DEVICE_TABLE(of, tc956x_gpio_ids);
 
-static struct auxiliary_driver tc956x_gpio_driver = {
-	.name		= DRIVER_NAME,
-	.probe          = tc956x_gpio_probe,
-	.id_table       = tc956x_gpio_ids,
-	.driver = {
+static struct platform_driver tc956x_gpio_driver = {
+	.probe	= tc956x_gpio_probe,
+	.remove	= tc956x_gpio_remove,
+	.driver	= {
 		.name		= DRIVER_NAME,
+		.of_match_table	= tc956x_gpio_ids,
 		.owner		= THIS_MODULE,
 		.probe_type	= PROBE_PREFER_ASYNCHRONOUS,
 	},
 };
-module_auxiliary_driver(tc956x_gpio_driver);
+module_platform_driver(tc956x_gpio_driver);
 
-MODULE_DESCRIPTION("Toshiba TC956X PCIe GPIO Driver");
+MODULE_DESCRIPTION("Toshiba TC956X GPIO Driver");
 MODULE_LICENSE("GPL");
-MODULE_ALIAS("auxiliary:" DRIVER_NAME);

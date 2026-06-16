@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: GPL-2.0
+
+/*
+ * Devicetree overlay for the TC9564 SoC.  This overlay defines the PCI
+ * endpoint bus provided by function 0 of the embedded PCIe endpoint.
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/clock/toshiba,tc9564.h>
+#include <dt-bindings/reset/toshiba,tc9564.h>
+
+/ {
+	fragment@0 {
+		target-path = "";
+
+		__overlay__ {
+			#address-cells = <3>;
+			#size-cells = <2>;
+
+			pci-ep-bus@0 {
+				compatible = "simple-bus";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				/* Map 0x0-0x3fff to BAR 0 */
+				// ranges = <0x0  0x0 0x0 0x0  0x4000>;
+				// ranges = <0x0  0x02000010 0x0 0x0  0x4000>;
+				ranges = <0x40002000  0x02000000 0x0 0x41800000  0x4000>;
+
+				bridge_syscon0: syscon@40002000 {
+					compatible = "toshiba,tc956x-bridge-syscon", "syscon";
+					reg = <0x40002000 0x1000>;
+				};
+
+				tc9564_translate0: translate@40002800 {
+					compatible = "toshiba,tc956x-translate";
+					reg = <0x40002800 0x80>;
+					toshiba,bridge-syscon = <&bridge_syscon0>;
+				};
+			};
+
+			pci-ep-bus@4 {
+				compatible = "simple-bus";
+				#address-cells = <1>;
+				#size-cells = <1>;
+				/* Map 0x0-0x1fffff to BAR 4 */
+				// ranges = <0x0  0x4 0x0 0x0  0x200000>;
+				// ranges = <0x0  0x0200001c 0x0 0x0  0x200000>;
+				ranges = <0x40000000  0x02000000 0x0 0x40400000  0x200000>;
+
+				config_syscon0: syscon@40000000 {
+					compatible = "toshiba,tc956x-config-syscon", "syscon";
+					reg = <0x40000000 0x2000>;
+				};
+
+				tc9564_clock0: clock@40001004 {
+					compatible = "toshiba,tc956x-clocks";
+					reg = <0x40001004 0x4>,
+					      <0x4000100c 0x4>;
+					toshiba,config-syscon = <&config_syscon0>;
+					#clock-cells = <1>;
+				};
+
+				tc9564_reset0: reset@40001008 {
+					compatible = "toshiba,tc956x-resets";
+					reg = <0x40001008 0x4>,
+					      <0x40001010 0x4>;
+					toshiba,config-syscon = <&config_syscon0>;
+					#reset-cells = <1>;
+				};
+
+				tc9564_gpio0: gpio@40001200 {
+					compatible = "toshiba,tc9564-gpio";
+					reg = <0x40001200 0x18>;
+					toshiba,config-syscon = <&config_syscon0>;
+					gpio-controller;
+					#gpio-cells = <2>;
+				};
+
+				msigen_syscon0: syscon@4000f000 {
+					compatible = "toshiba,tc956x-msigen-syscon", "syscon";
+					reg = <0x4000f000 0x1000>;
+				};
+
+				ethernet@40040000 {
+					compatible = "toshiba,tc9564-xgmac",
+						     "snps,dwxgmac-3.01",
+						     "snps,dwxgmac";
+					reg = <0x40040000 0x8000>;
+					toshiba,config-syscon = <&config_syscon0>;
+					toshiba,msigen-syscon = <&msigen_syscon0>;
+
+					clocks = <&tc9564_clock0 CLOCK_MAC0_TX>,
+						 <&tc9564_clock0 CLOCK_MAC0_RX>,
+						 <&tc9564_clock0 CLOCK_MAC0_ALL>;
+					clock-names = "toshiba,tc956x-mac-tx-clock",
+						      "toshiba,tc956x-mac-rx-clock",
+						      "toshiba,tc956x-mac-all-clock";
+
+					resets = <&tc9564_reset0 RESET_MAC0_MAC>,
+						 <&tc9564_reset0 RESET_MAC0_PMA>,
+						 <&tc9564_reset0 RESET_MAC0_XPCS>;
+					reset-names = "toshiba,tc956x-xpcs-reset",
+						      "toshiba,tc956x-mac-reset",
+						      "toshiba,tc956x-pma-reset";
+				};
+			};
+		};
+	};
+};

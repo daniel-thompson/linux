@@ -292,6 +292,16 @@ config COMMON_CLK_S2MPS11
 	  clock. These multi-function devices have two (S2MPS14) or three
 	  (S2MPS11, S5M8767) fixed-rate oscillators, clocked at 32KHz each.
 
+config COMMON_CLK_TC956X
+	tristate "Toshiba TC956X clock support"
+	depends on TC956X_PCI
+	default m
+	help
+	  This enables support for the clock controller embedded in the
+	  Toshiba TC956X (and Qualcomm QPS615).  This device connects to
+	  the host via PCIe port, which is the upstream port on an internal
+	  PCIe switch.  The supported clocks are simply gated on or off.
+
 config CLK_TWL
 	tristate "Clock driver for the TWL PMIC family"
 	depends on TWL4030_CORE

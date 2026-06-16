@@ -324,6 +324,17 @@ config RESET_SUNXI
 	help
 	  This enables the reset driver for Allwinner SoCs.
 
+config RESET_TC956X
+	tristate "Toshiba TC956X reset support"
+	depends on TC956X_PCI
+	default m
+	help
+	  This enables support for the reset controller embedded in the
+	  Toshiba TC956X (and Qualcomm QPS615).  This device connects to
+	  the host via PCIe port, which is the upstream port on an internal
+	  PCIe switch.  There are nine resets controlling the state of
+	  blocks internal to the chip.
+
 config RESET_TENSTORRENT_ATLANTIS
 	tristate "Tenstorrent atlantis reset driver"
 	depends on ARCH_TENSTORRENT || COMPILE_TEST

@@ -970,11 +970,6 @@
 				#size-cells = <2>;
 				device_type = "pci";
 				ranges;
-
-				tc9564_gpio0: gpio {
-					gpio-controller;
-					#gpio-cells = <2>;
-				};
 			};
 
 			pci@0,1 {
@@ -984,31 +979,6 @@
 				#size-cells = <2>;
 				device_type = "pci";
 				ranges;
-
-				ethernet {
-					phy-mode = "sgmii";
-					phy-handle = <&tc9564_emac1_phy>;
-
-					mdio {
-						compatible = "snps,dwmac-mdio";
-						#address-cells = <1>;
-						#size-cells = <0>;
-
-						tc9564_emac1_phy: ethernet-phy@1c {
-							compatible = "ethernet-phy-id004d.d101";
-							reg = <0x1c>;
-							snps,reset = <&tc9564_gpio0 1 GPIO_ACTIVE_LOW>;
-							reset-assert-us = <11000>;
-							reset-deassert-us = <70000>;
-
-							vdd18-supply = <&qep_1p8>;
-
-							pinctrl-names = "default";
-							pinctrl-0 = <&qep_irq_pin>;
-							interrupts-extended = <&tlmm 101 IRQ_TYPE_LEVEL_LOW>;
-						};
-					};
-				};
 			};
 		};
 	};

@@ -634,7 +634,7 @@ config MCHP_LAN966X_PCI
 	    - lan966x-miim (MDIO_MSCC_MIIM)
 	    - lan966x-switch (LAN966X_SWITCH)
 
-config TOSHIBA_TC956X_PCI
+config TC956X_PCI
 	tristate "Toshiba TC956X PCI function support"
 	depends on PCI
 	select AUXILIARY_BUS
@@ -645,6 +645,18 @@ config TOSHIBA_TC956X_PCI
 	  the embedded PCIe endpoint in the Toshiba TC956X.  This driver
 	  creates auxiliary devices and requires drivers for these devices
 	  to function.
+
+config TC956X_TRANSLATE
+	tristate "Toshiba TC956X configuration support"
+	depends on TC956X_PCI
+	default TC956X_PCI
+	help
+	  Enable support for configuring the address translation unit
+	  found inside the TC9564 SoC.  This translates addresses
+	  between PCIe space and a 36-bit AXI bus space used by the
+	  XGMACs on the TC9564 chip.  The hardware is configured using
+	  addresses in a range is managed by a syscon regmap, defined
+	  by the "toshiba,config-syscon" property.
 
 source "drivers/misc/c2port/Kconfig"
 source "drivers/misc/eeprom/Kconfig"
