@@ -133,10 +133,9 @@ static void tc956x_clock_disable_all(struct tc956x_clocks *clocks)
 
 static int tc956x_clk_probe(struct platform_device *pdev)
 {
-	const struct tc956x_clock_init *clock_init;
+	struct clk_hw_onecell_data *hw_data;
 	struct device *dev = &pdev->dev;
 	struct tc956x_clocks *clocks;
-	struct tc956x_clock *clock;
 	struct device_node *np;
 	struct regmap *regmap;
 	struct clk_hw *hw;
@@ -186,9 +185,18 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 	clocks->offset[1] = offset1;
 	clocks->clock_count = ARRAY_SIZE(tc9564_clock_init);
 
-	clock = &clocks->clocks[0];
-	clock_init = &tc9564_clock_init[0];
-	for (i = 0; i < clocks->clock_count; i++, clock++, clock_init++) {
+	hw_data = devm_kzalloc(
+		dev, struct_size(hw_data, hws, ARRAY_SIZE(tc9564_clock_init)),
+		GFP_KERNEL);
+	if (!hw_data)
+		return dev_err_probe(dev, -ENOMEM,
+				     "failed to allocate hw_data\n");
+	hw_data->num = ARRAY_SIZE(tc9564_clock_init);
+
+
+	for (i = 0; i < ARRAY_SIZE(tc9564_clock_init); i++) {
+		const struct tc956x_clock_init *clock_init = &tc9564_clock_init[i];
+		struct tc956x_clock *clock = &clocks->clocks[i];
 		struct clk_init_data init = { };
 
 		if (!clock_init->name)
@@ -206,6 +214,8 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 					     "failed to register clock \"%s\"\n",
 					     clock_init->name);
 
+		hw_data->hws[i] = hw;
+
 		clock->which = i;
 		clock->offset = clocks->offset[clock_init->zero_one];
 		clock->mask = clock_init->mask;
@@ -216,6 +226,11 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 	/* Force all clocks to be initially disabled */
 	tc956x_clock_disable_all(clocks);
 #endif
+
+	ret = devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get, hw_data);
+	if (ret)
+		return dev_err_probe(dev, ret,
+				     "failed to add clk hw provider\n");
 
 	dev_info(dev, " === %s successful\n", __func__);
 
