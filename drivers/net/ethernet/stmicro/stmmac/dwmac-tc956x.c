@@ -101,12 +101,14 @@ enum {
 	RESET_ID_MAC,
 	RESET_ID_XPCS,
 	RESET_ID_PMA,
+	RESET_ID_MSIGEN,
 };
 
 static const char *tc956x_reset_names[] = {
-	[RESET_ID_MAC]	= "toshiba,tc956x-mac-reset",
-	[RESET_ID_XPCS]	= "toshiba,tc956x-xpcs-reset",
-	[RESET_ID_PMA]	= "toshiba,tc956x-pma-reset",
+	[RESET_ID_MAC] = "toshiba,tc956x-mac-reset",
+	[RESET_ID_XPCS] = "toshiba,tc956x-xpcs-reset",
+	[RESET_ID_PMA] = "toshiba,tc956x-pma-reset",
+	[RESET_ID_MSIGEN] = "toshiba,tc956x-msigen-reset",
 };
 
 static const char *tc956x_clock_names[] = {
@@ -114,13 +116,13 @@ static const char *tc956x_clock_names[] = {
 	"toshiba,tc956x-mac-rx-clock",
 	"toshiba,tc956x-mac-all-clock",
 	"toshiba,tc956x-mac-rmii-clock",	/* eMAC 1 only; must be last */
+	"toshiba,tc956x-msigen-clock",
 };
 
 /**
  * struct tc956x_data - Toshiba-specific platform data
  * @dev:		Device pointer
  * @irq_domain:		MSIGEN IRQ domain
- * @auxbus_data:	Pointer to data passed from the parent device
  * @ioaddr:		Pointer to mapped eMAC memory
  * @mac_id:		MAC number (0 or 1)
  * @plat:		Pointer to our stmmac platform data
@@ -128,7 +130,7 @@ static const char *tc956x_clock_names[] = {
  * @clocks:		Clock controller bulk array
  * @clock_count:	Number of valid elements in the clock array
  * @config_regmap:	Regmap used to access eMAC configuration registers
- * @msigen_regmap:	Regmap used to access MSIGEN registers
+ * @msigen:		Pointer to mapped MSIGEN memory
  * @msigen_irq:		IRQ number for MSIGEN
  * @dma_cfg:		DMA config buffer used by plat_stmmacenet_data
  * @mdio_bus_data:	MDIO bus data used by plat_stmmacenet_data
@@ -140,7 +142,6 @@ static const char *tc956x_clock_names[] = {
 struct tc956x_data {
 	struct device *dev;
 	struct irq_domain *irq_domain;
-	// struct tc956x_dwmac_data *auxbus_data;
 	void __iomem *ioaddr;
 	u8 mac_id;
 	struct plat_stmmacenet_data *plat;
@@ -149,7 +150,7 @@ struct tc956x_data {
 	u32 clock_count;
 
 	struct regmap *config_regmap;
-	struct regmap *msigen_regmap;
+	void __iomem *msigen;
 	unsigned int msigen_irq;
 
 	/* These three fields are used by the plat_stmmacenet_data structure */
@@ -187,8 +188,6 @@ static const struct regmap_config xpcs_regmap_config = {
 	.reg_shift	= REGMAP_UPSHIFT(2),
 };
 
-/* TODO */
-#if 0
 static void tc956x_msigen_irq_handler(struct irq_desc *desc)
 {
 	struct irq_domain *irq_domain = irq_desc_get_handler_data(desc);
@@ -214,65 +213,54 @@ static void tc956x_msigen_irq_handler(struct irq_desc *desc)
 
 	chained_irq_exit(chip, desc);
 }
-#endif
 
-/* TODO */
-// Daniel:  This should use a regmap for the msigen pointer
 static int tc956x_msigen_irq_chip_init(struct irq_chip_generic *gc)
 {
-#if 0
 	struct tc956x_data *td = gc->domain->host_data;
 
-	gc->reg_base = td->auxbus_data->msigen;
+	gc->reg_base = td->msigen;
+	if (!gc->reg_base)
+		return -ENOMEM;
 	gc->chip_types[0].regs.mask = MSI_OUT_EN_OFFSET;
 	gc->chip_types[0].chip.irq_mask = irq_gc_mask_clr_bit;
 	gc->chip_types[0].chip.irq_unmask = irq_gc_mask_set_bit;
 
 	/* Disable all interrupts */
 	irq_reg_writel(gc, 0, MSI_OUT_EN_OFFSET);
-#endif
 	return 0;
 }
 
-/* TODO */
-// Daniel:  Implement gc->reg_writel() callback?
 static void tc956x_msigen_irq_chip_exit(struct irq_chip_generic *gc)
 {
 	irq_reg_writel(gc, 0, MSI_OUT_EN_OFFSET);
 }
 
-/* TODO */
-// Daniel:  Needs to get the msigen_irq some other way
 static int tc956x_msigen_irq_domain_init(struct irq_domain *irq_domain)
 {
-#if 0
 	struct tc956x_data *td = irq_domain->host_data;
 
-	irq_set_chained_handler_and_data(td->auxbus_data->msigen_irq,
+	irq_set_chained_handler_and_data(td->msigen_irq,
 					 tc956x_msigen_irq_handler,
 					 irq_domain);
-#endif
 	return 0;
 }
 
-/* TODO */
 static void tc956x_msigen_irq_domain_exit(struct irq_domain *irq_domain)
 {
-#if 0
 	struct tc956x_data *td = irq_domain->host_data;
 
-	irq_set_chained_handler_and_data(td->auxbus_data->msigen_irq,
+	irq_set_chained_handler_and_data(td->msigen_irq,
 					 NULL, NULL);
-#endif
 }
 
-/* TODO */
 /* We have one IRQ chip instance with 25 IRQs in its domain */
 static struct irq_domain *
 tc956x_msigen_irq_domain_instantiate(struct tc956x_data *td)
 {
 	struct irq_domain_chip_generic_info dgc_info;
 	struct irq_domain_info info;
+
+	reset_control_deassert(td->resets[RESET_ID_MSIGEN].rstc);
 
 	dgc_info.name = devm_kasprintf(td->dev, GFP_KERNEL, "tc956x-msigen-%d",
 				       td->mac_id);
@@ -394,7 +382,10 @@ static int tc956x_mac_configure(struct tc956x_data *td,
 
 static void tc956x_mac_enable(struct tc956x_data *td)
 {
+#if 0
+	// TODO: Can re-enable this once we have a proper MSIGEN driver
 	WARN_ON(clk_bulk_prepare_enable(td->clock_count, td->clocks));
+#endif
 
 	WARN_ON(reset_control_deassert(td->resets[RESET_ID_MAC].rstc));
 
@@ -408,11 +399,6 @@ static void tc956x_mac_disable(struct tc956x_data *td)
 	WARN_ON(reset_control_bulk_assert(ARRAY_SIZE(td->resets), td->resets));
 
 	clk_bulk_disable_unprepare(td->clock_count, td->clocks);
-}
-
-static void tc956x_mac_init_state(struct tc956x_data *td)
-{
-	tc956x_mac_disable(td);
 }
 
 /*
@@ -608,7 +594,7 @@ static int tc956x_plat_dat_init(struct tc956x_data *td)
 	plat->phy_interface = phy_interface;
 	plat->mdio_bus_data = &td->mdio_bus_data;
 	/* Parent PCI device is used for DMA */
-	plat->dma_device = dev->parent;
+	plat->dma_device = dev->parent->parent;
 	plat->dma_cfg = &td->dma_cfg;
 	plat->dma_cfg->pbl = 32;
 	plat->dma_cfg->pblx8 = true;
@@ -780,7 +766,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	struct tc956x_data *td;
 	struct device_node *np;
 	struct regmap *regmap;
-	static u32 mac_id;
 	int ret;
 
 	dev_info(dev, " === %s starting\n", __func__);
@@ -790,12 +775,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	td->dev = dev;
-	/* TODO */
-#if 0
-	td->auxbus_data = dev_get_platdata(dev);
-	if (!td->auxbus_data)
-		return dev_err_probe(dev, -EINVAL, "no platform data\n");
-#endif
 
 	np = dev_of_node(dev);
 	regmap = syscon_regmap_lookup_by_phandle(np, "toshiba,config-syscon");
@@ -804,27 +783,29 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 				     "failed to get config regmap\n");
 	td->config_regmap = regmap;
 
-	regmap = syscon_regmap_lookup_by_phandle(np, "toshiba,msigen-syscon");
-	if (IS_ERR(regmap))
-		return dev_err_probe(dev, PTR_ERR(regmap),
-				     "failed to get msigen regmap\n");
-	td->msigen_regmap = regmap;
-	td->msigen_irq = 0;	/* TODO Daniel */
-
 	td->ioaddr = devm_of_iomap(dev, np, 0, NULL);
 	if (IS_ERR(td->ioaddr))
 		return dev_err_probe(dev, -EINVAL, "failed to map memory\n");
 
+	td->msigen = devm_of_iomap(dev, np, 1, NULL) + 0x100;
+	if (IS_ERR(td->msigen))
+		return dev_err_probe(dev, -EINVAL, "failed to map memory\n");
+
+	ret = platform_get_irq(pdev, 0);
+	if (ret < 0)
+		return dev_err_probe(dev, ret, "failed to get MSI irq\n");
+	td->msigen_irq = ret;
+
 	/* XXX We need to know the MAC ID; this needs to be done differently */
-	td->mac_id = mac_id++;
+	td->mac_id = 1;
 
 	ret = tc956x_reset_init(td);
 	if (ret)
-		return dev_err_probe(dev, ret ,"failed to initalize resets\n");
+		return dev_err_probe(dev, ret ,"failed to initialize resets\n");
 
 	ret = tc956x_clock_init(td);
 	if (ret)
-		return dev_err_probe(dev, ret, "failed to initalize clocks\n");
+		return dev_err_probe(dev, ret, "failed to initialize clocks\n");
 
 	ret = tc956x_plat_dat_init(td);
 	if (ret)
@@ -834,6 +815,8 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	ret = tc956x_dwmac_parse_dt(td);
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to parse devicetree\n");
+
+	WARN_ON(clk_bulk_prepare_enable(td->clock_count, td->clocks));
 
 	td->irq_domain = tc956x_msigen_irq_domain_instantiate(td);
 	if (IS_ERR(td->irq_domain)) {
@@ -849,13 +832,7 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 		goto err_put_mdio;
 	}
 
-	/* Put the MAC in a known initial state, then enable it */
-	tc956x_mac_init_state(td);
 	tc956x_mac_enable(td);
-
-	dev_info(dev, " === %s successful (quitting early)\n", __func__);
-
-	return 0;	/* TODO */
 
 	ret = stmmac_dvr_probe(dev, td->plat, &td->res);
 	if (ret) {
