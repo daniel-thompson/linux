@@ -19,6 +19,9 @@
 			#address-cells = <3>;
 			#size-cells = <2>;
 
+			#interrupt-cells = <1>;
+			interrupt-controller;
+
 			pci-ep-bus@0 {
 				compatible = "simple-bus";
 				#address-cells = <1>;
@@ -83,6 +86,7 @@
 					reg = <0x4000f000 0x1000>;
 				};
 
+#if 0
 				ethernet@40040000 {
 					compatible = "toshiba,tc9564-xgmac",
 						     "snps,dwxgmac-3.01",
@@ -104,7 +108,35 @@
 					reset-names = "toshiba,tc956x-xpcs-reset",
 						      "toshiba,tc956x-mac-reset",
 						      "toshiba,tc956x-pma-reset";
+
+					interrupts = <0>; /* PCI INTx assigned interrupt */
+
+					phy-mode = "sgmii";
+#if 0
+					phy-handle = <&tc9564_emac1_phy>;
+
+					mdio {
+						compatible = "snps,dwmac-mdio";
+						#address-cells = <1>;
+						#size-cells = <0>;
+
+						tc9564_emac1_phy: ethernet-phy@1c {
+							compatible = "ethernet-phy-id004d.d101";
+							reg = <0x1c>;
+							snps,reset = <&tc9564_gpio0 0 GPIO_ACTIVE_LOW>;
+							reset-assert-us = <11000>;
+							reset-deassert-us = <70000>;
+
+							vdd18-supply = <&qep_1p8>;
+
+							pinctrl-names = "default";
+							pinctrl-0 = <&qep_irq_pin>;
+							interrupts-extended = <&tlmm 101 IRQ_TYPE_LEVEL_LOW>;
+						};
+					};
+#endif
 				};
+#endif
 			};
 		};
 	};
