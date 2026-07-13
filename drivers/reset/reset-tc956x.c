@@ -143,7 +143,7 @@ static int tc956x_reset_probe(struct platform_device *pdev)
 	if (size != sizeof(offset0))
 		return dev_err_probe(dev, -EINVAL,
 				     "bad offset 0 size %llu\n", size);
-	offset0 = lower_32_bits(addr);
+	offset0 = lower_32_bits(addr) & 0xffff;
 
 	ret = of_property_read_reg(np, 1, &addr, &size);
 	if (ret)
@@ -152,7 +152,7 @@ static int tc956x_reset_probe(struct platform_device *pdev)
 	if (size != sizeof(offset1))
 		return dev_err_probe(dev, -EINVAL,
 				     "bad offset 1 size %llu\n", size);
-	offset1 = lower_32_bits(addr);
+	offset1 = lower_32_bits(addr) & 0xffff;
 
 	resets = kzalloc_obj(*resets);
 	if (!resets)
