@@ -105,9 +105,9 @@
 					resets = <&tc9564_reset0 RESET_MAC0_MAC>,
 						 <&tc9564_reset0 RESET_MAC0_PMA>,
 						 <&tc9564_reset0 RESET_MAC0_XPCS>;
-					reset-names = "toshiba,tc956x-xpcs-reset",
-						      "toshiba,tc956x-mac-reset",
-						      "toshiba,tc956x-pma-reset";
+					reset-names = "toshiba,tc956x-mac-reset",
+						      "toshiba,tc956x-pma-reset",
+					              "toshiba,tc956x-xpcs-reset";
 
 					interrupts = <0>; /* PCI INTx assigned interrupt */
 
