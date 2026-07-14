@@ -38,25 +38,30 @@
 					compatible = "toshiba,tc9564-xgmac",
 						     "snps,dwxgmac-3.01",
 						     "snps,dwxgmac";
-					reg = <0x40048000 0x8000>;
+					reg = <0x40048000 0x8000>,
+					      <0x4000f000 0x1000>;
 					toshiba,config-syscon = <&config_syscon0>;
 					toshiba,msigen-syscon = <&msigen_syscon0>;
 
 					clocks = <&tc9564_clock0 CLOCK_MAC1_TX>,
 						 <&tc9564_clock0 CLOCK_MAC1_RX>,
 						 <&tc9564_clock0 CLOCK_MAC1_ALL>,
-						 <&tc9564_clock0 CLOCK_MAC1_RMII>;
+						 <&tc9564_clock0 CLOCK_MAC1_RMII>,
+						 <&tc9564_clock0 CLOCK_MSIGEN>;
 					clock-names = "toshiba,tc956x-mac-tx-clock",
 						      "toshiba,tc956x-mac-rx-clock",
 						      "toshiba,tc956x-mac-all-clock",
-						      "toshiba,tc956x-mac-rmii-clock";
+						      "toshiba,tc956x-mac-rmii-clock",
+						      "toshiba,tc956x-msigen-clock";
 
 					resets = <&tc9564_reset0 RESET_MAC1_MAC>,
 						 <&tc9564_reset0 RESET_MAC1_PMA>,
-						 <&tc9564_reset0 RESET_MAC1_XPCS>;
+						 <&tc9564_reset0 RESET_MAC1_XPCS>,
+						 <&tc9564_reset0 RESET_MSIGEN>;
 					reset-names = "toshiba,tc956x-mac-reset",
 						      "toshiba,tc956x-pma-reset",
-						      "toshiba,tc956x-xpcs-reset";
+						      "toshiba,tc956x-xpcs-reset",
+						      "toshiba,tc956x-msigen-reset";
 
 					interrupts = <0>; /* PCI INTx assigned interrupt */
 

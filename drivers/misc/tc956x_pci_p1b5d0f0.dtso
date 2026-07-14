@@ -88,11 +88,11 @@
 					reg = <0x4000f000 0x1000>;
 				};
 
-#if 0
 				ethernet@40040000 {
 					compatible = "toshiba,tc9564-xgmac",
 						     "snps,dwxgmac-3.01",
 						     "snps,dwxgmac";
+					status = "disabled";
 					reg = <0x40040000 0x8000>;
 					toshiba,config-syscon = <&config_syscon0>;
 					toshiba,msigen-syscon = <&msigen_syscon0>;
@@ -113,8 +113,8 @@
 
 					interrupts = <0>; /* PCI INTx assigned interrupt */
 
-					phy-mode = "sgmii";
 #if 0
+					phy-mode = "sgmii";
 					phy-handle = <&tc9564_emac1_phy>;
 
 					mdio {
@@ -138,7 +138,6 @@
 					};
 #endif
 				};
-#endif
 			};
 		};
 	};
