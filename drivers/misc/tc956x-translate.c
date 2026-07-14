@@ -158,8 +158,6 @@ static int tc956x_translate_probe(struct platform_device *pdev)
 	u64 size;
 	int ret;
 
-	dev_info(dev, " === %s starting\n", __func__);
-
 	np = dev_of_node(dev);
 	if (!np)
 		return dev_err_probe(dev, -EINVAL, "no devicetree node\n");
@@ -191,8 +189,6 @@ static int tc956x_translate_probe(struct platform_device *pdev)
 	/* Do the initial configuraiton */
 
 	tc956x_translate_config(translate);
-
-	dev_info(dev, " === %s successful\n", __func__);
 
 	return 0;
 }

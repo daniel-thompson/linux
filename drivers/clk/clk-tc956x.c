@@ -146,8 +146,6 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 	int ret;
 	u32 i;
 
-	dev_info(dev, " === %s starting\n", __func__);
-
 	np = dev_of_node(dev);
 	if (!np)
 		return dev_err_probe(dev, -EINVAL, "no devicetree node\n");
@@ -231,8 +229,6 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret,
 				     "failed to add clk hw provider\n");
-
-	dev_info(dev, " === %s successful\n", __func__);
 
 	return 0;
 }

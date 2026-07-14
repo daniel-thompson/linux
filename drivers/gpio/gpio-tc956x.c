@@ -74,8 +74,6 @@ static int tc956x_gpio_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct regmap *regmap;
 
-	dev_info(dev, " === %s starting\n", __func__);
-
 	regmap = syscon_regmap_lookup_by_phandle(dev_of_node(dev),
 						 "toshiba,config-syscon");
 	if (IS_ERR(regmap))
@@ -113,8 +111,6 @@ static int tc956x_gpio_probe(struct platform_device *pdev)
 	if (IS_ERR(gpio_regmap))
 		return dev_err_probe(dev, PTR_ERR(gpio_regmap),
 				     "registration failed\n");
-
-	dev_info(dev, " === %s successful\n", __func__);
 
 	return 0;
 };

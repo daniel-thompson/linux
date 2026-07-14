@@ -125,8 +125,6 @@ static int tc956x_reset_probe(struct platform_device *pdev)
 	u64 size;
 	int ret;
 
-	dev_info(dev, " === %s starting\n", __func__);
-
 	np = dev_of_node(dev);
 	if (!np)
 		return dev_err_probe(dev, -EINVAL, "no devicetree node\n");
@@ -176,12 +174,8 @@ static int tc956x_reset_probe(struct platform_device *pdev)
 	}
 	platform_set_drvdata(pdev, resets);
 
-#if 1
 	/* Force all resets to be initially asserted */
 	tc956x_reset_assert_all(resets);
-#endif
-
-	dev_info(dev, " === %s successful\n", __func__);
 
 	return 0;
 }

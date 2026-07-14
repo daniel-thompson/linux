@@ -202,7 +202,6 @@ tc956x_function_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to load overlay\n");
 
-	dev_info(dev, " === calling of_platform_default_populate()\n");
 	ret = of_platform_default_populate(np, NULL, dev);
 	if (ret)
 		goto err_unload_overlay;
