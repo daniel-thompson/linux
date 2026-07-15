@@ -8,7 +8,6 @@
  * Copyright (C) 2025 Toshiba Electronic Devices & Storage Corporation
  */
 
-#include <linux/auxiliary_bus.h>
 #include <linux/bitops.h>
 #include <linux/iopoll.h>
 #include <linux/irqdomain.h>
@@ -22,6 +21,7 @@
 #include <linux/types.h>
 #include <linux/units.h>
 
+// TODO: can this go?
 #include <soc/toshiba/tc956x-dwmac.h>
 
 #include "common.h"
@@ -47,26 +47,6 @@
 #define EMAC_INV_SGM_SIG_DET		BIT(6)	/* 1 = polarity inverted */
 #define EMAC_LPIHWCLKEN			BIT(8)	/* 1 = low power mode */
 #define EMAC_INIT_DONE			BIT(21)
-
-/* MSIGEN Registers */
-#define MSI_OUT_EN_OFFSET		0x0000
-#define MSI_MASK_CLR_OFFSET		0x000c
-#define MSI_MASK_VALUE			BIT(0)
-#define MSI_INT_STS_OFFSET		0x0010
-
-enum msigen_hwirq {
-	HWIRQ_LPI		= 0,
-	HWIRQ_PMT		= 1,
-	HWIRQ_EVENT		= 2,
-	HWIRQ_TX0		= 3,
-	HWIRQ_RX0		= 11,
-	HWIRQ_XPCS		= 19,
-	HWIRQ_PHY		= 20,
-	HWIRQ_PFMAILBOX		= 21,
-	HWIRQ_MSIREQ_PLS	= 24
-};
-
-#define HWIRQ_COUNT			25
 
 /* Offset to the XPCS memory block, relative to the EMAC address range */
 #define DWMAC_XPCS_OFFSET		0x3a00
@@ -108,7 +88,6 @@ static const char *tc956x_reset_names[] = {
 	[RESET_ID_MAC] = "toshiba,tc956x-mac-reset",
 	[RESET_ID_XPCS] = "toshiba,tc956x-xpcs-reset",
 	[RESET_ID_PMA] = "toshiba,tc956x-pma-reset",
-	[RESET_ID_MSIGEN] = "toshiba,tc956x-msigen-reset",
 };
 
 static const char *tc956x_clock_names[] = {
@@ -116,7 +95,6 @@ static const char *tc956x_clock_names[] = {
 	"toshiba,tc956x-mac-rx-clock",
 	"toshiba,tc956x-mac-all-clock",
 	"toshiba,tc956x-mac-rmii-clock",	/* eMAC 1 only; must be last */
-	"toshiba,tc956x-msigen-clock",
 };
 
 /**
@@ -130,8 +108,6 @@ static const char *tc956x_clock_names[] = {
  * @clocks:		Clock controller bulk array
  * @clock_count:	Number of valid elements in the clock array
  * @config_regmap:	Regmap used to access eMAC configuration registers
- * @msigen:		Pointer to mapped MSIGEN memory
- * @msigen_irq:		IRQ number for MSIGEN
  * @dma_cfg:		DMA config buffer used by plat_stmmacenet_data
  * @mdio_bus_data:	MDIO bus data used by plat_stmmacenet_data
  * @axi:		AXI data used by plat_stmmacenet_data
@@ -150,8 +126,6 @@ struct tc956x_data {
 	u32 clock_count;
 
 	struct regmap *config_regmap;
-	void __iomem *msigen;
-	unsigned int msigen_irq;
 
 	/* These three fields are used by the plat_stmmacenet_data structure */
 	struct stmmac_dma_cfg dma_cfg;
@@ -187,103 +161,6 @@ static const struct regmap_config xpcs_regmap_config = {
 	.max_register	= 0xff,		/* Register DW_VR_CSR_VIEWPORT */
 	.reg_shift	= REGMAP_UPSHIFT(2),
 };
-
-static void tc956x_msigen_irq_handler(struct irq_desc *desc)
-{
-	struct irq_domain *irq_domain = irq_desc_get_handler_data(desc);
-	struct irq_chip *chip = irq_desc_get_chip(desc);
-	struct irq_chip_generic *gc;
-	unsigned long status;
-	unsigned int hwirq;
-
-	gc = irq_get_domain_generic_chip(irq_domain, 0);
-
-	chained_irq_enter(chip, desc);
-
-	status = irq_reg_readl(gc, MSI_INT_STS_OFFSET);
-	for_each_set_bit(hwirq, &status, HWIRQ_COUNT)
-		generic_handle_domain_irq(irq_domain, hwirq);
-
-	/*
-	 * Clear the MSI flag. Most interrupts within TC956X are level-high
-	 * type. If any interrupts are still asserted then clearing this flag
-	 * will cause the (edge-triggered) MSI to be regenerated.
-	 */
-	irq_reg_writel(gc, MSI_MASK_VALUE, MSI_MASK_CLR_OFFSET);
-
-	chained_irq_exit(chip, desc);
-}
-
-static int tc956x_msigen_irq_chip_init(struct irq_chip_generic *gc)
-{
-	struct tc956x_data *td = gc->domain->host_data;
-
-	gc->reg_base = td->msigen;
-	if (!gc->reg_base)
-		return -ENOMEM;
-	gc->chip_types[0].regs.mask = MSI_OUT_EN_OFFSET;
-	gc->chip_types[0].chip.irq_mask = irq_gc_mask_clr_bit;
-	gc->chip_types[0].chip.irq_unmask = irq_gc_mask_set_bit;
-
-	/* Disable all interrupts */
-	irq_reg_writel(gc, 0, MSI_OUT_EN_OFFSET);
-	return 0;
-}
-
-static void tc956x_msigen_irq_chip_exit(struct irq_chip_generic *gc)
-{
-	irq_reg_writel(gc, 0, MSI_OUT_EN_OFFSET);
-}
-
-static int tc956x_msigen_irq_domain_init(struct irq_domain *irq_domain)
-{
-	struct tc956x_data *td = irq_domain->host_data;
-
-	irq_set_chained_handler_and_data(td->msigen_irq,
-					 tc956x_msigen_irq_handler,
-					 irq_domain);
-	return 0;
-}
-
-static void tc956x_msigen_irq_domain_exit(struct irq_domain *irq_domain)
-{
-	struct tc956x_data *td = irq_domain->host_data;
-
-	irq_set_chained_handler_and_data(td->msigen_irq,
-					 NULL, NULL);
-}
-
-/* We have one IRQ chip instance with 25 IRQs in its domain */
-static struct irq_domain *
-tc956x_msigen_irq_domain_instantiate(struct tc956x_data *td)
-{
-	struct irq_domain_chip_generic_info dgc_info;
-	struct irq_domain_info info;
-
-	reset_control_deassert(td->resets[RESET_ID_MSIGEN].rstc);
-
-	dgc_info.name = devm_kasprintf(td->dev, GFP_KERNEL, "tc956x-msigen-%d",
-				       td->mac_id);
-	if (!dgc_info.name)
-		return ERR_PTR(-ENOMEM);
-
-	dgc_info.handler = handle_level_irq;
-	dgc_info.irqs_per_chip = HWIRQ_COUNT;
-	dgc_info.num_ct = 1;
-	dgc_info.init = tc956x_msigen_irq_chip_init;
-	dgc_info.exit = tc956x_msigen_irq_chip_exit;
-
-	info.domain_flags = IRQ_DOMAIN_FLAG_DESTROY_GC;
-	info.size = HWIRQ_COUNT;
-	info.hwirq_max = HWIRQ_COUNT;
-	info.ops = &irq_generic_chip_ops;
-	info.host_data = td;
-	info.dgc_info = &dgc_info;
-	info.init = tc956x_msigen_irq_domain_init;
-	info.exit = tc956x_msigen_irq_domain_exit;
-
-	return devm_irq_domain_instantiate(td->dev, &info);
-}
 
 /**
  * tc956x_pma_init() - Initialize PMA
@@ -382,10 +259,7 @@ static int tc956x_mac_configure(struct tc956x_data *td,
 
 static void tc956x_mac_enable(struct tc956x_data *td)
 {
-#if 0
-	// TODO: Can re-enable this once we have a proper MSIGEN driver
 	WARN_ON(clk_bulk_prepare_enable(td->clock_count, td->clocks));
-#endif
 
 	WARN_ON(reset_control_deassert(td->resets[RESET_ID_MAC].rstc));
 
@@ -679,10 +553,15 @@ static int tc956x_plat_dat_init(struct tc956x_data *td)
  */
 static int tc956x_stmmac_resources_init(struct tc956x_data *td)
 {
+#if 0
 	struct irq_domain *irq_domain = td->irq_domain;
+#else
+	struct platform_device *pdev = container_of(td->dev, struct platform_device, dev);
+#endif
 	struct stmmac_resources *res = &td->res;
 	u32 i;
 
+#if 0
 	res->irq = irq_create_mapping(irq_domain, HWIRQ_EVENT);
 	if (!res->irq)
 		return -EINVAL;
@@ -698,6 +577,23 @@ static int tc956x_stmmac_resources_init(struct tc956x_data *td)
 		if (!res->rx_irq[i])
 			return -EINVAL;
 	}
+#else
+	res->irq = platform_get_irq(pdev, 0);
+	if (res->irq < 0)
+		return res->irq;
+
+	for (i = 0; i < td->plat->tx_queues_to_use; i++) {
+		res->tx_irq[i] = platform_get_irq(pdev, 1 + i);
+		if (res->tx_irq[i] < 0)
+			return res->tx_irq[i];
+	}
+
+	for (i = 0; i < td->plat->rx_queues_to_use; i++) {
+		res->rx_irq[i] = platform_get_irq(pdev, 9 + i);
+		if (res->rx_irq[i] < 0)
+			return res->rx_irq[i];
+	}
+#endif
 
 	res->addr = td->ioaddr;
 
@@ -768,8 +664,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	struct regmap *regmap;
 	int ret;
 
-	dev_info(dev, " === %s starting\n", __func__);
-
 	td = devm_kzalloc(dev, sizeof(*td), GFP_KERNEL);
 	if (!td)
 		return -ENOMEM;
@@ -786,15 +680,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	td->ioaddr = devm_of_iomap(dev, np, 0, NULL);
 	if (IS_ERR(td->ioaddr))
 		return dev_err_probe(dev, -EINVAL, "failed to map memory\n");
-
-	td->msigen = devm_of_iomap(dev, np, 1, NULL) + 0x100;
-	if (IS_ERR(td->msigen))
-		return dev_err_probe(dev, -EINVAL, "failed to map memory\n");
-
-	ret = platform_get_irq(pdev, 0);
-	if (ret < 0)
-		return dev_err_probe(dev, ret, "failed to get MSI irq\n");
-	td->msigen_irq = ret;
 
 	/* XXX We need to know the MAC ID; this needs to be done differently */
 	td->mac_id = 1;
@@ -816,15 +701,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to parse devicetree\n");
 
-	WARN_ON(clk_bulk_prepare_enable(td->clock_count, td->clocks));
-
-	td->irq_domain = tc956x_msigen_irq_domain_instantiate(td);
-	if (IS_ERR(td->irq_domain)) {
-		ret = dev_err_probe(dev, PTR_ERR(td->irq_domain),
-				    "failed to instantiate IRQ domain\n");
-		goto err_put_mdio;
-	}
-
 	ret = tc956x_stmmac_resources_init(td);
 	if (ret) {
 		ret = dev_err_probe(dev, ret,
@@ -839,8 +715,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 		ret = dev_err_probe(dev, ret, "failed stmmac probe\n");
 		goto err_disable_mac;
 	}
-
-	dev_info(dev, " === %s successful\n", __func__);
 
 	return 0;
 
