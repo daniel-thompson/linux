@@ -8,6 +8,8 @@
 /dts-v1/;
 /plugin/;
 
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/clock/toshiba,tc9564.h>
 #include <dt-bindings/reset/toshiba,tc9564.h>
 
@@ -75,7 +77,7 @@
 					#reset-cells = <1>;
 				};
 
-				tc9564_gpio0: gpio@40001200 {
+				gpio@40001200 {
 					compatible = "toshiba,tc9564-gpio";
 					reg = <0x40001200 0x18>;
 					toshiba,config-syscon = <&config_syscon0>;
@@ -83,9 +85,19 @@
 					#gpio-cells = <2>;
 				};
 
-				msigen_syscon0: syscon@4000f000 {
-					compatible = "toshiba,tc956x-msigen-syscon", "syscon";
-					reg = <0x4000f000 0x1000>;
+				tc9564_msigen0: interrupt-controller@4000f000 {
+					compatible = "toshiba,tc956x-msigen";
+					reg = <0x4000f000 0x100>;
+
+					interrupt-controller;
+					#interrupt-cells = <1>;
+
+					interrupts = <0>;
+
+					clocks = <&tc9564_clock0 CLOCK_MSIGEN>;
+					clock-names = "toshiba,tc956x-msigen-clock";
+					resets = <&tc9564_reset0 RESET_MSIGEN>;
+					reset-names = "toshiba,tc956x-msigen-reset";
 				};
 
 				ethernet@40040000 {
@@ -95,7 +107,6 @@
 					status = "disabled";
 					reg = <0x40040000 0x8000>;
 					toshiba,config-syscon = <&config_syscon0>;
-					toshiba,msigen-syscon = <&msigen_syscon0>;
 
 					clocks = <&tc9564_clock0 CLOCK_MAC0_TX>,
 						 <&tc9564_clock0 CLOCK_MAC0_RX>,
@@ -111,7 +122,7 @@
 						      "toshiba,tc956x-pma-reset",
 					              "toshiba,tc956x-xpcs-reset";
 
-					interrupts = <0>; /* PCI INTx assigned interrupt */
+					interrupts = <0>;
 
 #if 0
 					phy-mode = "sgmii";

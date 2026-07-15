@@ -33,60 +33,60 @@
 				//ranges = <0x40000000  0x02000000 0x0 0x40c00000  0x200000>;
 				ranges = <0x40000000  0x02050100 0x0 0x40c00000  0x200000>;
 
+				tc9564_msigen1: interrupt-controller@4000f100 {
+					compatible = "toshiba,tc956x-msigen";
+					reg = <0x4000f100 0x0100>;
+					interrupt-controller;
+					#interrupt-cells = <1>;
+
+					interrupts = <0>;
+
+					clocks = <&tc9564_clock0 CLOCK_MSIGEN>;
+					clock-names = "toshiba,tc956x-msigen-clock";
+					resets = <&tc9564_reset0 RESET_MSIGEN>;
+					reset-names = "toshiba,tc956x-msigen-reset";
+				};
 
 				ethernet@40048000 {
 					compatible = "toshiba,tc9564-xgmac",
 						     "snps,dwxgmac-3.01",
 						     "snps,dwxgmac";
-					reg = <0x40048000 0x8000>,
-					      <0x4000f000 0x1000>;
+					reg = <0x40048000 0x8000>;
 					toshiba,config-syscon = <&config_syscon0>;
-					toshiba,msigen-syscon = <&msigen_syscon0>;
 
 					clocks = <&tc9564_clock0 CLOCK_MAC1_TX>,
 						 <&tc9564_clock0 CLOCK_MAC1_RX>,
 						 <&tc9564_clock0 CLOCK_MAC1_ALL>,
-						 <&tc9564_clock0 CLOCK_MAC1_RMII>,
-						 <&tc9564_clock0 CLOCK_MSIGEN>;
+						 <&tc9564_clock0 CLOCK_MAC1_RMII>;
 					clock-names = "toshiba,tc956x-mac-tx-clock",
 						      "toshiba,tc956x-mac-rx-clock",
 						      "toshiba,tc956x-mac-all-clock",
-						      "toshiba,tc956x-mac-rmii-clock",
-						      "toshiba,tc956x-msigen-clock";
+						      "toshiba,tc956x-mac-rmii-clock";
 
 					resets = <&tc9564_reset0 RESET_MAC1_MAC>,
 						 <&tc9564_reset0 RESET_MAC1_PMA>,
-						 <&tc9564_reset0 RESET_MAC1_XPCS>,
-						 <&tc9564_reset0 RESET_MSIGEN>;
+						 <&tc9564_reset0 RESET_MAC1_XPCS>;
 					reset-names = "toshiba,tc956x-mac-reset",
 						      "toshiba,tc956x-pma-reset",
-						      "toshiba,tc956x-xpcs-reset",
-						      "toshiba,tc956x-msigen-reset";
+						      "toshiba,tc956x-xpcs-reset";
 
-					interrupts = <0>; /* PCI INTx assigned interrupt */
-
-					phy-mode = "sgmii";
-					phy-handle = <&tc9564_emac1_phy>;
-
-					mdio {
-						compatible = "snps,dwmac-mdio";
-						#address-cells = <1>;
-						#size-cells = <0>;
-
-						tc9564_emac1_phy: ethernet-phy@1c {
-							compatible = "ethernet-phy-id004d.d101";
-							reg = <0x1c>;
-							snps,reset = <&tc9564_gpio0 1 GPIO_ACTIVE_LOW>;
-							reset-assert-us = <11000>;
-							reset-deassert-us = <70000>;
-
-							vdd18-supply = <&qep_1p8>;
-
-							pinctrl-names = "default";
-							pinctrl-0 = <&qep_irq_pin>;
-							interrupts-extended = <&tlmm 101 IRQ_TYPE_LEVEL_LOW>;
-						};
-					};
+					interrupts-extended = <&tc9564_msigen1 2>,
+							      <&tc9564_msigen1 3>,
+							      <&tc9564_msigen1 4>,
+							      <&tc9564_msigen1 5>,
+							      <&tc9564_msigen1 6>,
+							      <&tc9564_msigen1 7>,
+							      <&tc9564_msigen1 8>,
+							      <&tc9564_msigen1 9>,
+							      <&tc9564_msigen1 10>,
+							      <&tc9564_msigen1 11>,
+							      <&tc9564_msigen1 12>,
+							      <&tc9564_msigen1 13>,
+							      <&tc9564_msigen1 14>,
+							      <&tc9564_msigen1 15>,
+							      <&tc9564_msigen1 16>,
+							      <&tc9564_msigen1 17>,
+							      <&tc9564_msigen1 18>;
 				};
 			};
 		};
