@@ -122,7 +122,7 @@ static struct pci_dev_intr_ctrl *pci_dev_create_intr_ctrl(struct pci_dev *pdev)
 		goto err_remove_domain;
 	}
 	intr_ctrl->irq = pci_irq_vector(pdev, 0);
-	ret = request_irq(intr_ctrl->irq, pci_dev_irq_handler, IRQF_SHARED,
+	ret = request_irq(intr_ctrl->irq, pci_dev_irq_handler, IRQF_NO_THREAD,
 			  pci_name(pdev), intr_ctrl);
 	if (ret) {
 		pci_err(pdev, "Unable to request irq %d (%d)\n", intr_ctrl->irq, ret);
