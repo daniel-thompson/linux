@@ -845,4 +845,13 @@ config SUNPLUS_SP7021_INTC
 	  chained controller, routing all interrupt source in P-Chip to
 	  the primary controller on C-Chip.
 
+config TC956X_MSIGEN
+	tristate "Toshiba TC956X MSI distributor"
+	depends on TC956X_PCI
+	default n
+	help
+	  This enables support for the "MSIGEN" MSI distributor embedded in the
+	  Toshiba TC956X (and Qualcomm QPS615).  This device receive wired
+	  interrupts within the TC956x and raises them to the host using MSI.
+
 endmenu
