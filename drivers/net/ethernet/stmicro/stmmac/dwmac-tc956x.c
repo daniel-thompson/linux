@@ -36,7 +36,6 @@
 #define TC956X_TX_FIFO_KB		46	/* Shared by all TX queues */
 
 /* Fields and values for the EMACTL registers */
-#define EMAC_CTL_OFFSET(_mac_id)	((_mac_id) ? 0x1074 : 0x1070)
 #define EMAC_SP_SEL_MASK		GENMASK(3, 0)
 #define SP_SEL_2500BASEX		4
 #define SP_SEL_SGMII_1000M		5
@@ -81,7 +80,6 @@ enum {
 	RESET_ID_MAC,
 	RESET_ID_XPCS,
 	RESET_ID_PMA,
-	RESET_ID_MSIGEN,
 };
 
 static const char *tc956x_reset_names[] = {
@@ -90,24 +88,16 @@ static const char *tc956x_reset_names[] = {
 	[RESET_ID_PMA] = "toshiba,tc956x-pma-reset",
 };
 
-static const char *tc956x_clock_names[] = {
-	"toshiba,tc956x-mac-tx-clock",
-	"toshiba,tc956x-mac-rx-clock",
-	"toshiba,tc956x-mac-all-clock",
-	"toshiba,tc956x-mac-rmii-clock",	/* eMAC 1 only; must be last */
-};
-
 /**
  * struct tc956x_data - Toshiba-specific platform data
  * @dev:		Device pointer
- * @irq_domain:		MSIGEN IRQ domain
  * @ioaddr:		Pointer to mapped eMAC memory
- * @mac_id:		MAC number (0 or 1)
  * @plat:		Pointer to our stmmac platform data
  * @resets:		Reset controller bulk array
  * @clocks:		Clock controller bulk array
  * @clock_count:	Number of valid elements in the clock array
  * @config_regmap:	Regmap used to access eMAC configuration registers
+ * @emac_ctl_offset:	Offset of the eMAC control register within the regmap
  * @dma_cfg:		DMA config buffer used by plat_stmmacenet_data
  * @mdio_bus_data:	MDIO bus data used by plat_stmmacenet_data
  * @axi:		AXI data used by plat_stmmacenet_data
@@ -117,15 +107,14 @@ static const char *tc956x_clock_names[] = {
  */
 struct tc956x_data {
 	struct device *dev;
-	struct irq_domain *irq_domain;
 	void __iomem *ioaddr;
-	u8 mac_id;
 	struct plat_stmmacenet_data *plat;
 	struct reset_control_bulk_data resets[ARRAY_SIZE(tc956x_reset_names)];
-	struct clk_bulk_data clocks[ARRAY_SIZE(tc956x_clock_names)];
+	struct clk_bulk_data *clocks;
 	u32 clock_count;
 
 	struct regmap *config_regmap;
+	u32 emac_ctl_offset;
 
 	/* These three fields are used by the plat_stmmacenet_data structure */
 	struct stmmac_dma_cfg dma_cfg;
@@ -209,9 +198,9 @@ static void tc956x_pma_init(struct tc956x_data *td)
 
 	WARN_ON(reset_control_deassert(rstc));
 
-	ret = regmap_read_poll_timeout(regmap, EMAC_CTL_OFFSET(td->mac_id),
+	ret = regmap_read_poll_timeout(regmap, td->emac_ctl_offset,
 				       val, val & EMAC_INIT_DONE, 50, 1000000);
-	WARN(ret, "timeout waiting for MAC %u init done\n", td->mac_id);
+	WARN(ret, "timeout waiting for MAC init done\n");
 }
 
 static int tc956x_mac_speed_select(struct tc956x_data *td,
@@ -238,7 +227,7 @@ static int tc956x_mac_configure(struct tc956x_data *td,
 				phy_interface_t interface, int speed)
 {
 	struct regmap *regmap = td->config_regmap;
-	u32 offset = EMAC_CTL_OFFSET(td->mac_id);
+	u32 offset = td->emac_ctl_offset;
 	int sp_sel;
 	u32 val;
 
@@ -464,7 +453,6 @@ static int tc956x_plat_dat_init(struct tc956x_data *td)
 		return -ENOMEM;
 
 	plat->core_type = DWMAC_CORE_XGMAC;
-	plat->bus_id = td->mac_id;
 	plat->phy_interface = phy_interface;
 	plat->mdio_bus_data = &td->mdio_bus_data;
 	/* Parent PCI device is used for DMA */
@@ -553,31 +541,10 @@ static int tc956x_plat_dat_init(struct tc956x_data *td)
  */
 static int tc956x_stmmac_resources_init(struct tc956x_data *td)
 {
-#if 0
-	struct irq_domain *irq_domain = td->irq_domain;
-#else
 	struct platform_device *pdev = container_of(td->dev, struct platform_device, dev);
-#endif
 	struct stmmac_resources *res = &td->res;
 	u32 i;
 
-#if 0
-	res->irq = irq_create_mapping(irq_domain, HWIRQ_EVENT);
-	if (!res->irq)
-		return -EINVAL;
-
-	for (i = 0; i < td->plat->tx_queues_to_use; i++) {
-		res->tx_irq[i] = irq_create_mapping(irq_domain, HWIRQ_TX0 + i);
-		if (!res->tx_irq[i])
-			return -EINVAL;
-	}
-
-	for (i = 0; i < td->plat->rx_queues_to_use; i++) {
-		res->rx_irq[i] = irq_create_mapping(irq_domain, HWIRQ_RX0 + i);
-		if (!res->rx_irq[i])
-			return -EINVAL;
-	}
-#else
 	res->irq = platform_get_irq(pdev, 0);
 	if (res->irq < 0)
 		return res->irq;
@@ -593,7 +560,6 @@ static int tc956x_stmmac_resources_init(struct tc956x_data *td)
 		if (res->rx_irq[i] < 0)
 			return res->rx_irq[i];
 	}
-#endif
 
 	res->addr = td->ioaddr;
 
@@ -635,23 +601,12 @@ static int tc956x_reset_init(struct tc956x_data *td)
 static int tc956x_clock_init(struct tc956x_data *td)
 {
 	struct device *dev = td->dev;
-	u32 clock_count;
 	int ret;
-	u32 i;
 
-	/* MAC 1 has one more clock than MAC0 does (RMII) */
-	clock_count = ARRAY_SIZE(td->clocks);
-	if (!td->mac_id)
-		clock_count--;
-
-	for (i = 0; i < clock_count; i++)
-		td->clocks[i].id = tc956x_clock_names[i];
-
-	ret = devm_clk_bulk_get(dev, clock_count, td->clocks);
-	if (ret)
+	ret = devm_clk_bulk_get_all(dev, &td->clocks);
+	if (ret < 0)
 		return ret;
-
-	td->clock_count = clock_count;
+	td->clock_count = ret;
 
 	return 0;
 }
@@ -671,7 +626,8 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	td->dev = dev;
 
 	np = dev_of_node(dev);
-	regmap = syscon_regmap_lookup_by_phandle(np, "toshiba,config-syscon");
+	regmap = syscon_regmap_lookup_by_phandle_args(
+		np, "toshiba,config-syscon", 1, &td->emac_ctl_offset);
 	if (IS_ERR(regmap))
 		return dev_err_probe(dev, PTR_ERR(regmap),
 				     "failed to get config regmap\n");
@@ -680,9 +636,6 @@ static int tc956x_dwmac_probe(struct platform_device *pdev)
 	td->ioaddr = devm_of_iomap(dev, np, 0, NULL);
 	if (IS_ERR(td->ioaddr))
 		return dev_err_probe(dev, -EINVAL, "failed to map memory\n");
-
-	/* XXX We need to know the MAC ID; this needs to be done differently */
-	td->mac_id = 1;
 
 	ret = tc956x_reset_init(td);
 	if (ret)
