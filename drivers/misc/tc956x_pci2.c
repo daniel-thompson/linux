@@ -169,19 +169,29 @@ tc956x_function_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	unsigned int fn = PCI_FUNC(pdev->devfn);
 	struct device *dev = &pdev->dev;
+	struct pci_dev *f0 = NULL;
 	struct tc956x_func *func;
 	struct device_node *np;
 	int ret;
 
 	dev_info(dev, " === %s: starting\n", __func__);
 
-	if (fn > 1)
-		return dev_err_probe(dev, -EINVAL, "bad function %u\n", fn);
-
 	/* Despite being a PCI device, we require devicetree */
 	np = dev_of_node(dev);
 	if (!np)
 		return dev_err_probe(dev, -EINVAL, "no devicetree node\n");
+
+	if (fn == 1) {
+		/* Check function 0 has probed before allowing function 1 to probe */
+		f0 = pci_get_slot(pdev->bus, PCI_DEVFN(PCI_SLOT(pdev->devfn), 0));
+		if (!f0)
+			return -ENXIO;
+
+		if (pci_get_drvdata(f0) == NULL)
+			return -EPROBE_DEFER;
+	} else if (fn > 1) {
+		return dev_err_probe(dev, -EINVAL, "bad function %u\n", fn);
+	}
 
 	ret = pcim_enable_device(pdev);
 	if (ret)
@@ -202,9 +212,24 @@ tc956x_function_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (ret)
 		return dev_err_probe(dev, ret, "failed to load overlay\n");
 
-	ret = of_platform_default_populate(np, NULL, dev);
-	if (ret)
-		goto err_unload_overlay;
+	/*
+	 * Populate the platform bus only once both overlays are loaded. Without
+	 * this logic fw_devlink creates spurious links from fn1 clients to
+	 * the simple-mfd parent of fn0 suppliers.
+	 */
+	if (fn == 1) {
+		ret = of_platform_default_populate(np, NULL, dev);
+		if (ret) {
+			dev_err_probe(dev, ret, "failed to populate for function 1\n");
+			goto err_unload_overlay;
+		}
+
+		ret = of_platform_default_populate(dev_of_node(&f0->dev), NULL, &f0->dev);
+		if (ret) {
+			dev_err_probe(dev, ret, "failed to populate for function 0\n");
+			goto err_unload_overlay;
+		}
+	}
 
 	pci_set_drvdata(pdev, func);
 
