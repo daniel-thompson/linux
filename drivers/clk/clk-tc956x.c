@@ -32,7 +32,7 @@ struct tc956x_clock {
 
 struct tc956x_clocks {
 	struct regmap *regmap;
-	u32 offset[2];
+	u16 offset[2];
 	size_t clock_count;
 	struct tc956x_clock clocks[] __counted_by(clock_count);
 };
@@ -139,8 +139,8 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 	struct device_node *np;
 	struct regmap *regmap;
 	struct clk_hw *hw;
-	u32 offset0;
-	u32 offset1;
+	u16 offset[2];
+	int reg_size;
 	u64 addr;
 	u64 size;
 	int ret;
@@ -150,28 +150,24 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 	if (!np)
 		return dev_err_probe(dev, -EINVAL, "no devicetree node\n");
 
-	ret = of_property_read_reg(np, 0, &addr, &size);
-	if (ret)
-		return dev_err_probe(dev, ret, "failed to get offset 0\n");
-
-	if (size != sizeof(offset0))
-		return dev_err_probe(dev, -EINVAL,
-				     "bad offset 0 size %llu\n", size);
-	offset0 = lower_32_bits(addr);
-
-	ret = of_property_read_reg(np, 1, &addr, &size);
-	if (ret)
-		return dev_err_probe(dev, ret, "failed to get offset 1\n");
-
-	if (size != sizeof(offset1))
-		return dev_err_probe(dev, -EINVAL,
-				     "bad offset 1 size %llu\n", size);
-	offset1 = lower_32_bits(addr);
-
-	regmap = syscon_regmap_lookup_by_phandle(np, "toshiba,config-syscon");
+	regmap = syscon_node_to_regmap(dev->parent->of_node);
 	if (IS_ERR(regmap))
 		return dev_err_probe(dev, PTR_ERR(regmap),
 				     "failed to get config regmap\n");
+	reg_size = regmap_get_val_bytes(regmap);
+
+	for (i = 0; i < 2; i++) {
+		ret = of_property_read_reg(np, i, &addr, &size);
+		if (ret)
+			return dev_err_probe(dev, ret,
+					     "failed to get offset %d\n", i);
+
+		if (size != reg_size)
+			return dev_err_probe(dev, -EINVAL,
+					     "bad offset %d size %llu\n", i,
+					     size);
+		offset[i] = lower_16_bits(addr);
+	}
 
 	clocks = kzalloc_flex(*clocks, clocks, ARRAY_SIZE(tc9564_clock_init));
 	if (!clocks)
@@ -179,8 +175,7 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 				     "failed to allocate clocks\n");
 
 	clocks->regmap = regmap;
-	clocks->offset[0] = offset0;
-	clocks->offset[1] = offset1;
+	memcpy(clocks->offset, offset, sizeof(clocks->offset));
 	clocks->clock_count = ARRAY_SIZE(tc9564_clock_init);
 
 	hw_data = devm_kzalloc(
@@ -190,7 +185,6 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, -ENOMEM,
 				     "failed to allocate hw_data\n");
 	hw_data->num = ARRAY_SIZE(tc9564_clock_init);
-
 
 	for (i = 0; i < ARRAY_SIZE(tc9564_clock_init); i++) {
 		const struct tc956x_clock_init *clock_init = &tc9564_clock_init[i];
@@ -207,10 +201,12 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 		hw->init = &init;
 
 		ret = devm_clk_hw_register(dev, hw);
-		if (ret)
-			return dev_err_probe(dev, ret,
-					     "failed to register clock \"%s\"\n",
-					     clock_init->name);
+		if (ret) {
+			dev_err_probe(dev, ret,
+				      "failed to register clock \"%s\"\n",
+				      clock_init->name);
+			goto free_clocks;
+		}
 
 		hw_data->hws[i] = hw;
 
@@ -226,11 +222,16 @@ static int tc956x_clk_probe(struct platform_device *pdev)
 #endif
 
 	ret = devm_of_clk_add_hw_provider(dev, of_clk_hw_onecell_get, hw_data);
-	if (ret)
-		return dev_err_probe(dev, ret,
-				     "failed to add clk hw provider\n");
+	if (ret) {
+		dev_err_probe(dev, ret, "failed to add clk hw provider\n");
+		goto free_clocks;
+	}
 
 	return 0;
+
+free_clocks:
+	kfree(clocks);
+	return ret;
 }
 
 static void tc956x_clk_remove(struct platform_device *pdev)
