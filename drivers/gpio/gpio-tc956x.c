@@ -74,8 +74,7 @@ static int tc956x_gpio_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	struct regmap *regmap;
 
-	regmap = syscon_regmap_lookup_by_phandle(dev_of_node(dev),
-						 "toshiba,config-syscon");
+	regmap = syscon_node_to_regmap(dev_of_node(dev));
 	if (IS_ERR(regmap))
 		return dev_err_probe(dev, PTR_ERR(regmap),
 				     "failed to get config regmap\n");
