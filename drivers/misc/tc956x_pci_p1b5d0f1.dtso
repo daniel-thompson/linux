@@ -30,7 +30,6 @@
 				/* Map 0x0-0x1fffff to BAR 4 */
 				// ranges = <0x0  0x4 0x0 0x0  0x200000>;
 				// ranges = <0x0  0x0200001c 0x0 0x0  0x200000>;
-				//ranges = <0x40000000  0x02000000 0x0 0x40c00000  0x200000>;
 				ranges = <0x40000000  0x02050100 0x0 0x40c00000  0x200000>;
 
 				tc9564_msigen1: interrupt-controller@4000f100 {
@@ -52,7 +51,7 @@
 						     "snps,dwxgmac-3.01",
 						     "snps,dwxgmac";
 					reg = <0x40048000 0x8000>;
-					toshiba,config-syscon = <&config_syscon0>;
+					toshiba,config-syscon = <&config_syscon0 0x1074>;
 
 					clocks = <&tc9564_clock0 CLOCK_MAC1_TX>,
 						 <&tc9564_clock0 CLOCK_MAC1_RX>,

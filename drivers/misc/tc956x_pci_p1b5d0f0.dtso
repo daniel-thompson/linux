@@ -53,36 +53,35 @@
 				/* Map 0x0-0x1fffff to BAR 4 */
 				// ranges = <0x0  0x4 0x0 0x0  0x200000>;
 				// ranges = <0x0  0x0200001c 0x0 0x0  0x200000>;
-				//ranges = <0x40000000  0x02000000 0x0 0x40400000  0x200000>;
 				ranges = <0x40000000  0x02050000 0x0 0x40400000  0x200000>;
 
-				config_syscon0: syscon@40000000 {
-					compatible = "toshiba,tc956x-config-syscon", "syscon";
+				syscon@40000000 {
+					compatible = "toshiba,tc956x-config-syscon", "syscon", "simple-bus";
 					reg = <0x40000000 0x2000>;
-				};
 
-				tc9564_clock0: clock@40001004 {
-					compatible = "toshiba,tc956x-clocks";
-					reg = <0x40001004 0x4>,
-					      <0x4000100c 0x4>;
-					toshiba,config-syscon = <&config_syscon0>;
-					#clock-cells = <1>;
-				};
+					#address-cells = <1>;
+					#size-cells = <1>;
+					ranges = <0x0 0x40000000 0x2000>;
 
-				tc9564_reset0: reset@40001008 {
-					compatible = "toshiba,tc956x-resets";
-					reg = <0x40001008 0x4>,
-					      <0x40001010 0x4>;
-					toshiba,config-syscon = <&config_syscon0>;
-					#reset-cells = <1>;
-				};
+					tc9564_clock0: clock@1004 {
+						compatible = "toshiba,tc956x-clocks";
+						reg = <0x1004 0x4>, <0x100c 0x4>;
+						#clock-cells = <1>;
+					};
 
-				gpio@40001200 {
-					compatible = "toshiba,tc9564-gpio";
-					reg = <0x40001200 0x18>;
-					toshiba,config-syscon = <&config_syscon0>;
-					gpio-controller;
-					#gpio-cells = <2>;
+					tc9564_reset0: reset@40001008 {
+						compatible = "toshiba,tc956x-resets";
+						reg = <0x1008 0x4>, <0x1010 0x4>;
+						#reset-cells = <1>;
+					};
+
+					gpio@40001200 {
+						compatible = "toshiba,tc9564-gpio";
+						reg = <0x1200 0x18>;
+						toshiba,config-syscon = <&config_syscon0>;
+						gpio-controller;
+						#gpio-cells = <2>;
+					};
 				};
 
 				tc9564_msigen0: interrupt-controller@4000f000 {
@@ -104,9 +103,8 @@
 					compatible = "toshiba,tc9564-xgmac",
 						     "snps,dwxgmac-3.01",
 						     "snps,dwxgmac";
-					status = "disabled";
 					reg = <0x40040000 0x8000>;
-					toshiba,config-syscon = <&config_syscon0>;
+					toshiba,config-syscon = <&config_syscon0 0x1070>;
 
 					clocks = <&tc9564_clock0 CLOCK_MAC0_TX>,
 						 <&tc9564_clock0 CLOCK_MAC0_RX>,
@@ -122,32 +120,23 @@
 						      "toshiba,tc956x-pma-reset",
 					              "toshiba,tc956x-xpcs-reset";
 
-					interrupts = <0>;
-
-#if 0
-					phy-mode = "sgmii";
-					phy-handle = <&tc9564_emac1_phy>;
-
-					mdio {
-						compatible = "snps,dwmac-mdio";
-						#address-cells = <1>;
-						#size-cells = <0>;
-
-						tc9564_emac1_phy: ethernet-phy@1c {
-							compatible = "ethernet-phy-id004d.d101";
-							reg = <0x1c>;
-							snps,reset = <&tc9564_gpio0 0 GPIO_ACTIVE_LOW>;
-							reset-assert-us = <11000>;
-							reset-deassert-us = <70000>;
-
-							vdd18-supply = <&qep_1p8>;
-
-							pinctrl-names = "default";
-							pinctrl-0 = <&qep_irq_pin>;
-							interrupts-extended = <&tlmm 101 IRQ_TYPE_LEVEL_LOW>;
-						};
-					};
-#endif
+					interrupts-extended = <&tc9564_msigen0 2>,
+							      <&tc9564_msigen0 3>,
+							      <&tc9564_msigen0 4>,
+							      <&tc9564_msigen0 5>,
+							      <&tc9564_msigen0 6>,
+							      <&tc9564_msigen0 7>,
+							      <&tc9564_msigen0 8>,
+							      <&tc9564_msigen0 9>,
+							      <&tc9564_msigen0 10>,
+							      <&tc9564_msigen0 11>,
+							      <&tc9564_msigen0 12>,
+							      <&tc9564_msigen0 13>,
+							      <&tc9564_msigen0 14>,
+							      <&tc9564_msigen0 15>,
+							      <&tc9564_msigen0 16>,
+							      <&tc9564_msigen0 17>,
+							      <&tc9564_msigen0 18>;
 				};
 			};
 		};

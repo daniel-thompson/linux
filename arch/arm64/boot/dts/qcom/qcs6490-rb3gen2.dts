@@ -972,7 +972,9 @@
 				ranges;
 
 				pci-ep-bus@4 {
-					tc9564_gpio0: gpio@40001200 {
+					config_syscon0: syscon@40000000 {
+						tc9564_gpio0: gpio@40001200 {
+						};
 					};
 				};
 			};
