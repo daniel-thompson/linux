@@ -119,38 +119,35 @@ static int tc956x_reset_probe(struct platform_device *pdev)
 	struct tc956x_resets *resets;
 	struct device_node *np;
 	struct regmap *regmap;
-	u32 offset0;
-	u32 offset1;
+	u32 offset[2];
+	int reg_size;
 	u64 addr;
 	u64 size;
 	int ret;
+	int i;
 
 	np = dev_of_node(dev);
 	if (!np)
 		return dev_err_probe(dev, -EINVAL, "no devicetree node\n");
 
-	regmap = syscon_regmap_lookup_by_phandle(np, "toshiba,config-syscon");
+	regmap = syscon_node_to_regmap(dev->parent->of_node);
 	if (IS_ERR(regmap))
 		return dev_err_probe(dev, PTR_ERR(regmap),
 				     "failed to get config regmap\n");
+	reg_size = regmap_get_val_bytes(regmap);
 
-	ret = of_property_read_reg(np, 0, &addr, &size);
-	if (ret)
-		return dev_err_probe(dev, ret, "failed to get offset 0\n");
+	for (i = 0; i < 2; i++) {
+		ret = of_property_read_reg(np, i, &addr, &size);
+		if (ret)
+			return dev_err_probe(dev, ret,
+					     "failed to get offset %d\n", i);
 
-	if (size != sizeof(offset0))
-		return dev_err_probe(dev, -EINVAL,
-				     "bad offset 0 size %llu\n", size);
-	offset0 = lower_32_bits(addr) & 0xffff;
-
-	ret = of_property_read_reg(np, 1, &addr, &size);
-	if (ret)
-		return dev_err_probe(dev, ret, "failed to get offset 1\n");
-
-	if (size != sizeof(offset1))
-		return dev_err_probe(dev, -EINVAL,
-				     "bad offset 1 size %llu\n", size);
-	offset1 = lower_32_bits(addr) & 0xffff;
+		if (size != reg_size)
+			return dev_err_probe(dev, -EINVAL,
+					     "bad offset %d size %llu\n", i,
+					     size);
+		offset[i] = lower_32_bits(addr);
+	}
 
 	resets = kzalloc_obj(*resets);
 	if (!resets)
@@ -158,8 +155,8 @@ static int tc956x_reset_probe(struct platform_device *pdev)
 				     "failed to allocate resets\n");
 
 	resets->regmap = regmap;
-	resets->offset[0] = offset0;
-	resets->offset[1] = offset1;
+	resets->offset[0] = offset[0];
+	resets->offset[1] = offset[1];
 
 	resets->rcdev.ops = &tc956x_reset_control_ops;
 	resets->rcdev.owner = THIS_MODULE;
