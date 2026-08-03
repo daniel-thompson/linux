@@ -27382,6 +27382,12 @@ F:	Documentation/devicetree/bindings/reset/toshiba,tc9564-reset.yaml
 F:	drivers/reset/reset-tc9564.c
 F:	include/dt-bindings/reset/toshiba,tc9564.h
 
+TOSHIBA TC9564 TRANSLATE DRIVER
+M:	Alex Elder <elder@kernel.org>
+M:	Daniel Thompson <danielt@kernel.org>
+S:	Maintained
+F:	Documentation/devicetree/bindings/misc/toshiba,tc9564-translate.yaml
+
 TOSHIBA WMI HOTKEYS DRIVER
 M:	Azael Avalos <coproscefalo@gmail.com>
 L:	platform-driver-x86@vger.kernel.org
