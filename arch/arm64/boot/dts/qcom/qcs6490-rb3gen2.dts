@@ -966,7 +966,7 @@
 					 <0x2 0x0 0x0  0x83050000 0x0 0x0 0x0 0x80000>,
 					 <0x4 0x0 0x0  0x83050000 0x0 0x0 0x0 0x200000>;
 
-				pci-ep-bus@0 {
+				pcie_s1b5d0f0_bar0_bus: pci-ep-bus@0 {
 					compatible = "simple-bus";
 					#address-cells = <1>;
 					#size-cells = <1>;
@@ -1001,6 +1001,23 @@
 					ranges = <0x0  0x4 0x0 0x0  0x200000>;
 				};
 			};
+		};
+	};
+};
+
+&pcie_s1b5d0f0_bar0_bus {
+	tc9564_bridge_syscon0: syscon@0 {
+		compatible = "toshiba,tc9564-bridge",
+			     "syscon",
+			     "simple-mfd";
+		reg = <0x0 0x1000>;
+		#address-cells = <1>;
+		#size-cells = <1>;
+		ranges;
+
+		tc9564_translate0: translate@800 {
+			compatible = "toshiba,tc9564-translate";
+			reg = <0x0800 0x80>;
 		};
 	};
 };
