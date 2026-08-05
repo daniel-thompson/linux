@@ -993,7 +993,7 @@
 					 <0x2 0x0 0x0  0x83050100 0x0 0x0 0x0 0x80000>,
 					 <0x4 0x0 0x0  0x83050100 0x0 0x0 0x0 0x200000>;
 
-				pci-ep-bus@4 {
+				pcie_s1b5d0f1_bar4_bus: pci-ep-bus@4 {
 					compatible = "simple-bus";
 					#address-cells = <1>;
 					#size-cells = <1>;
@@ -1028,6 +1028,30 @@
 			      <0x1010 0x4>;
 			#reset-cells = <1>;
 		};
+	};
+
+	interrupt-controller@f000 {
+		compatible = "toshiba,tc9564-msigen";
+		reg = <0xf000 0x100>;
+
+		interrupt-controller;
+		#interrupt-cells = <1>;
+
+		clocks = <&tc9564_clock0 CLOCK_MSIGEN>;
+		resets = <&tc9564_reset0 RESET_MSIGEN>;
+	};
+};
+
+&pcie_s1b5d0f1_bar4_bus {
+	interrupt-controller@f100 {
+		compatible = "toshiba,tc9564-msigen";
+		reg = <0xf100 0x100>;
+
+		interrupt-controller;
+		#interrupt-cells = <1>;
+
+		clocks = <&tc9564_clock0 CLOCK_MSIGEN>;
+		resets = <&tc9564_reset0 RESET_MSIGEN>;
 	};
 };
 
