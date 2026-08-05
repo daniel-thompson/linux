@@ -327,6 +327,15 @@
 		regulator-enable-ramp-delay = <10000>;
 	};
 
+	qep_1p8: regulator-qep-1p8 {
+		compatible = "regulator-fixed";
+		regulator-name = "qep_1p8";
+		gpio = <&pm7325_gpios 8 GPIO_ACTIVE_HIGH>;
+		regulator-min-microvolt = <1800000>;
+		regulator-max-microvolt = <1800000>;
+		enable-active-high;
+	};
+
 	wcn6750-pmu {
 		compatible = "qcom,wcn6750-pmu";
 		pinctrl-0 = <&bt_en>;
@@ -956,6 +965,42 @@
 			ranges;
 			bus-range = <0x5 0xff>;
 
+			clocks {
+				tc9564_xo_board: xo-board {
+					compatible = "fixed-clock";
+					#clock-cells = <0>;
+					clock-frequency = <25000000>;
+					clock-output-names = "tc9564_xo_board";
+				};
+
+				tc9564_pll: pll {
+					compatible = "fixed-factor-clock";
+					clocks = <&tc9564_xo_board>;
+					#clock-cells = <0>;
+					clock-mult = <50>;
+					clock-div = <1>;
+					clock-output-names = "tc9564_pll";
+				};
+
+				tc9564_ref_125mhz_clk: ref-125mhz-clk {
+					compatible = "fixed-factor-clock";
+					clocks = <&tc9564_pll>;
+					#clock-cells = <0>;
+					clock-mult = <1>;
+					clock-div = <10>;
+					clock-output-names = "tc9564_125mhz_clk";
+				};
+
+				tc9564_ref_250mhz_clk: ref-250mhz-clk {
+					compatible = "fixed-factor-clock";
+					clocks = <&tc9564_pll>;
+					#clock-cells = <0>;
+					clock-mult = <1>;
+					clock-div = <5>;
+					clock-output-names = "tc9564_250mhz_clk";
+				};
+			};
+
 			pci@0,0 {
 				compatible = "pci1179,0220";
 				reg = <0x50000 0x0 0x0 0x0 0x0>;
@@ -1023,7 +1068,7 @@
 };
 
 &pcie_s1b5d0f0_bar4_bus {
-	syscon@0 {
+	tc9564_config_syscon0: syscon@0 {
 		compatible = "toshiba,tc9564-config",
 			     "syscon",
 			     "simple-mfd";
@@ -1047,7 +1092,7 @@
 		};
 	};
 
-	interrupt-controller@f000 {
+	tc9564_msigen0: interrupt-controller@f000 {
 		compatible = "toshiba,tc9564-msigen";
 		reg = <0xf000 0x100>;
 
@@ -1057,10 +1102,131 @@
 		clocks = <&tc9564_clock0 CLOCK_MSIGEN>;
 		resets = <&tc9564_reset0 RESET_MSIGEN>;
 	};
+
+	tc9564_emac0: ethernet@40000 {
+		compatible = "toshiba,tc9564-xgmac";
+		reg = <0x40000 0x8000>;
+		status = "disabled";
+		toshiba,config-syscon = <&tc9564_config_syscon0 0x1070>;
+
+		clocks = <&tc9564_ref_125mhz_clk>,
+			 <&tc9564_ref_250mhz_clk>,
+			 <&tc9564_clock0 CLOCK_MAC0_TX>,
+			 <&tc9564_clock0 CLOCK_MAC0_RX>,
+			 <&tc9564_clock0 CLOCK_MAC0_ALL>;
+		clock-names = "stmmaceth",
+			      "ptp_ref",
+			      "mac-tx-clock",
+			      "mac-rx-clock",
+			      "mac-all-clock";
+
+		resets = <&tc9564_reset0 RESET_MAC0_MAC>,
+			 <&tc9564_reset0 RESET_MAC0_PMA>,
+			 <&tc9564_reset0 RESET_MAC0_XPCS>;
+		reset-names = "mac-reset",
+			      "pma-reset",
+			      "xpcs-reset";
+
+		interrupts-extended = <&tc9564_msigen0 2>,
+				      <&tc9564_msigen0 3>,
+				      <&tc9564_msigen0 4>,
+				      <&tc9564_msigen0 5>,
+				      <&tc9564_msigen0 6>,
+				      <&tc9564_msigen0 7>,
+				      <&tc9564_msigen0 8>,
+				      <&tc9564_msigen0 9>,
+				      <&tc9564_msigen0 10>,
+				      <&tc9564_msigen0 11>,
+				      <&tc9564_msigen0 12>,
+				      <&tc9564_msigen0 13>,
+				      <&tc9564_msigen0 14>,
+				      <&tc9564_msigen0 15>,
+				      <&tc9564_msigen0 16>,
+				      <&tc9564_msigen0 17>,
+				      <&tc9564_msigen0 18>;
+		interrupt-names = "macirq",
+				  "tx-queue-0",
+				  "tx-queue-1",
+				  "tx-queue-2",
+				  "tx-queue-3",
+				  "tx-queue-4",
+				  "tx-queue-5",
+				  "tx-queue-6",
+				  "tx-queue-7",
+				  "rx-queue-0",
+				  "rx-queue-1",
+				  "rx-queue-2",
+				  "rx-queue-3",
+				  "rx-queue-4",
+				  "rx-queue-5",
+				  "rx-queue-6",
+				  "rx-queue-7";
+
+		snps,tso;
+		snps,pbl = <32>;
+		snps,force_sf_dma_mode;
+		snps,perfect-filter-entries = <32>;
+
+		snps,mtl-rx-config = <&tc9564_mtl_rx_emac0_setup>;
+		snps,mtl-tx-config = <&tc9564_mtl_tx_emac0_setup>;
+		rx-fifo-depth = <32768>;
+		tx-fifo-depth = <32768>;
+
+		snps,axi-config = <&tc9564_axi_emac0_setup>;
+
+		tc9564_mtl_rx_emac0_setup: rx-queues-config {
+			snps,rx-queues-to-use = <4>;
+			snps,rx-sched-sp;
+			queue0 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x0>;
+			};
+			queue1 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x1>;
+			};
+			queue2 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x2>;
+			};
+			queue3 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x3>;
+			};
+		};
+
+		tc9564_mtl_tx_emac0_setup: tx-queues-config {
+			snps,tx-queues-to-use = <4>;
+			snps,tx-sched-wrr;
+			queue0 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+			queue1 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+			queue2 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+			queue3 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+		};
+
+		tc9564_axi_emac0_setup: stmmac-axi-config {
+			snps,lpi_en;
+			snps,wr_osr_lmt = <31>;
+			snps,rd_osr_lmt = <31>;
+			snps,blen = <256 128 64 32 16 8 4>;
+		};
+	};
 };
 
 &pcie_s1b5d0f1_bar4_bus {
-	interrupt-controller@f100 {
+	tc9564_msigen1: interrupt-controller@f100 {
 		compatible = "toshiba,tc9564-msigen";
 		reg = <0xf100 0x100>;
 
@@ -1069,6 +1235,159 @@
 
 		clocks = <&tc9564_clock0 CLOCK_MSIGEN>;
 		resets = <&tc9564_reset0 RESET_MSIGEN>;
+	};
+
+	tc9564_emac1: ethernet@48000 {
+		compatible = "toshiba,tc9564-xgmac";
+		reg = <0x48000 0x8000>;
+		status = "disabled";
+		toshiba,config-syscon = <&tc9564_config_syscon0 0x1074>;
+
+		clocks = <&tc9564_ref_125mhz_clk>,
+			 <&tc9564_ref_250mhz_clk>,
+			 <&tc9564_clock0 CLOCK_MAC1_TX>,
+			 <&tc9564_clock0 CLOCK_MAC1_RX>,
+			 <&tc9564_clock0 CLOCK_MAC1_ALL>,
+			 <&tc9564_clock0 CLOCK_MAC1_RMII>;
+		clock-names = "stmmaceth",
+			      "ptp_ref",
+			      "mac-tx-clock",
+			      "mac-rx-clock",
+			      "mac-all-clock",
+			      "mac-rmii-clock";
+
+		resets = <&tc9564_reset0 RESET_MAC1_MAC>,
+			 <&tc9564_reset0 RESET_MAC1_PMA>,
+			 <&tc9564_reset0 RESET_MAC1_XPCS>;
+		reset-names = "mac-reset",
+			      "pma-reset",
+			      "xpcs-reset";
+
+		interrupts-extended = <&tc9564_msigen1 2>,
+				      <&tc9564_msigen1 3>,
+				      <&tc9564_msigen1 4>,
+				      <&tc9564_msigen1 5>,
+				      <&tc9564_msigen1 6>,
+				      <&tc9564_msigen1 7>,
+				      <&tc9564_msigen1 8>,
+				      <&tc9564_msigen1 9>,
+				      <&tc9564_msigen1 10>,
+				      <&tc9564_msigen1 11>,
+				      <&tc9564_msigen1 12>,
+				      <&tc9564_msigen1 13>,
+				      <&tc9564_msigen1 14>,
+				      <&tc9564_msigen1 15>,
+				      <&tc9564_msigen1 16>,
+				      <&tc9564_msigen1 17>,
+				      <&tc9564_msigen1 18>;
+		interrupt-names = "macirq",
+				  "tx-queue-0",
+				  "tx-queue-1",
+				  "tx-queue-2",
+				  "tx-queue-3",
+				  "tx-queue-4",
+				  "tx-queue-5",
+				  "tx-queue-6",
+				  "tx-queue-7",
+				  "rx-queue-0",
+				  "rx-queue-1",
+				  "rx-queue-2",
+				  "rx-queue-3",
+				  "rx-queue-4",
+				  "rx-queue-5",
+				  "rx-queue-6",
+				  "rx-queue-7";
+
+		snps,tso;
+		snps,pbl = <32>;
+		snps,force_sf_dma_mode;
+		snps,perfect-filter-entries = <32>;
+
+		snps,mtl-rx-config = <&tc9564_mtl_rx_emac1_setup>;
+		snps,mtl-tx-config = <&tc9564_mtl_tx_emac1_setup>;
+		rx-fifo-depth = <32768>;
+		tx-fifo-depth = <32768>;
+
+		snps,axi-config = <&tc9564_axi_emac1_setup>;
+
+		tc9564_mtl_rx_emac1_setup: rx-queues-config {
+			snps,rx-queues-to-use = <4>;
+			snps,rx-sched-sp;
+			queue0 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x0>;
+			};
+			queue1 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x1>;
+			};
+			queue2 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x2>;
+			};
+			queue3 {
+				snps,dcb-algorithm;
+				snps,map-to-dma-channel = <0x3>;
+			};
+		};
+
+		tc9564_mtl_tx_emac1_setup: tx-queues-config {
+			snps,tx-queues-to-use = <4>;
+			snps,tx-sched-wrr;
+			queue0 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+			queue1 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+			queue2 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+			queue3 {
+				snps,weight = <0x0c>;
+				snps,dcb-algorithm;
+			};
+		};
+
+		tc9564_axi_emac1_setup: stmmac-axi-config {
+			snps,lpi_en;
+			snps,wr_osr_lmt = <31>;
+			snps,rd_osr_lmt = <31>;
+			snps,blen = <256 128 64 32 16 8 4>;
+		};
+	};
+};
+
+&tc9564_emac1 {
+	status = "okay";
+
+	/* SID comes from the iommu-map for &pcie1 */
+	iommus = <&apps_smmu 0x1c90 0x0>;
+
+	phy-mode = "sgmii";
+	phy-handle = <&tc9564_emac1_phy>;
+
+	mdio {
+		compatible = "snps,dwmac-mdio";
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		tc9564_emac1_phy: ethernet-phy@1c {
+			compatible = "ethernet-phy-id004d.d101";
+			reg = <0x1c>;
+
+			reset-assert-us = <11000>;
+			reset-deassert-us = <70000>;
+
+			vdd18-supply = <&qep_1p8>;
+
+			pinctrl-names = "default";
+			pinctrl-0 = <&qep_irq_pin>;
+			interrupts-extended = <&tlmm 101 IRQ_TYPE_LEVEL_LOW>;
+		};
 	};
 };
 
@@ -1650,6 +1969,13 @@
 
 	usb_hub_reset_state: usb-hub-reset-state {
 		pins = "gpio162";
+		function = "gpio";
+		drive-strength = <2>;
+		bias-disable;
+	};
+
+	qep_irq_pin: qep-irq-state {
+		pins = "gpio101";
 		function = "gpio";
 		drive-strength = <2>;
 		bias-disable;
