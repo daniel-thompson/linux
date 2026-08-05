@@ -9,6 +9,7 @@
 #define PM7250B_SID 8
 #define PM7250B_SID1 9
 
+#include <dt-bindings/clock/toshiba,tc9564.h>
 #include <dt-bindings/iio/qcom,spmi-adc7-pmk8350.h>
 #include <dt-bindings/iio/qcom,spmi-adc7-pm7325.h>
 #include <dt-bindings/leds/common.h>
@@ -1013,6 +1014,13 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 		ranges;
+
+		tc9564_clock0: clock@1004 {
+			compatible = "toshiba,tc9564-clock";
+			reg = <0x1004 0x4>,
+			      <0x100c 0x4>;
+			#clock-cells = <1>;
+		};
 
 		tc9564_reset0: reset@1008 {
 			compatible = "toshiba,tc9564-reset";
