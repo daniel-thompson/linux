@@ -663,20 +663,65 @@ void of_pci_remove_node(struct pci_dev *pdev)
 	of_node_put(np);
 }
 
+/* Returns true if the ranges property was added or updated successfully */
+static bool of_pci_update_endpoint_node_ranges(struct pci_dev *pdev)
+{
+	struct device_node *np = pci_device_to_OF_node(pdev);
+	struct property *prop;
+	u32 *value;
+	u32 size;
+
+	prop = kzalloc_obj(*prop);
+	if (!prop)
+		return false;
+
+	value = of_pci_build_prop_ranges(pdev, &size);
+	if (!value) {
+		kfree(prop);
+		return false;
+	}
+
+	prop->name = "ranges";
+	prop->length = size * sizeof(u32);
+	prop->value = value;
+
+	/* The property value needs to be in big-endian byte order */
+	while (size--)
+		cpu_to_be32s(value++);
+
+	/* of_update_property() consumes the allocated property */
+	of_update_property(np, prop);
+
+	return true;
+}
+
 void of_pci_make_dev_node(struct pci_dev *pdev)
 {
 	struct device_node *ppnode, *np = NULL;
-	const char *pci_type;
+	struct device *dev = &pdev->dev;
 	struct of_changeset *cset;
+	const char *pci_type;
 	const char *name;
 	int ret;
 
-	/*
-	 * If there is already a device tree node linked to this device,
-	 * return immediately.
-	 */
-	if (pci_device_to_OF_node(pdev))
+	/* No need to create a new devicetree node if one already exists */
+	if (pci_device_to_OF_node(pdev)) {
+		if (pci_is_bridge(pdev))
+			return;
+
+		/*
+		 * For an endpoint device, we need to add or update its
+		 * devicetree "ranges" property.  The new property will
+		 * include an entry for every BAR, mapping BAR offsets
+		 * to the actual assigned PCI bus address space for the
+		 * endpoint.  The child space in each range uses the flags
+		 * cell of the child bus address to encode the BAR number.
+		 */
+		if (!of_pci_update_endpoint_node_ranges(pdev))
+			dev_err(dev, "failed updating ranges property\n");
+
 		return;
+	}
 
 	/* Check if there is device tree node for parent device */
 	if (!pdev->bus->self)
@@ -715,7 +760,7 @@ void of_pci_make_dev_node(struct pci_dev *pdev)
 
 	np->data = cset;
 
-	ret = device_add_of_node(&pdev->dev, np);
+	ret = device_add_of_node(dev, np);
 	if (ret)
 		goto out_revert_cset;
 
