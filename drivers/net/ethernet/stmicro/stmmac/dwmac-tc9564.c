@@ -239,7 +239,7 @@ static void tc9564_mac_enable(struct tc9564_data *td)
 
 	WARN_ON(reset_control_deassert(td->resets[RESET_ID_MAC].rstc));
 
-	tc9564_mac_configure(td, PHY_INTERFACE_MODE_SGMII, SPEED_UNKNOWN);
+	tc9564_mac_configure(td, td->plat->phy_interface, SPEED_UNKNOWN);
 	tc9564_pma_init(td);
 
 	WARN_ON(reset_control_deassert(td->resets[RESET_ID_XPCS].rstc));
